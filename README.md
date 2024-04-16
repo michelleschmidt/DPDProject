@@ -3,7 +3,7 @@
 
 ## Overview
 
-HealthHub is a web (mobile) application designed to empower individuals to manage their health effectively. The app combines features of health tracking, personalized recommendations, medication management and telehealth services to provide users with a holistic approach to healthcare management.
+HealthHub is a web (mobile) application designed to empower individuals to manage their health effectively. The app combines health tracking features, personalized recommendations, medication management, and telehealth services to provide users with a holistic approach to healthcare management.
 
 ## Features
 
@@ -12,8 +12,8 @@ HealthHub is a web (mobile) application designed to empower individuals to manag
 - **Telehealth Services**: Users can schedule virtual consultations with healthcare professionals, including doctors, nutritionists, and fitness trainers. They can conduct video consultations and receive prescriptions or personalized treatment plans within the app.
 - **Health Education Resources**: The app will offer a library of articles, videos, and interactive modules covering various health topics, empowering users to make informed decisions about their well-being.
 - **Community Support**: A supportive community where users can share their experiences, tips, and encouragement with fellow members. This feature promotes accountability and motivation for achieving health goals.
-- **Medication Reminders and Tracking: The platform will be able to send customizable medication reminders to users, ensuring they take their medications on time. Users can track their medication intake within the app, recording each dose taken and receiving feedback on adherence levels.
-- **Medication Interaction Checker: The platform includes a database of medications and their potential interactions. Users can input their medication regimen, and the platform alerts them to any potential interactions or conflicts between medications.
+- **Medication Reminders and Tracking**: The platform will be able to send customizable medication reminders to users, ensuring they take their medications on time. Users can track their medication intake within the app, recording each dose taken and receiving feedback on adherence levels.
+- **Medication Interaction Checker**: The platform includes a database of medications and their potential interactions. Users can input their medication regimen, and the platform alerts them for any possible interactions or conflicts between medications.
 
 ## Target Market
 
