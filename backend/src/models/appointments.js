@@ -1,6 +1,6 @@
 // models/appointment.js
 const Sequelize = require('sequelize');
-const sequelize = require('./index');
+const sequelize = require('db.js');
 
 const Appointment = sequelize.define('appointment', {
     date: Sequelize.DATE,
