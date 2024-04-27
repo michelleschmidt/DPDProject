@@ -1,5 +1,5 @@
 // In the doctorController.js file
-const DoctorService = require('./doctorService');
+const DoctorService = require('../services/doctorService');
 
 class DoctorController {
   async create(req, res) {

@@ -1,7 +1,7 @@
 
 const express = require('express');
 const router = express.Router();
-const doctorController = require('./doctorController');
+const doctorController = require('../controllers/doctorController');
 
 const roleCheck = require("../middleware/roleCheck");
 

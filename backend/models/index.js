@@ -33,7 +33,8 @@ db.Sequelize = Sequelize
 db.sequelize = sequelize
 
 db.User = require('./user.js')(sequelize, DataTypes)
-// db.doctors = require('./doctorModel.js')(sequelize, DataTypes)
+db.Doctor = require('./doctor.js')(sequelize, DataTypes)
+db.Specialization = require('./specialization.js')(sequelize, DataTypes)
 // 
 
 db.sequelize.sync({ force: false })
@@ -46,11 +47,17 @@ db.sequelize.sync({ force: false })
 //     as: 'review'
 // })
 
-// db.reviews.belongsTo(db.products, {
-//     foreignKey: 'product_id',
-//     as: 'product'
-// })
-
+// Define relationships
+db.Doctor.belongsToMany(db.Specialization, {
+    through: "doctor_specialization",
+    foreignKey: "doctor_id",
+    otherKey: "specialization_id",
+  });
+  db.Specialization.belongsToMany(db.Doctor, {
+    through: "doctor_specialization",
+    foreignKey: "specialization_id",
+    otherKey: "doctor_id",
+  });
 
 
 
