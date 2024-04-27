@@ -3,6 +3,8 @@ const express = require("express");
 const db = require("./models/index.js");
 
 const userRoutes = require("./routes/userRoutes.js");
+const doctorRoutes = require("./routes/doctorRoutes.js");
+
 
 const app = express();
 
@@ -11,7 +13,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 app.use('/api/users', userRoutes);
-
+app.use('/api/doctors', doctorRoutes);
 
 
 
