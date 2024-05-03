@@ -1,21 +1,21 @@
 module.exports = (sequelize, DataTypes) => {
-    const DoctorSpecialization = sequelize.define('doctor_specialization', {
-        doctor_id: {
+    const UserLanguage = sequelize.define('user_language', {
+        user_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
             primaryKey: true,
             references: {
-                model: 'doctor',
-                key: 'id'
+                model: 'user',
+                key: 'user_id'
             }
         },
-        specialization_id: {
+        language_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
             primaryKey: true,
             references: {
-                model: 'specialization',
-                key: 'specialization_id'
+                model: 'language',
+                key: 'language_id'
             }
         }
     },
@@ -23,6 +23,6 @@ module.exports = (sequelize, DataTypes) => {
         freezeTableName: true,
         timestamps: true,
       }
-    );
-    return DoctorSpecialization;
+);
+    return UserLanguage;
   };

@@ -4,7 +4,7 @@ const { Doctor, Specialization } = require('../models');
 class DoctorService {
   async createDoctor(doctorData) {
     const doctor = await Doctor.create(doctorData);
-    await doctor.addSpecializations(doctorData.specializations);
+    await doctor.addSpecializations(doctorData.specialization);
     return doctor;
   }
 

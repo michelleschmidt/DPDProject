@@ -20,6 +20,26 @@ class DoctorController {
     }
   }
 
+  async findDoctorByLanguageAndSpecialization(req, res) {
+    try {
+      const doctors = await DoctorService.getAllDoctors({
+        include: [
+          {
+            model: Language,
+            where: { id: req.query.language_id }
+          },
+          {
+            model: Specialization,
+            where: { id: req.query.specialization_id }
+          }
+        ]
+      });
+      res.send(doctors);
+    } catch (err) {
+      res.status(500).send({ message: err.message });
+    }
+  };
+
   async findOne(req, res) {
     try {
       const doctor = await DoctorService.getDoctorById(req.params.id);

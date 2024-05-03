@@ -1,17 +1,21 @@
 module.exports = (sequelize, DataTypes) => {
-    const Specialization = sequelize.define(
-      "specialization",
-      {
-        area_of_specialization: {
-          type: DataTypes.STRING,
+  const Specialization = sequelize.define(
+    "specialization",
+    {
+      specialization_id: {
+          type: DataTypes.INTEGER,
+          primaryKey: true,
+          autoIncrement: true,
+        },
+      area_of_specialization: {
+          type: DataTypes.STRING(55),
           allowNull: false,
         },
-      },
-      {
-        freezeTableName: true,
-      }
-    );
-  
-    return Specialization;
-  };
-  
+    },
+    {
+      freezeTableName: true,
+      timestamps: false,
+    }
+  );
+  return Specialization;
+};

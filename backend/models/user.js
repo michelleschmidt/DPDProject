@@ -8,18 +8,18 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement: true,
       },
       title: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(25),
       },
       first_name: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(35),
         allowNull: false,
       },
       last_name: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(35),
         allowNull: false,
       },
       email: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(125),
         allowNull: false,
       },
       password: {
@@ -28,11 +28,11 @@ module.exports = (sequelize, DataTypes) => {
       },
 
       street: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(100),
         allowNull: false,
       },
       city: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(35),
         allowNull: false,
       },
       postcode: {
@@ -40,15 +40,15 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       state: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(45),
         allowNull: false,
       },
       country: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(55),
         allowNull: false,
       },
       role: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(25),
         allowNull: false,
         defaultValue: "normal_user",
       },
@@ -58,6 +58,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       freezeTableName: true,
+      timestamps: true,
     }
   );
 

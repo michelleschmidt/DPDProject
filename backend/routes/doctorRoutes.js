@@ -12,4 +12,8 @@ router.get('/:id', doctorController.findOne);
 router.put('/:id', roleCheck('admin'), doctorController.update);
 router.delete('/:id', roleCheck('admin'), doctorController.delete);
 
+
+// router.get('/api/doctors', controller.findDoctorByLanguageAndSpecialization);
+
+
 module.exports = router;

@@ -1,22 +1,20 @@
-const Specialization = require("./specialization");
-
 module.exports = (sequelize, DataTypes) => {
   const Doctor = sequelize.define(
     "doctor",
     {
       title: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(25),
       },
       first_name: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(35),
         allowNull: false,
       },
       last_name: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(35),
         allowNull: false,
       },
       email: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(125),
         allowNull: false,
       },
       password: {
@@ -24,11 +22,11 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true, // ToDO:change later
       },
       street: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(100),
         allowNull: false,
       },
       city: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(55),
         allowNull: false,
       },
       postcode: {
@@ -36,15 +34,15 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       state: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(55),
         allowNull: false,
       },
       country: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(35),
         allowNull: false,
       },
       role: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(25),
         allowNull: false,
         defaultValue: "doctor",
       },
@@ -54,20 +52,9 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       freezeTableName: true,
+      timestamps: true,
     }
   );
-
-  Doctor.belongsToMany(Specialization, {
-    through: "doctor_specialization",
-    foreignKey: "doctor_id",
-    otherKey: "specialization_id",
-  });
-
-  Specialization.belongsToMany(Doctor, {
-    through: "doctor_specialization",
-    foreignKey: "specialization_id",
-    otherKey: "doctor_id",
-  });
 
   return Doctor;
 };

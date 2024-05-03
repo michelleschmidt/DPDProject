@@ -5,6 +5,8 @@ const db = require("./models/index.js");
 const userRoutes = require("./routes/userRoutes.js");
 const doctorRoutes = require("./routes/doctorRoutes.js");
 
+const blogRoutes = require('./routes/blogRoutes');
+
 
 const app = express();
 
@@ -12,9 +14,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
-app.use('/api/users', userRoutes);
-app.use('/api/doctors', doctorRoutes);
+app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/doctors', doctorRoutes);
 
+app.use('/api/v1/blogs', blogRoutes);
 
 
 //port

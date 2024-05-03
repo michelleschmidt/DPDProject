@@ -1,21 +1,13 @@
 module.exports = (sequelize, DataTypes) => {
-  const Blog = sequelize.define(
-    "blog",
+  const Appointment = sequelize.define(
+    "appointment",
     {
-      blog_id: {
+      appointment_id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
       },
-      title: {
-        type: DataTypes.STRING(100),
-        allowNull: false,
-      },
-      body: {
-        type: DataTypes.STRING(),
-        allowNull: false,
-      },
-      created_by: {
+      user_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,
@@ -24,12 +16,23 @@ module.exports = (sequelize, DataTypes) => {
           key: "user_id",
         },
       },
+      doctor_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        references: {
+          model: "doctor",
+          key: "id",
+        },
+      },
+      appointment_date: {
+        type: DataTypes.DATE,
+      },
     },
     {
       freezeTableName: true,
-      timestamps: true,
     }
   );
 
-  return Blog;
+  return Appointment;
 };
