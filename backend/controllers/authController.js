@@ -1,6 +1,8 @@
 const { Request, Response } = require("express");
 
 const authService = require("../services/authService");
+const specialization = require("../models/specialization");
+const language = require("../models/language");
 
 class authController {
 
@@ -27,6 +29,34 @@ class authController {
       next(error);
     }
   }
+
+
+  async doctorLogin(req, res, next) {
+    try {
+      const service = new authService();
+      const { doctor, token } = await service.doctorLogin(req.body);
+      res
+        .cookie("token", token, {
+          httpOnly: true,
+          secure: false,
+          sameSite: "none",
+          expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        })
+        .status(201)
+        .json({
+          firstname: doctor.first_name,
+          lastname: doctor.last_name,
+          role: doctor.role,
+          email: doctor.email,
+          address: doctor.address,
+          language: doctor.language,
+          specialization: doctor.specialization,
+        });
+    } catch (error) {
+      next(error);
+    }
+  }
+
 
   async logout(req, res, next) {
     try {

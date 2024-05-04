@@ -1,11 +1,14 @@
+const userService = require("../services/userService");
 
-module.exports = function roleCheck(requiredRole) {
-    return (req, res, next) => {
-      if (req.user && req.user.role === requiredRole) {
-        next();
-      } else {
-        res.status(403).json({ message: "Unauthorized permissions" });
-      }
-    };
+const roleCheck = (role) => {
+  return (req, res, next) => {
+    if (!req.user || !role.include(req.user.role)) {
+      res.status(403).json({ message: "You are not authorized!" });
+    }
+    next();
   };
-  
+};
+
+module.exports = {
+  roleCheck,
+};

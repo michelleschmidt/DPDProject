@@ -3,6 +3,7 @@ bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
 
 const User = db.User;
+const Doctor = db.Doctor;
 
 
 
@@ -36,6 +37,38 @@ class authService {
       token,
     };
   }
+
+  async doctorLogin(data) {
+    data.email = data.email.toLowerCase();
+    const doctor = await Doctor.findOne({
+      where: {
+        email: data.email,
+      },
+    });
+    if (!doctor) throw new Error("user does not exist");
+
+    const validPassword = await bcrypt.compare(data.password, doctor.password);
+    if (!validPassword) {
+      throw new Error("Invalid password");
+    }
+
+    const token = jwt.sign(
+      {
+        doctorId: doctor.dataValues.id,
+        role: doctor.dataValues.role,
+      },
+      process.env.ACCESS_KEY,
+      { expiresIn: "24h" }
+    );
+    return {
+        doctor,
+      token,
+    };
+  }
+
+
 }
+
+
 
 module.exports = authService;

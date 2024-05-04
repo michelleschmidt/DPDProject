@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       title: {
         type: DataTypes.STRING(25),
+        allowNull: true,
       },
       first_name: {
         type: DataTypes.STRING(35),
@@ -26,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       password: {
         type: DataTypes.STRING,
-        allowNull: true, // ToDO:change later
+        allowNull: false,
       },
 
       street: {

@@ -2,18 +2,68 @@ const { Doctor, Specialization, Language } = require("../models");
 
 class DoctorService {
   async createDoctor(doctorData) {
-    const doctor = await Doctor.create(doctorData);
-    await doctor.addSpecializations(doctorData.specialization);
+    let doctor = await Doctor.findOne({ where: { email: doctorData.email } });
+
+    if (doctor) {
+      throw new Error("email already exists");
+    }
+    const hashedPassword = await bcrypt.hash(doctorData.password, 10);
+
+    // ToDo: set up the location coordinates
+    // const { postcode, street, city, state, country } = doctorData;
+    //  const coordinates = await getCoordinates(postcode, street, city, state, country);
+    // doctorData.location = sequelize.literal(`ST_GeomFromText('POINT(${coordinates.lng} ${coordinates.lat})')`);
+    //  console.log("we got here again")
+
+    doctor = await Doctor.create({ ...doctorData, password: hashedPassword });
+
+    // Assuming doctorData.languages is either a single language ID or an array of language IDs
+    if (doctorData.language && doctorData.language.length > 0) {
+      for (const lang of doctorData.language) {
+        const language = await Language.findOne({
+          where: {
+            language_id: lang,
+          },
+        });
+        if (language) {
+          await doctor.addLanguage(language);
+        }
+      }
+    }
+
+    if (doctorData.specialization && doctorData.specialization.length > 0) {
+      for (const spec of doctorData.specialization) {
+        const specialization = await Specialization.findOne({
+          where: {
+            specialization_id: spec,
+          },
+        });
+        if (specialization) {
+          await doctor.addSpecialization(specialization);
+        }
+      }
+    }
     return doctor;
   }
 
-
-  
-  async findNearbyDoctors(userLocation, radiusInMeters, language, specialization) {
+  async findNearbyDoctors(
+    userLocation,
+    radiusInMeters,
+    language,
+    specialization
+  ) {
     return sequelize.models.doctor.findAll({
       where: {
         location: {
-          [Sequelize.Op.within]: sequelize.literal(`ST_MakeEnvelope(${userLocation.coordinates[0]} - ${radiusInMeters / 1000}, ${userLocation.coordinates[1]} - ${radiusInMeters / 1000}, ${userLocation.coordinates[0]} + ${radiusInMeters / 1000}, ${userLocation.coordinates[1]} + ${radiusInMeters / 1000}, 4326)`),
+          [Sequelize.Op.within]: sequelize.literal(
+            `ST_MakeEnvelope(${userLocation.coordinates[0]} - ${
+              radiusInMeters / 1000
+            }, ${userLocation.coordinates[1]} - ${radiusInMeters / 1000}, ${
+              userLocation.coordinates[0]
+            } + ${radiusInMeters / 1000}, ${userLocation.coordinates[1]} + ${
+              radiusInMeters / 1000
+            }, 4326)`
+          ),
         },
         // Add any additional filtering based on language and specialisation if needed
       },
@@ -45,6 +95,7 @@ class DoctorService {
     }
     await doctor.update(updates);
     await doctor.setSpecializations(updates.specializations);
+    await doctor.setLanguages(updates.languages);
     return doctor;
   }
 
