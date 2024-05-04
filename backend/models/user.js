@@ -1,3 +1,5 @@
+const { getCoordinates } = require("../utils");
+
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define(
     "user",
@@ -47,6 +49,15 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(55),
         allowNull: false,
       },
+      address: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          return `${this.street}, ${this.postcode}, ${this.city}, ${this.state}, ${this.country}`;
+        },
+        set(value) {
+          throw new Error("Do not try to set the address directly!");
+        },
+      },
       role: {
         type: DataTypes.STRING(25),
         allowNull: false,
@@ -54,6 +65,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       location: {
         type: DataTypes.GEOMETRY("POINT"),
+        allowNull: true,
       },
     },
     {
@@ -61,6 +73,7 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: true,
     }
   );
+
 
   return User;
 };

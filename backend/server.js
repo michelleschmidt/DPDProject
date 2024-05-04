@@ -1,30 +1,31 @@
+require("dotenv").config();
 const express = require("express");
-
-const db = require("./models/index.js");
 
 const userRoutes = require("./routes/userRoutes.js");
 const doctorRoutes = require("./routes/doctorRoutes.js");
-
-const blogRoutes = require('./routes/blogRoutes');
-
+const authRoutes = require("./routes/authRoutes.js");
+// const blogRoutes = require("./routes/blogRoutes.js");
+const appointmentRoutes = require("./routes/appointmentRoutes.js");
 
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/doctors", doctorRoutes);
+app.use("/api/v1/search", doctorRoutes);
 
-app.use('/api/v1/users', userRoutes);
-app.use('/api/v1/doctors', doctorRoutes);
+// app.use("/api/v1/blogs", blogRoutes);
 
-app.use('/api/v1/blogs', blogRoutes);
+app.use("/api/v1/auth", authRoutes);
 
+app.use("/api/v1/appointments", appointmentRoutes);
 
 //port
 const PORT = process.env.PORT || 7000;
 
 //server
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

@@ -1,6 +1,7 @@
 const UserService = require("../services/userService");
 
 class UserController {
+
   async createUser(req, res) {
     try {
       const user = await UserService.createUser(req.body);
@@ -9,6 +10,7 @@ class UserController {
       res.status(400).json({ error: error.message });
     }
   }
+
 
   async getUser(req, res) {
     try {

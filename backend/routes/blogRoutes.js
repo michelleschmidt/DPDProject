@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { blogController } = require('../controllers');
+const { blogController } = require('../controllers/blogController');
 
 // CRUD operations for blogs
 router.post('/', blogController.createBlog);

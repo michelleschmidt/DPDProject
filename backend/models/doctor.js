@@ -41,6 +41,16 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(35),
         allowNull: false,
       },
+        address: {
+          type: DataTypes.VIRTUAL,
+          get() {
+            return `${this.street}, ${this.city}, ${this.state}, ${this.postcode}, ${this.country}`;
+          },
+          set(value) {
+            throw new Error('Do not try to set the address directly!')
+          },
+        },
+
       role: {
         type: DataTypes.STRING(25),
         allowNull: false,
