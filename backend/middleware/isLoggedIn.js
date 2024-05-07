@@ -8,7 +8,7 @@ function isLoggedIn(req, res, next) {
     return res.status(401).json({ error: "No token found. You need to login" });
 
   //verify the token
-  jwt.verify(token, process.env.ACCESS_KEY, async (error, user) => {
+  jwt.verify(token, process.env.SECRETE, async (error, user) => {
     if (error) return res.status(403).json({ error: error.message });
 
     // double checking for user restriction

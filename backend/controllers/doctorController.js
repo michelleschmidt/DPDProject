@@ -21,8 +21,6 @@ class DoctorController {
     }
   }
 
-
-
   async search(req, res) {
     try {
       const { address, radius } = req.query;
@@ -31,8 +29,8 @@ class DoctorController {
       const geocodingResponse = await axios.get(
         "http://api.positionstack.com/v1/forward",
         {
-          params: {
-            access_key: process.env.ACCESS_KEY,
+          body: {
+            access_key: process.env.API_ACCESS_KEY,
             query: address,
           },
         }
@@ -62,12 +60,6 @@ class DoctorController {
     }
   }
 
-
-
-
-
-
-  
   async findDoctorByLanguageAndSpecialization(req, res) {
     try {
       const doctors = await DoctorService.getAllDoctors({
@@ -90,7 +82,7 @@ class DoctorController {
 
   async findOne(req, res) {
     try {
-      const doctor = await DoctorService.getDoctorById(req.params.id);
+      const doctor = await DoctorService.getDoctorById(req.body.id);
       res.json(doctor);
     } catch (error) {
       res.status(404).json({ message: error.message });
@@ -99,7 +91,7 @@ class DoctorController {
 
   async update(req, res) {
     try {
-      const doctor = await DoctorService.updateDoctor(req.params.id, req.body);
+      const doctor = await DoctorService.updateDoctor(req.body.id, req.body);
       res.json(doctor);
     } catch (error) {
       res.status(400).json({ message: error.message });
@@ -108,7 +100,7 @@ class DoctorController {
 
   async delete(req, res) {
     try {
-      await DoctorService.deleteDoctor(req.params.id);
+      await DoctorService.deleteDoctor(req.body.id);
       res.json({ message: "Doctor deleted" });
     } catch (error) {
       res.status(500).json({ message: error.message });

@@ -10,7 +10,6 @@ module.exports = (sequelize, DataTypes) => {
       user_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        primaryKey: true,
         references: {
           model: "user",
           key: "user_id",
@@ -19,7 +18,6 @@ module.exports = (sequelize, DataTypes) => {
       doctor_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        primaryKey: true,
         references: {
           model: "doctor",
           key: "id",
@@ -27,6 +25,9 @@ module.exports = (sequelize, DataTypes) => {
       },
       appointment_date: {
         type: DataTypes.DATE,
+      },
+      appointment_time: {
+        type: DataTypes.TIME,
       },
     },
     {

@@ -1,14 +1,16 @@
 // routes/appointments.js
 const express = require('express');
-const router = express.Router();
-const Appointment = require('../models/appointment');
+const appointRouter = express.Router();
 
-// Book an appointment
-router.post('/book', (req, res) => {
-    const { date, userId, doctorId } = req.body;
-    Appointment.create({ date, userId, doctorId })
-        .then(appointment => res.json(appointment))
-        .catch(err => res.status(400).json('Error: ' + err));
-});
+const AppointmentController = require("../controllers/appointmentController");
 
-module.exports = router;
+
+appointRouter.post("/appointments", AppointmentController.createAppointment);
+appointRouter.get("/appointments/user", AppointmentController.getAppointmentsByUser);
+appointRouter.get("/appointments", AppointmentController.getAllAppointments);
+appointRouter.put("/appointments/:appointmentId", AppointmentController.updateAppointment);
+appointRouter.delete("/appointments/:appointmentId", AppointmentController.deleteAppointment);
+
+
+
+module.exports = appointRouter;

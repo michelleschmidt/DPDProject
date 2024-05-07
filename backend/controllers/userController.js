@@ -14,7 +14,7 @@ class UserController {
 
   async getUser(req, res) {
     try {
-      const user = await UserService.getUserById(req.params.id);
+      const user = await UserService.getUserById(req.body.user_id);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
@@ -22,13 +22,13 @@ class UserController {
     } catch (error) {
       res.status(400).json({ error: error.message });
     }
-  }
+  } 
 
   async updateUser(req, res) {
     try {
-      const updatedUser = await UserService.updateUser(req.params.id, req.body);
+      const updatedUser = await UserService.updateUser(req.body.user_id, req.body);
       if (!updatedUser) {
-        return res.status(404).json({ message: "User not found" });
+        return res.status(404).json({ message: "Update not successful" });
       }
       res.json(updatedUser);
     } catch (error) {
@@ -38,7 +38,7 @@ class UserController {
 
   async deleteUser(req, res) {
     try {
-      const result = await UserService.deleteUser(req.params.id);
+      const result = await UserService.deleteUser(req.body.user_id);
       if (!result) {
         return res.status(404).json({ message: "User not found" });
       }

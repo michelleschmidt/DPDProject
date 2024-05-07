@@ -4,7 +4,7 @@ const axios = require("axios");
 async function getCoordinates(postcode, street, city, state, country) {
   const addressString = `${postcode}, ${street}, ${city}, ${state}, ${country}`;
   const params = {
-    access_key: process.env.ACCESS_KEY,
+    access_key: process.env.API_ACCESS_KEY,
     query: addressString,
   };
 

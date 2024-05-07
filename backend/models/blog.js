@@ -18,7 +18,6 @@ module.exports = (sequelize, DataTypes) => {
       created_by: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        primaryKey: true,
         references: {
           model: "user",
           key: "user_id",

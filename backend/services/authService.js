@@ -29,7 +29,7 @@ class authService {
         userId: user.dataValues.id,
         role: user.dataValues.role,
       },
-      process.env.ACCESS_KEY,
+      process.env.SECRETE,
       { expiresIn: "24h" }
     );
     return {
@@ -57,7 +57,7 @@ class authService {
         doctorId: doctor.dataValues.id,
         role: doctor.dataValues.role,
       },
-      process.env.ACCESS_KEY,
+      process.env.SECRETE,
       { expiresIn: "24h" }
     );
     return {
