@@ -2,7 +2,6 @@ db = require("../models");
 
 const Appointment = db.Appointment;
 const Availability = db.Availability;
-const Doctor = db.Doctor;
 
 
 class AppointmentService {
@@ -12,9 +11,30 @@ class AppointmentService {
     if (!availability) {
       throw new Error("Availability not found");
     }
-    const appointment = await Appointment.create({data});
+    const appointment = await Appointment.create(data);
+    const updatedAvailability = await availability.update({ active: false });  
     return appointment;
   }
+  
+
+// Decide which one to use later. the findByPk or fineOne
+  // async createAppointment(data) {
+  //   const availability = await Availability.findOne({
+  //     where: {
+  //       active: true,
+  //       availability_id: data.availability_id,
+  //       availability: {
+  //         [Op.gt]: new Date(),
+  //       },
+  //     },
+  //   });
+  //   if (!availability) {
+  //     throw new Error("Availability not found");
+  //   }
+  //   const appointment = await Appointment.create(data);
+  //   const updatedAvailability = await availability.update({ active: false });
+  //   return appointment;
+  // }
   
 
 

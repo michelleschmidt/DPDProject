@@ -1,16 +1,18 @@
 // routes/appointments.js
 const express = require('express');
 const appointmentRouter = express.Router();
-
 const appointmentController = require("../controllers/appointmentController");
 
+const { isLoggedIn } = require("../middleware/isLoggedIn");
+const { roleCheck } = require("../middleware/roleCheck");
 
-appointmentRouter.post("/appointments", appointmentController.createAppointment);
+appointmentRouter.post("/create-new", isLoggedIn, appointmentController.createAppointment);
 
-appointmentRouter.get("/appointments/user", appointmentController.getAppointmentsByUser);
-appointmentRouter.get("/appointments", appointmentController.getAllAppointments);
-appointmentRouter.put("/appointments/:id", appointmentController.updateAppointment);
-appointmentRouter.delete("/appointments/:id", appointmentController.deleteAppointment);
+appointmentRouter.get("/user/appointments", appointmentController.getAppointmentsByUser);
+appointmentRouter.get("/", isLoggedIn, appointmentController.getAllAppointments);
+
+appointmentRouter.put("/:id", isLoggedIn, appointmentController.updateAppointment);
+appointmentRouter.delete("/:id", isLoggedIn, appointmentController.deleteAppointment);
 
 
 
