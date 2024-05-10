@@ -1,23 +1,22 @@
 
 const express = require('express');
-const router = express.Router();
+const doctorRouter = express.Router();
 const doctorController = require('../controllers/doctorController');
 
 const { isLoggedIn } = require("../middleware/isLoggedIn");
 const { roleCheck } = require("../middleware/roleCheck");
 
 
-router.post('/', isLoggedIn, roleCheck('admin'), doctorController.create);
+doctorRouter.post('/', isLoggedIn, roleCheck('admin'), doctorController.create);
 
-router.get('/', isLoggedIn, doctorController.findAll);
-router.get("/search", doctorController.search);
-router.get('/:id', isLoggedIn, doctorController.findOne);
+doctorRouter.get('/', doctorController.findAll);
+doctorRouter.get('/:id', isLoggedIn, doctorController.findOne);
 
-router.put('/:id', isLoggedIn, roleCheck('admin'), doctorController.update);
-router.delete('/:id', isLoggedIn, roleCheck('admin'), doctorController.delete);
-
-
-// router.get('/api/doctors', controller.findDoctorByLanguageAndSpecialization);
+doctorRouter.put('/:id', isLoggedIn, roleCheck('admin'), doctorController.update);
+doctorRouter.delete('/:id', isLoggedIn, roleCheck('admin'), doctorController.delete);
 
 
-module.exports = router;
+//doctorRouter.get("/search", doctorController.search);
+
+
+module.exports = doctorRouter;

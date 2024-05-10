@@ -2,6 +2,12 @@ module.exports = (sequelize, DataTypes) => {
   const Doctor = sequelize.define(
     "doctor",
     {
+      doctor_id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+
       title: {
         type: DataTypes.STRING(25),
       },
@@ -41,15 +47,15 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(35),
         allowNull: false,
       },
-        address: {
-          type: DataTypes.VIRTUAL,
-          get() {
-            return `${this.street}, ${this.city}, ${this.state}, ${this.postcode}, ${this.country}`;
-          },
-          set(value) {
-            throw new Error('Do not try to set the address directly!')
-          },
+      address: {
+        type: DataTypes.VIRTUAL,
+        get() {
+          return `${this.street}, ${this.city}, ${this.state}, ${this.postcode}, ${this.country}`;
         },
+        set(value) {
+          throw new Error("Do not try to set the address directly!");
+        },
+      },
 
       role: {
         type: DataTypes.STRING(25),

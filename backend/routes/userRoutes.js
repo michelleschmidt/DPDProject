@@ -5,12 +5,14 @@ const userController = require("../controllers/userController");
 const { isLoggedIn } = require("../middleware/isLoggedIn");
 const { roleCheck } = require("../middleware/roleCheck");
 
-userRouter.get('/', isLoggedIn, userController.listUsers);
-userRouter.post('/create-new', isLoggedIn, roleCheck('admin'), userController.createUser);
+userRouter.get('/', isLoggedIn, userController.getUsers);
 
-userRouter.get('/:id', isLoggedIn, userController.getUser);
+userRouter.post('/admin-create', isLoggedIn, roleCheck('admin'), userController.createUser);
 
-userRouter.put('/:id', isLoggedIn, roleCheck('admin'), userController.updateUser);
+userRouter.get('/:id', isLoggedIn, userController.getUserById);
+
+userRouter.put('/:id', isLoggedIn, userController.updateUser);
+
 userRouter.delete('/:id', isLoggedIn, roleCheck('admin'), userController.deleteUser);
 
 module.exports = userRouter;

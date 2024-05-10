@@ -1,4 +1,7 @@
-const { Blog, User } = require("../models");
+db = require("../models");
+
+const User = db.User;
+const Blog = db.Blog;
 
 class BlogService {
   async createBlog(blogData) {
@@ -10,24 +13,41 @@ class BlogService {
     if (!user) {
       throw new Error("No user found");
     }
-    return await Blog.create(blogData);
+      return await Blog.create(blogData);
   }
 
   async getAllBlogs() {
-    return await Blog.findAll();
+    try {
+      return await Blog.findAll();
+    } catch (error) {
+      throw error;
+    }
   }
 
   async getAllBlogsByUser(userId) {
-    return await Blog.findAll({
-      where: {
-        user_id: userId
-      }
-    });
+    try {
+      return await Blog.findAll({
+        where: {
+          user_id: userId,
+        },
+        include: [
+          {
+            model: User,
+            attributes: ["first_name", "last_name"],
+          },
+        ],
+      });
+    } catch (error) {
+      throw error;
+    }
   }
 
-  
   async getBlogById(blogId) {
-    return await Blog.findByPk(blogId);
+    try {
+      return await Blog.findByPk(blogId);
+    } catch (error) {
+      throw error;
+    }
   }
 
   async updateBlog(blogId, updates) {
@@ -48,7 +68,9 @@ class BlogService {
       if (!blog) {
         throw new Error("Blog not found");
       }
-      await blog.destroy();
+      await blog.destroy({
+        where: { blog_id: blogId },
+      });
     } catch (error) {
       throw error;
     }

@@ -1,12 +1,19 @@
 const express = require('express');
-const router = express.Router();
-const { blogController } = require('../controllers/blogController');
+const blogRouter = express.Router();
+const BlogController  = require('../controllers/blogController');
 
-// CRUD operations for blogs
-router.post('/', blogController.createBlog);
-router.get('/', blogController.getAllBlogs);
-router.get('/:id', blogController.getBlogById);
-router.put('/:id', blogController.updateBlog);
-router.delete('/:id', blogController.deleteBlog);
+const { isLoggedIn } = require("../middleware/isLoggedIn");
+const { roleCheck } = require("../middleware/roleCheck");
 
-module.exports = router;
+
+blogRouter.post('/new-blog', isLoggedIn, BlogController.createBlog);
+
+blogRouter.get('/', BlogController.getAllBlogs);
+
+blogRouter.get('/user/blogs', isLoggedIn, BlogController.getAllBlogsByUser);
+
+blogRouter.get('/:id', isLoggedIn, BlogController.getBlogById);
+blogRouter.put('/:id', isLoggedIn, roleCheck('admin'), BlogController.updateBlog);
+blogRouter.delete('/:id', isLoggedIn, roleCheck('admin'), BlogController.deleteBlog);
+
+module.exports = blogRouter;

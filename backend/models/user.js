@@ -4,14 +4,8 @@ module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define(
     "user",
     {
-      user_id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
       title: {
-        type: DataTypes.STRING(25),
-        allowNull: true,
+        type: DataTypes.STRING(15),
       },
       first_name: {
         type: DataTypes.STRING(35),
@@ -24,12 +18,12 @@ module.exports = (sequelize, DataTypes) => {
       email: {
         type: DataTypes.STRING(125),
         allowNull: false,
+        unique: true
       },
       password: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-
       street: {
         type: DataTypes.STRING(100),
         allowNull: false,
@@ -47,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       country: {
-        type: DataTypes.STRING(55),
+        type: DataTypes.STRING(25),
         allowNull: false,
       },
       address: {
@@ -59,19 +53,24 @@ module.exports = (sequelize, DataTypes) => {
           throw new Error("Do not try to set the address directly!");
         },
       },
+      location: {
+        type: DataTypes.GEOMETRY("POINT"),
+      },      
       role: {
         type: DataTypes.STRING(25),
         allowNull: false,
         defaultValue: "normal_user",
       },
-      location: {
-        type: DataTypes.GEOMETRY("POINT"),
-        allowNull: true,
+      language: {
+        type: DataTypes.JSON,
+        allowNull: false,
       },
+      specialization: {
+        type: DataTypes.JSON,
+      }
     },
     {
       freezeTableName: true,
-      timestamps: true,
     }
   );
 

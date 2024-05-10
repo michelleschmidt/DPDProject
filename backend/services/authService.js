@@ -1,14 +1,25 @@
 const db = require("../models");
-bcrypt = require('bcryptjs');
+bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const User = db.User;
 const Doctor = db.Doctor;
 
+class AuthService {
+  async register(data) {
+    let user = await User.findOne({ where: { email: data.email } });
+    if (user) {
+      throw new Error("email already exists");
+    }
+    data.email = data.email.toLowerCase();
+    const hashedPassword = await bcrypt.hash(data.password, 10);
 
-
-
-class authService {
+    user = await User.create({
+      ...data,
+      password: hashedPassword,
+    });
+    return user;
+  }
 
   async login(data) {
     data.email = data.email.toLowerCase();
@@ -54,21 +65,17 @@ class authService {
 
     const token = jwt.sign(
       {
-        doctorId: doctor.dataValues.id,
+        doctorId: doctor.dataValues.doctor_id,
         role: doctor.dataValues.role,
       },
       process.env.SECRETE,
       { expiresIn: "24h" }
     );
     return {
-        doctor,
+      doctor,
       token,
     };
   }
-
-
 }
 
-
-
-module.exports = authService;
+module.exports = new AuthService();

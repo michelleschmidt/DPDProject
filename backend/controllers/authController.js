@@ -1,15 +1,21 @@
 const { Request, Response } = require("express");
 
-const authService = require("../services/authService");
-const specialization = require("../models/specialization");
-const language = require("../models/language");
+const AuthService = require("../services/authService");
 
-class authController {
+class AuthController {
+
+  async register(req, res, next) {
+    try {
+      const user = await AuthService.register(req.body);
+      res.status(201).json(user);
+    } catch (error) {
+      next(error);
+    }
+  }
 
   async login(req, res, next) {
     try {
-      const service = new authService();
-      const { user, token } = await service.login(req.body);
+      const { user, token } = await AuthService.login(req.body);
       res
         .cookie("token", token, {
           httpOnly: true,
@@ -33,8 +39,8 @@ class authController {
 
   async doctorLogin(req, res, next) {
     try {
-      const service = new authService();
-      const { doctor, token } = await service.doctorLogin(req.body);
+      // const service = new authService();
+      const { doctor, token } = await AuthService.doctorLogin(req.body);
       res
         .cookie("token", token, {
           httpOnly: true,
@@ -75,4 +81,4 @@ class authController {
   }
 }
 
-module.exports = new authController();
+module.exports = new AuthController();

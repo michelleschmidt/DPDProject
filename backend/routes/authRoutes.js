@@ -5,7 +5,7 @@ const authController = require("../controllers/authController");
 const userController = require("../controllers/userController");
 const doctorController = require("../controllers/doctorController");
 
-authRouter.post('/register', userController.createUser);
+authRouter.post('/register', authController.register);
 authRouter.post('/login', authController.login);
 
 authRouter.post('/doctor-register', doctorController.create);

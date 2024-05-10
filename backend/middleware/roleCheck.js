@@ -1,9 +1,11 @@
-const userService = require("../services/userService");
-
 const roleCheck = (role) => {
   return (req, res, next) => {
-    if (!req.user || !role.include(req.user.role)) {
-      res.status(403).json({ message: "You are not authorized!" });
+    console.log(req.user, role);
+
+    if (!req.user.userId || !role.includes(req.user.role)) {
+      return res
+        .status(403)
+        .json({ message: "You are not authorized to perform this action!" });
     }
     next();
   };

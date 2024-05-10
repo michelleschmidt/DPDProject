@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const userService = require("../services/userService");
+const UserService = require("../services/userService");
 
 function isLoggedIn(req, res, next) {
   //get the token from the request
@@ -11,11 +11,10 @@ function isLoggedIn(req, res, next) {
   jwt.verify(token, process.env.SECRETE, async (error, user) => {
     if (error) return res.status(403).json({ error: error.message });
 
-    // double checking for user restriction
-    const service = new userService();
-    const verifyUser = await service.findOne({
+
+    const verifyUser = await UserService.findOne({
       where: {
-        id: user.user_id,
+        id: user.userId,
       },
     });
     req.user = user;

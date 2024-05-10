@@ -1,4 +1,8 @@
-const { Doctor, Specialization, Language } = require("../models");
+db = require("../models");
+
+const Doctor = db.Doctor;
+const Specialization = db.Specialization;
+const Language = db.Language;
 
 class DoctorService {
   async createDoctor(doctorData) {
@@ -46,29 +50,6 @@ class DoctorService {
     return doctor;
   }
 
-  async findNearbyDoctors(
-    userLocation,
-    radiusInMeters,
-    language,
-    specialization
-  ) {
-    return sequelize.models.doctor.findAll({
-      where: {
-        location: {
-          [Sequelize.Op.within]: sequelize.literal(
-            `ST_MakeEnvelope(${userLocation.coordinates[0]} - ${
-              radiusInMeters / 1000
-            }, ${userLocation.coordinates[1]} - ${radiusInMeters / 1000}, ${
-              userLocation.coordinates[0]
-            } + ${radiusInMeters / 1000}, ${userLocation.coordinates[1]} + ${
-              radiusInMeters / 1000
-            }, 4326)`
-          ),
-        },
-        // Add any additional filtering based on language and specialisation if needed
-      },
-    });
-  }
 
   async getAllDoctors() {
     return await Doctor.findAll({

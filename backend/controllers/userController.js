@@ -1,7 +1,6 @@
 const UserService = require("../services/userService");
 
 class UserController {
-
   async createUser(req, res) {
     try {
       const user = await UserService.createUser(req.body);
@@ -11,51 +10,42 @@ class UserController {
     }
   }
 
-
-  async getUser(req, res) {
+  async getUserById(req, res, next) {
     try {
-      const user = await UserService.getUserById(req.body.user_id);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      res.json(user);
+      const user = await UserService.getUserById(req.params.id);
+      res.status(201).json(user);
     } catch (error) {
-      res.status(400).json({ error: error.message });
-    }
-  } 
-
-  async updateUser(req, res) {
-    try {
-      const updatedUser = await UserService.updateUser(req.body.user_id, req.body);
-      if (!updatedUser) {
-        return res.status(404).json({ message: "Update not successful" });
-      }
-      res.json(updatedUser);
-    } catch (error) {
-      res.status(400).json({ error: error.message });
+      next(error);
     }
   }
 
-  async deleteUser(req, res) {
+  async getUsers(req, res, next) {
     try {
-      const result = await UserService.deleteUser(req.body.user_id);
-      if (!result) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      res.status(204).send();
+      const users = await UserService.getUsers();
+      res.status(201).json(users);
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      next(error);
     }
   }
 
-  async listUsers(req, res) {
+  async updateUser(req, res, next) {
     try {
-      const users = await UserService.listUsers();
-      res.json(users);
+      const updatedUser = await UserService.updateUser(req.params.id, req.body);
+      res.status(201).json(updatedUser);
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      next(error);
     }
   }
+
+  async deleteUser(req, res, next) {
+    try {
+      const result = await UserService.deleteUser(req.params.id);
+      res.sendStatus(204).send(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
 }
 
 module.exports = new UserController();
