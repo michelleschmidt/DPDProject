@@ -62,6 +62,9 @@ class UserService {
     return user;
   }
 
+
+
+
   async getUsers() {
     const user = await User.findAll();
     return user;

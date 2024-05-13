@@ -19,6 +19,18 @@ class UserController {
     }
   }
 
+
+
+  async getDoctorById(req, res, next) {
+    try {
+      const user = await UserService.getDoctorById(req.params.id);
+      res.status(201).json(user);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+
   async getUsers(req, res, next) {
     try {
       const users = await UserService.getUsers();
@@ -27,6 +39,16 @@ class UserController {
       next(error);
     }
   }
+
+  async getDoctors(req, res, next) {
+    try {
+      const users = await UserService.getDoctors();
+      res.status(201).json(users);
+    } catch (error) {
+      next(error);
+    }
+  }
+
 
   async updateUser(req, res, next) {
     try {
