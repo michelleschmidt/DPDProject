@@ -39,33 +39,30 @@ class AppointmentService {
 
 
   async getAppointmentsByUser(userId) {
-    if (!user) {
-      return res.status(401).send("You must log in to view your appointments.");
-    }
-    try {
       const appointments = await Appointment.findAll({
         where: { user_id: userId },
       });
       return appointments;
-    } catch (error) {
-      throw error;
-    }
+
   }
  // get app by doc.....not completed
   async getAppointmentsByDoctor(doctorId) {
-    if (!doctor) {
-      return res.status(401).send("You must log in to view your appointments.");
-    }
-    try {
       const appointments = await Appointment.findAll({
         where: { id: doctorId },
       });
       return appointments;
-    } catch (error) {
-      throw error;
-    }
   }
 
+  async getDoctorById(id) {
+    const doctor = await Doctor.findByPk(id, {
+      include: [Specialization],
+      include: [Language],
+    });
+    if (!doctor) {
+      throw new Error("Doctor not found");
+    }
+    return doctor;
+  }
   async getAllAppointments() {
     try {
       const appointments = await Appointment.findAll();

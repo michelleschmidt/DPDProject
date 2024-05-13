@@ -2,11 +2,6 @@ module.exports = (sequelize, DataTypes) => {
   const Language = sequelize.define(
     "language",
     {
-      language_id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
       language_name: {
         type: DataTypes.STRING(55),
         allowNull: false,

@@ -61,13 +61,13 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: "normal_user",
       },
-      language: {
-        type: DataTypes.JSON,
-        allowNull: false,
-      },
-      specialization: {
-        type: DataTypes.JSON,
-      }
+      // language: {
+      //   type: DataTypes.JSON,
+      //   allowNull: false,
+      // },
+      // specialization: {
+      //   type: DataTypes.JSON,
+      // }
     },
     {
       freezeTableName: true,

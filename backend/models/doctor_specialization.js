@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             primaryKey: true,
             references: {
-                model: 'doctor',
+                model: 'user',
                 key: 'id'
             }
         },
@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true,
             references: {
                 model: 'specialization',
-                key: 'specialization_id'
+                key: 'id'
             }
         }
     },
