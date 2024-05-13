@@ -45,7 +45,6 @@ class AuthService {
 
 
 
-
   async register(data) {
     let user = await User.findOne({ where: { email: data.email } });
     if (user) {

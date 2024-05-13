@@ -1,0 +1,44 @@
+.simple-form {
+    max-width: 80%;
+    margin: 0 auto;
+    padding: 2%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2% 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .simple-form .form-group {
+    margin-bottom: 15%;
+  }
+  
+  .simple-form .form-control {
+    border-radius: 5px;
+    border-color: #ccc;
+    box-shadow: none;
+  }
+  
+  .simple-form .form-control:focus {
+    border-color: #337ab7;
+    box-shadow: 0 0 5px rgba(51, 122, 183, 0.5);
+  }
+  
+  .simple-form .form-control::placeholder {
+    color: #ccc;
+  }
+  
+  .simple-form .form-check {
+    margin-bottom: 10%;
+  }
+  
+  .simple-form .btn-primary {
+    border-radius: 5px;
+    padding: 8px 20px;
+    font-size: 16px;
+    font-weight: 500;
+  }
+  
+  .simple-form .invalid-feedback {
+    display: block;
+    color: #d53;
+    font-size: 80%;
+  }
