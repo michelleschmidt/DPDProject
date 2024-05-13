@@ -33,7 +33,7 @@ db.UserLanguage = require("./user_language.js")(sequelize, DataTypes);
 
 db.Language = require("./language.js")(sequelize, DataTypes);
 
-db.DoctorLanguage = require("./doctor_language.js")(sequelize, DataTypes);
+// db.DoctorLanguage = require("./doctor_language.js")(sequelize, DataTypes);
 db.Specialization = require("./specialization.js")(sequelize, DataTypes);
 db.DoctorSpecialization = require("./doctor_specialization.js")(sequelize, DataTypes);
 db.Doctor = require("./doctor.js")(sequelize, DataTypes);
@@ -49,13 +49,13 @@ db.sequelize.sync({ force: false }).then(() => {});
 // Define relationships
 db.User.belongsToMany(db.Specialization, {
   through: "doctor_specialization",
-  foreignKey: "doctor_id",
+  foreignKey: "user_id",
   otherKey: "specialization_id",
 });
 db.Specialization.belongsToMany(db.User, {
   through: "doctor_specialization",
   foreignKey: "specialization_id",
-  otherKey: "doctor_id",
+  otherKey: "user_id",
 });
 
 db.User.belongsToMany(db.Language, {

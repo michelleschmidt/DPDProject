@@ -3,11 +3,11 @@ bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const User = db.User;
-const Doctor = db.Doctor;
+const Specialization = db.Specialization;
+const Language = db.Language;
 
 class AuthService {
   // async register(data) {
-
 
   //   let user = await User.findOne({ where: { email: data.email } });
   //   if (user) {
@@ -28,13 +28,12 @@ class AuthService {
     if (user) {
       throw new Error("email already exists");
     }
+    data.email = data.email.toLowerCase();
+    const hashedPassword = await bcrypt.hash(data.password, 10);
     user = await User.create({
       ...data,
       password: hashedPassword,
     });
-    data.email = data.email.toLowerCase();
-    const hashedPassword = await bcrypt.hash(data.password, 10);
-
     if (data.language && data.language.length > 0) {
       for (const lang of data.language) {
         const language = await Language.findOne({
@@ -43,7 +42,7 @@ class AuthService {
           },
         });
         if (language) {
-          await user.addLanguage(language);
+          await user.addLanguages(language);
         }
       }
     }
@@ -55,15 +54,12 @@ class AuthService {
           },
         });
         if (specialization) {
-          await user.addSpecialization(specialization);
+          await user.addSpecializations(specialization);
         }
       }
     }
     return user;
   }
-
-
-
 
   async login(data) {
     data.email = data.email.toLowerCase();
