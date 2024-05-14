@@ -53,6 +53,7 @@ module.exports = (sequelize, DataTypes) => {
           throw new Error("Do not try to set the address directly!");
         },
       },
+
       location: {
         type: DataTypes.GEOMETRY("POINT"),
       },      
@@ -61,13 +62,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: "normal_user",
       },
-      // language: {
-      //   type: DataTypes.JSON,
-      //   allowNull: false,
-      // },
-      // specialization: {
-      //   type: DataTypes.JSON,
-      // }
+
     },
     {
       freezeTableName: true,

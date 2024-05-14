@@ -31,7 +31,7 @@ class AuthService {
     }
     const hashedPassword = await bcrypt.hash(data.password, 10);
     data.password = hashedPassword;
-    // Create the user within a transaction to ensure data is saved correctly
+    // Creating the user within a transaction to ensure data is saved correctly
     // into all tables at once
     return await db.sequelize.transaction(async (t) => {
       user = await User.create(data, { transaction: t });
@@ -76,6 +76,7 @@ class AuthService {
       {
         userId: user.dataValues.id,
         role: user.dataValues.role,
+        address: user.dataValues.address,
       },
       process.env.SECRETE,
       { expiresIn: "24h" }
@@ -104,6 +105,7 @@ class AuthService {
       {
         doctorId: doctor.dataValues.doctor_id,
         role: doctor.dataValues.role,
+        address: doctor.dataValues.address,
       },
       process.env.SECRETE,
       { expiresIn: "24h" }

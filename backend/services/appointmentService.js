@@ -37,11 +37,12 @@ class AppointmentService {
     return appointment;
   }
 
-  async getAppointmentsByUser(userId) {
+  async getUserAppointments(userId) {
     const appointments = await Appointment.findAll({
       where: { user_id: userId },
       include: [
-        { model: User, as: "doctor" },
+        { model: User, as: "doctor",
+        attributes: ['first_name', 'last_name', 'address'], },
         {
           model: db.Availability,
           as: "availability",
@@ -52,12 +53,14 @@ class AppointmentService {
     return appointments;
   }
 
-  async getAppointmentsByDoctor(doctorId) {
+  async getDoctorAppointments(doctorId) {
     const appointments = await Appointment.findAll({
       where: { doctor_id: doctorId },
       include: [
-        { model: User, as: "patient" },
-        { model: Availability, as: "availability" },
+        { model: User, as: "patient",
+        attributes: ['first_name', 'last_name', 'address'], },
+        { model: Availability, as: "availability",
+        attributes: ['availability_date'], },
       ],
     });
     return appointments;
