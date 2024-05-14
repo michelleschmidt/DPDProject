@@ -84,9 +84,15 @@ class UserService {
   }
 
 
+
+  
+
   async getDoctorById(id) {
     const doctor = await User.findByPk(id, {
-      include: [Specialization, Language],
+      include: [
+        { model: Specialization },
+        { model: Language }
+      ]
     });
     if (!doctor) {
       throw new Error("Doctor not found");

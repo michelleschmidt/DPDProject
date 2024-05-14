@@ -8,7 +8,8 @@ const { roleCheck } = require("../middleware/roleCheck");
 
 appointmentRouter.post("/create-new", isLoggedIn, appointmentController.createAppointment);
 
-appointmentRouter.get("/user/appointments", appointmentController.getAppointmentsByUser);
+appointmentRouter.get("/user/appointments", isLoggedIn, appointmentController.getAppointmentsByUser);
+
 appointmentRouter.get("/", isLoggedIn, appointmentController.getAllAppointments);
 
 appointmentRouter.put("/:id", isLoggedIn, appointmentController.updateAppointment);

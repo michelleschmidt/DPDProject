@@ -7,15 +7,15 @@ const { roleCheck } = require("../middleware/roleCheck");
 
 
 
-availabilityRouter.post('/', AvailabilityController.createAvailability);
+availabilityRouter.post('/', isLoggedIn, AvailabilityController.createAvailability);
 
-availabilityRouter.get('/:id', AvailabilityController.getAvailabilityById);
+availabilityRouter.get('/:id', isLoggedIn, AvailabilityController.getAvailabilityById);
 
-availabilityRouter.get('/:doctorId/availabilities', AvailabilityController.getDoctorsAvailability);
+availabilityRouter.get('/doctor/availabilities', isLoggedIn, AvailabilityController.getDoctorAvailabilities);
 
-availabilityRouter.get('/availabilities', roleCheck('admin'), AvailabilityController.getAllAvailabilities);
+availabilityRouter.get('/all-availabilities', isLoggedIn, roleCheck('admin'), AvailabilityController.getAllAvailabilities);
 
-availabilityRouter.put('/:id', AvailabilityController.updateAvailability);
-availabilityRouter.delete('/:id', AvailabilityController.deleteAvailability);
+availabilityRouter.put('/:id', isLoggedIn, AvailabilityController.updateAvailability);
+availabilityRouter.delete('/:id', isLoggedIn, AvailabilityController.deleteAvailability);
 
 module.exports = availabilityRouter;

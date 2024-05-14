@@ -10,19 +10,16 @@ class AppointmentController {
     }
   }
 
-
-
-  async getAppointmentsByUser(req, res) {
+  async getAppointmentsByUser(req, res, next) {
     try {
-      const userId = req.user.user_id;
-      const appointments = await AppointmentService.getAppointmentsByUser(
-        userId
-      );
+      const userId = req.user.id;
+      const appointments = await AppointmentService.getAppointmentsByUser(userId);
       res.json(appointments);
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      next(error); 
     }
   }
+
 
   async getAppointmentsByDoctor(req, res) {
     try {
@@ -68,6 +65,51 @@ class AppointmentController {
       res.status(400).json({ error: error.message });
     }
   }
+
+
+
+  
+
+
+//   async getAppointmentsByDoctor(req, res, next) {
+//     try {
+//       const doctorId = req.doctor.doctor_id;
+//       const appointments = await AppointmentService.getAppointmentsByDoctor(doctorId);
+//       res.json(appointments);
+//     } catch (error) {
+//       next(error); // Use the next middleware to handle errors centrally
+//     }
+//   }
+
+//   async getAllAppointments(req, res, next) {
+//     try {
+//       const appointments = await AppointmentService.getAllAppointments();
+//       res.json(appointments);
+//     } catch (error) {
+//       next(error); // Use the next middleware to handle errors centrally
+//     }
+//   }
+
+//   async updateAppointment(req, res, next) {
+//     try {
+//       const appointmentId = req.params.appointmentId; // Use params for IDs
+//       const appointmentData = req.body;
+//       const updatedAppointment = await AppointmentService.updateAppointment(appointmentId, appointmentData);
+//       res.json(updatedAppointment);
+//     } catch (error) {
+//       next(error); // Use the next middleware to handle errors centrally
+//     }
+//   }
+
+//   async deleteAppointment(req, res, next) {
+//     try {
+//       const appointmentId = req.params.appointmentId;
+//       const result = await AppointmentService.deleteAppointment(appointmentId);
+//       res.send(result);
+//     } catch (error) {
+//       next(error); // Use the next middleware to handle errors centrally
+//     }
+//   }
 }
 
 module.exports = new AppointmentController();

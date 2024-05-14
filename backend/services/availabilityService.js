@@ -13,21 +13,24 @@ class AvailabilityService {
 
   async getAvailabilityById(id) {
     const availability = await Availability.findByPk(id);
+    if (!availability) {
+      throw new Error("Availability not found");
+    }
     return availability;
   }
 
-  async getDoctorsAvailability(doctorId) {
-    const availability = Availability.findAll({
+  async getDoctorAvailabilities(doctorId) {
+    const availabilities = await Availability.findAll({
       where: {
         doctor_id: doctorId,
       },
     });
-    return availability;
+    return availabilities;
   }
 
   async getAllAvailabilities() {
-    const availability = await Availability.findAll();
-    return availability;
+    const availabilities = await Availability.findAll();
+    return availabilities;
   }
 
   async updateAvailability(id, updates) {
@@ -38,7 +41,6 @@ class AvailabilityService {
     const updatedAvailability = await availability.update(updates);
     return updatedAvailability;
   }
-  
 
   async deleteAvailability(id) {
     const availability = await Availability.findByPk(id);
@@ -48,8 +50,6 @@ class AvailabilityService {
     await availability.destroy();
     return { message: "Entry deleted successfully" };
   }
-
-  
 }
 
 module.exports = new AvailabilityService();

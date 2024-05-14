@@ -3,7 +3,12 @@ import { Circle, MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import L, { LatLngTuple } from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-const Map = () => {
+interface MapProps {
+  radius: number; // Specify the type of the radius prop as number
+}
+
+const Map: React.FC<MapProps> = ({ radius }) => {
+  // Define MapProps as the type of props for Map component
   const [userLocation, setUserLocation] = useState<LatLngTuple | null>(null);
 
   useEffect(() => {
@@ -50,7 +55,7 @@ const Map = () => {
       {/* Circle representing a radius around the user's location */}
       <Circle
         center={userLocation}
-        radius={2500}
+        radius={radius}
         fillColor="blue"
         fillOpacity={0.1}
       />

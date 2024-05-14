@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
           key: "id",
         },
       },
-      availability: {
+      availability_date: {
         type: DataTypes.DATE,
         allowNull: false,
       },

@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
     const DoctorSpecialization = sequelize.define('doctor_specialization', {
-        user_id: {
+        doctor_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
             primaryKey: true,

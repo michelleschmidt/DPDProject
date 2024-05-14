@@ -1,6 +1,6 @@
 const dbConfig = require("../config/db.js");
 
-const { Sequelize, DataTypes } = require("sequelize");
+const { Sequelize, DataTypes, Op } = require("sequelize");
 
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
   host: dbConfig.HOST,
@@ -27,6 +27,7 @@ const db = {};
 
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
+db.Op = Op;
 
 db.User = require("./user.js")(sequelize, DataTypes);
 db.UserLanguage = require("./user_language.js")(sequelize, DataTypes);
@@ -44,7 +45,6 @@ db.Availability = require("./availability.js")(sequelize, DataTypes);
 db.Blog = require("./blog.js")(sequelize, DataTypes);
 //
 
-db.sequelize.sync({ force: false }).then(() => {});
 
 // Define relationships
 db.User.belongsToMany(db.Specialization, {
@@ -76,23 +76,32 @@ db.Blog.belongsTo(db.User, {
   foreignKey: "created_by",
 });
 
+
+db.Appointment.belongsTo(db.Availability, {
+  foreignKey: 'availability_id',
+  as: 'availability',
+});
+db.Availability.hasOne(db.Appointment, {
+  foreignKey: "availability_id",
+});
+
 db.User.hasMany(db.Appointment, {
   foreignKey: "user_id",
-  as: "Appointments",
 });
 db.Appointment.belongsTo(db.User, {
   foreignKey: "user_id",
-  as: "User",
+  as: 'patient',
 });
 
 db.User.hasMany(db.Appointment, {
   foreignKey: "doctor_id",
-  as: "DoctorAppointments",
 });
 db.Appointment.belongsTo(db.User, {
   foreignKey: "doctor_id",
-  as: "Doctor",
+  as: 'doctor',
 });
+
+
 
 db.User.hasMany(db.Availability, {
   foreignKey: "doctor_id",
@@ -100,5 +109,8 @@ db.User.hasMany(db.Availability, {
 db.Availability.belongsTo(db.User, {
   foreignKey: "doctor_id",
 });
+
+
+db.sequelize.sync({ force: false }).then(() => {});
 
 module.exports = db;
