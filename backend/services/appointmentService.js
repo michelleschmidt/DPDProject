@@ -42,7 +42,7 @@ class AppointmentService {
       where: { user_id: userId },
       include: [
         { model: User, as: "doctor",
-        attributes: ['first_name', 'last_name', 'address'], },
+        attributes: ['first_name', 'last_name'], },
         {
           model: db.Availability,
           as: "availability",
@@ -53,6 +53,33 @@ class AppointmentService {
     return appointments;
   }
 
+  // Includes address but still not sure if necessary
+  // async getUserAppointments(userId) {
+  //   const appointments = await Appointment.findAll({
+  //     where: { user_id: userId },
+  //     include: [
+  //       {
+  //         model: User,
+  //         as: "doctor",
+  //         attributes: ['first_name', 'last_name', 'street', 'city', 'postcode', 'state', 'country'], // Include all fields needed for the address
+  //       },
+  //       {
+  //         model: db.Availability,
+  //         as: "availability",
+  //         attributes: ['availability_date'],
+  //       },
+  //     ],
+  //   });
+  //   // Manually append the address to each doctor object
+  //   appointments.forEach(appointment => {
+  //     if (appointment.doctor) {
+  //       appointment.doctor.dataValues.address = `${appointment.doctor.street}, ${appointment.doctor.postcode}, ${appointment.doctor.city}, ${appointment.doctor.state}, ${appointment.doctor.country}`;
+  //     }
+  //   });
+  //   return appointments;
+  // }
+
+  
   async getDoctorAppointments(doctorId) {
     const appointments = await Appointment.findAll({
       where: { doctor_id: doctorId },
