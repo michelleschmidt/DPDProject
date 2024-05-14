@@ -12,7 +12,7 @@ class AppointmentController {
 
   async getUserAppointments(req, res, next) {
     try {
-      console.log(req.user.address)
+// Need to work on retrieving the address correctly
       const appointments = await AppointmentService.getUserAppointments(
         req.user.userId
       );
