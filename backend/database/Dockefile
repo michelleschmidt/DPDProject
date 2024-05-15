@@ -1,0 +1,9 @@
+# Use the official MySQL image
+FROM mysql:8
+
+# Set environment variables for MySQL
+ENV MYSQL_DATABASE=your_database_name
+ENV MYSQL_ROOT_PASSWORD=your_root_password
+
+# Copy schema.sql to the Docker container
+COPY schema.sql /docker-entrypoint-initdb.d/
