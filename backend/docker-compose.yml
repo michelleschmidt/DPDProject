@@ -6,10 +6,11 @@ services:
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-    volumes:
-      - db-data:/var/lib/mysql
     ports:
       - "3306:3306"
+    volumes:
+      - project-database:/var/lib/mysql
+      - ./mysql/schema.sql:/docker-entrypoint-initdb.d/schema.sql
 
   app:
     build: .
@@ -24,4 +25,4 @@ services:
       - "3000:3000"
 
 volumes:
-  db-data:
+  project-database:
