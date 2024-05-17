@@ -1,7 +1,7 @@
 
   {
     "name": "vigilant space fortnight",
-    "dockerComposeFile": "./backend/docker-compose.yml",
+    "dockerComposeFile": "backend/docker-compose.yml",
     "service": "app",
     "workspaceFolder": "/usr/src/app",
 
