@@ -1,5 +1,5 @@
   {
-    "name": "vigilant space fortnight",
+    "name": "olivia codespace",
     "dockerComposeFile": "../backend/docker-compose.yml",
     "service": "app",
     "workspaceFolder": "/usr/src/app",
