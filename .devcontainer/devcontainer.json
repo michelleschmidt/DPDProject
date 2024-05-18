@@ -1,10 +1,8 @@
-
   {
     "name": "vigilant space fortnight",
     "dockerComposeFile": "../backend/docker-compose.yml",
     "service": "app",
     "workspaceFolder": "/usr/src/app",
-
     "remoteEnv": {
       "SECRETE": "${{ secrets.SECRETE }}",
       "MYSQL_DATABASE": "${{ secrets.MYSQL_DATABASE }}",
@@ -12,10 +10,9 @@
       "DB_HOST": "${{ secrets.DB_HOST }}",
       "DB_USER": "${{ secrets.DB_USER }}",
       "DB_PASSWORD": "${{ secrets.DB_PASSWORD }}",
-      "DB_NAME": "${{ secrets.DB_NAME }}"
+      "DB_NAME": "${{ secrets.DB_NAME }}",
+      "PORT": "${{ secrets.PORT }}"
     },
-
-
     "shutdownAction": "stopCompose",
     "postCreateCommand": "npm install",
     "mounts": [

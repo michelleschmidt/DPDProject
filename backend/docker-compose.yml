@@ -17,9 +17,11 @@ services:
       retries: 5
 
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     environment:
-      DB_HOST: ${DB_HOST}
+      DB_HOST: db
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
@@ -28,6 +30,8 @@ services:
         condition: service_healthy
     ports:
       - "3000:3000"
+    volumes:
+      - .:/usr/src/app
 
 volumes:
   project-database:
