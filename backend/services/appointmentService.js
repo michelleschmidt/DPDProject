@@ -1,33 +1,14 @@
-db = require("../models");
+const db = require("../models");
 
+const Op = db.Op;
 const Appointment = db.Appointment;
 const Availability = db.Availability;
-
+const User = db.User;
 
 class AppointmentService {
 
-  async createAppointment(data) {
-    const availability = await Availability.findByPk(data.availability_id);
-    if (!availability) {
-      throw new Error("Availability not found");
-    }
-    const appointment = await Appointment.create(data);
-    const updatedAvailability = await availability.update({ active: false });  
-    return appointment;
-  }
-  
-
-// Decide which one to use later. the findByPk or fineOne
   // async createAppointment(data) {
-  //   const availability = await Availability.findOne({
-  //     where: {
-  //       active: true,
-  //       availability_id: data.availability_id,
-  //       availability: {
-  //         [Op.gt]: new Date(),
-  //       },
-  //     },
-  //   });
+  //   const availability = await Availability.findByPk(data.availability_id);
   //   if (!availability) {
   //     throw new Error("Availability not found");
   //   }
@@ -35,62 +16,108 @@ class AppointmentService {
   //   const updatedAvailability = await availability.update({ active: false });
   //   return appointment;
   // }
-  
 
-
-  async getAppointmentsByUser(userId) {
-      const appointments = await Appointment.findAll({
-        where: { user_id: userId },
-      });
-      return appointments;
-
-  }
- // get app by doc.....not completed
-  async getAppointmentsByDoctor(doctorId) {
-      const appointments = await Appointment.findAll({
-        where: { id: doctorId },
-      });
-      return appointments;
-  }
-
-  async getDoctorById(id) {
-    const doctor = await Doctor.findByPk(id, {
-      include: [Specialization],
-      include: [Language],
+  async createAppointment(data) {
+    const currentTime = new Date();
+    const availability = await Availability.findOne({
+      where: {
+        id: data.availability_id,
+        active: true,
+        availability: {
+          [Op.gt]: currentTime,
+        },
+      },
     });
-    if (!doctor) {
-      throw new Error("Doctor not found");
-    }
-    return doctor;
+    const appointment = await db.sequelize.transaction(async (t) => {
+      const appointment = await Appointment.create(data, { transaction: t });
+      await availability.update({ active: false }, { transaction: t });
+      return appointment;
+    });
+
+    return appointment;
   }
+
+  async getUserAppointments(userId) {
+    const appointments = await Appointment.findAll({
+      where: { user_id: userId },
+      include: [
+        { model: User, as: "doctor",
+        attributes: ['first_name', 'last_name'], },
+        {
+          model: db.Availability,
+          as: "availability",
+          attributes: ['availability_date'],
+        },
+      ],
+    });
+    return appointments;
+  }
+
+  // Includes address but still not sure if necessary
+  // async getUserAppointments(userId) {
+  //   const appointments = await Appointment.findAll({
+  //     where: { user_id: userId },
+  //     include: [
+  //       {
+  //         model: User,
+  //         as: "doctor",
+  //         attributes: ['first_name', 'last_name', 'street', 'city', 'postcode', 'state', 'country'], // Include all fields needed for the address
+  //       },
+  //       {
+  //         model: db.Availability,
+  //         as: "availability",
+  //         attributes: ['availability_date'],
+  //       },
+  //     ],
+  //   });
+  //   // Manually append the address to each doctor object
+  //   appointments.forEach(appointment => {
+  //     if (appointment.doctor) {
+  //       appointment.doctor.dataValues.address = `${appointment.doctor.street}, ${appointment.doctor.postcode}, ${appointment.doctor.city}, ${appointment.doctor.state}, ${appointment.doctor.country}`;
+  //     }
+  //   });
+  //   return appointments;
+  // }
+
+  
+  async getDoctorAppointments(doctorId) {
+    const appointments = await Appointment.findAll({
+      where: { doctor_id: doctorId },
+      include: [
+        { model: User, as: "patient",
+        attributes: ['first_name', 'last_name', 'address'], },
+        { model: Availability, as: "availability",
+        attributes: ['availability_date'], },
+      ],
+    });
+    return appointments;
+  }
+
   async getAllAppointments() {
-    try {
-      const appointments = await Appointment.findAll();
-      return appointments;
-    } catch (error) {
-      throw error;
-    }
+    const appointments = await Appointment.findAll({
+      include: [
+        { model: User, as: "patient" },
+        { model: User, as: "doctor" },
+        { model: Availability, as: "availability" },
+      ],
+    });
+    return appointments;
   }
 
   async updateAppointment(appointmentId, updates) {
-    try {
-      const appointment = await Appointment.findByPk(appointmentId);
-      if (appointment) {
-        return await appointment.update(updates);
-      }
-      return null;
-    } catch (error) {
-      throw error;
+    const appointment = await Appointment.findByPk(appointmentId);
+    if (!appointment) {
+      throw new Error("Appointment not found");
     }
+    return await appointment.update(updates);
   }
 
   async deleteAppointment(appointmentId) {
-    try {
-      await Appointment.destroy({ where: { appointment_id: appointmentId } });
-      return "Appointment deleted successfully.";
-    } catch (error) {
-      throw error;
+    const result = await Appointment.destroy({ where: { id: appointmentId } });
+    if (result === 0) {
+      throw new Error("Appointment not found or already deleted.");
     }
+    return "Appointment deleted successfully.";
   }
 }
 

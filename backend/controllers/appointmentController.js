@@ -10,62 +10,54 @@ class AppointmentController {
     }
   }
 
-
-
-  async getAppointmentsByUser(req, res) {
+  async getUserAppointments(req, res, next) {
     try {
-      const userId = req.user.user_id;
-      const appointments = await AppointmentService.getAppointmentsByUser(
-        userId
+// Need to work on retrieving the address correctly
+      const appointments = await AppointmentService.getUserAppointments(
+        req.user.userId
       );
       res.json(appointments);
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      next(error);
     }
   }
 
-  async getAppointmentsByDoctor(req, res) {
+  async getDoctorAppointments(req, res, next) {
     try {
-      const doctorId = req.doctor.doctor_id;
-      const appointments = await AppointmentService.getAppointmentsByDoctor(
+      const doctorId = req.user.userId;
+      const appointments = await AppointmentService.getDoctorAppointments(
         doctorId
       );
       res.json(appointments);
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      next(error);
     }
   }
 
-  async getAllAppointments(req, res) {
+  async getAllAppointments(req, res, next) {
     try {
       const appointments = await AppointmentService.getAllAppointments();
       res.json(appointments);
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      next(error);
     }
   }
 
-  async updateAppointment(req, res) {
+  async updateAppointment(req, res, next) {
     try {
-      const appointmentId = req.body.appointment_id;
-      const appointmentData = req.body;
-      const updatedAppointment = await AppointmentService.updateAppointment(
-        appointmentId,
-        appointmentData
-      );
-      res.json(updatedAppointment);
+      const updatedAppointment = await AppointmentService.updateAppointment(req.params.id,req.body);
+      res.status(201).json(updatedAppointment);
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      next(error);
     }
   }
 
-  async deleteAppointment(req, res) {
+  async deleteAppointment(req, res, next) {
     try {
-      const appointmentId = req.params.appointmentId;
-      const result = await AppointmentService.deleteAppointment(appointmentId);
-      res.send(result);
+      const result = await AppointmentService.deleteAppointment(req.params.id);
+      res.sendStatus(204).send(result);
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      next(error);
     }
   }
 }

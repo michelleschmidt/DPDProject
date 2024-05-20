@@ -1,0 +1,24 @@
+  {
+    "name": "olivia codespace",
+    "dockerComposeFile": "../backend/docker-compose.yml",
+    "service": "app",
+    "workspaceFolder": "/usr/src/app",
+    "remoteEnv": {
+      "SECRETE": "${{ secrets.SECRETE }}",
+      "MYSQL_DATABASE": "${{ secrets.MYSQL_DATABASE }}",
+      "MYSQL_ROOT_PASSWORD": "${{ secrets.MYSQL_ROOT_PASSWORD }}",
+      "DB_HOST": "${{ secrets.DB_HOST }}",
+      "DB_USER": "${{ secrets.DB_USER }}",
+      "DB_PASSWORD": "${{ secrets.DB_PASSWORD }}",
+      "DB_NAME": "${{ secrets.DB_NAME }}",
+      "PORT": "${{ secrets.PORT }}"
+    },
+    "shutdownAction": "stopCompose",
+    "postCreateCommand": "service docker start && apt-get update && apt-get install -y curl && curl -L https://github.com/docker/compose/releases/download/v2.27.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose && npm install",
+  
+    "mounts": [
+      "source=project-database,target=/var/lib/mysql,type=volume"
+    ],
+    "forwardPorts": [3000]
+  }
+  

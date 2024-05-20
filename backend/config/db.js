@@ -1,9 +1,10 @@
 module.exports = {
-    HOST: 'localhost',
-    USER: 'root',
-    PASSWORD: '',
-    DB: 'health_hub',
+    HOST: process.env.DB_HOST || 'localhost',
+    USER: process.env.DB_USER || 'root',
+    PASSWORD: process.env.DB_PASSWORD || '',
+    DB: process.env.DB_NAME ||  'health_hub',
     dialect: 'mysql',
+
 
     pool: {
         max: 5,

@@ -3,68 +3,58 @@ const AvailabilityService = require('../services/availabilityService');
 
 class AvailabilityController {
 
-    async createAvailability(req, res) {
+    async createAvailability(req, res, next) {
         try {
           const availability = await AvailabilityService.createAvailability(req.body);
           res.status(201).json(availability);
         } catch (error) {
-          res.status(400).json({ error: error.message });
+          next(error);
         }
       }
 
-      async getAvailabilityById(req, res) {
+
+      async getAvailabilityById(req, res, next) {
         try {
-          const availability = await AvailabilityService.getAvailabilityById(req.body.availability_id);
-          if (availability) {
+          const availability = await AvailabilityService.getAvailabilityById(req.params.id);
             res.status(200).json(availability);
-          } else {
-            res.status(404).send('No Availability found');
-          }
         } catch (error) {
-          res.status(500).send(error.message);
+          next(error);
         }
       }
 
-      async getDoctorsAvailability(req, res) {
+      async getDoctorAvailabilities(req, res, next) {
         try {
-          const availabilities = await AvailabilityService.getDoctorsAvailability(req.body.doctor_id);
+          const availabilities = await AvailabilityService.getDoctorAvailabilities(req.params.doctor_id);
           res.status(200).json(availabilities);
         } catch (error) {
-          res.status(500).send(error.message);
+          next(error);
         }
       }
     
-      async getAllAvailabilities(req, res) {
+      async getAllAvailabilities(req, res, next) {
         try {
           const availabilities = await AvailabilityService.getAllAvailabilities();
           res.status(200).json(availabilities);
         } catch (error) {
-          res.status(500).send(error.message);
+          next(error);
         }
       }
     
-      async updateAvailability(req, res) {
+      async updateAvailability(req, res, next) {
         try {
-          const updatedAvailability = await AvailabilityService.updateAvailability(req.body.availability_id, req.body);
-          if (updatedAvailability) {
+          const updatedAvailability = await AvailabilityService.updateAvailability(req.params.id, req.body);
             res.status(200).json(updatedAvailability);
-          } else {
-            res.status(404).send('Availability not found');
-          }
         } catch (error) {
-          res.status(500).send(error.message);
+          next(error);
         }
       }
-      async deleteAvailability(req, res) {
+
+      async deleteAvailability(req, res, next) {
         try {
-          const result = await AvailabilityService.deleteAvailability(req.body.availability_id);
-          if (result) {
-            res.status(200).json({ message: 'Availability deleted successfully' });
-          } else {
-            res.status(404).send('Availability not found');
-          }
+          const result = await AvailabilityService.deleteAvailability(req.params.id);
+          res.sendStatus(204).send(result);
         } catch (error) {
-          res.status(500).send(error.message);
+          next(error);
         }
       }
   }
