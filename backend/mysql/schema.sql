@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 17, 2024 at 07:06 PM
+-- Generation Time: May 20, 2024 at 08:48 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -43,7 +43,7 @@ CREATE TABLE `appointment` (
 --
 
 INSERT INTO `appointment` (`id`, `user_id`, `doctor_id`, `availability_id`, `createdAt`, `updatedAt`) VALUES
-(6, 15, 14, 4, '2024-05-14 17:59:41', '2024-05-14 17:59:41');
+(3, 1, 7, 1, '2024-05-20 18:21:18', '2024-05-20 18:40:10');
 
 -- --------------------------------------------------------
 
@@ -65,9 +65,10 @@ CREATE TABLE `availability` (
 --
 
 INSERT INTO `availability` (`id`, `doctor_id`, `availability_date`, `active`, `createdAt`, `updatedAt`) VALUES
-(3, 14, '2024-05-20 10:00:00', 1, '2024-05-14 17:42:15', '2024-05-14 17:42:15'),
-(4, 14, '2024-05-20 11:00:00', 0, '2024-05-14 17:42:28', '2024-05-14 17:59:41'),
-(5, 14, '2024-05-19 11:00:00', 1, '2024-05-14 17:42:41', '2024-05-14 17:42:41');
+(1, 5, '2024-05-22 10:00:00', 0, '2024-05-20 17:56:05', '2024-05-20 18:21:18'),
+(2, 5, '2024-05-25 13:30:00', 1, '2024-05-20 17:56:44', '2024-05-20 18:03:39'),
+(4, 5, '2024-05-26 12:30:00', 0, '2024-05-20 18:11:14', '2024-05-20 18:20:09'),
+(5, 5, '2024-05-26 12:00:00', 1, '2024-05-20 18:11:26', '2024-05-20 18:11:26');
 
 -- --------------------------------------------------------
 
@@ -76,13 +77,21 @@ INSERT INTO `availability` (`id`, `doctor_id`, `availability_date`, `active`, `c
 --
 
 CREATE TABLE `blog` (
-  `blog_id` int(11) NOT NULL,
+  `id` int(11) NOT NULL,
   `title` varchar(100) NOT NULL,
-  `body` varchar(255) NOT NULL,
+  `content` text NOT NULL,
   `created_by` int(11) NOT NULL,
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `blog`
+--
+
+INSERT INTO `blog` (`id`, `title`, `content`, `created_by`, `createdAt`, `updatedAt`) VALUES
+(2, 'My Updated Second Blog', 'Sequelize is a Node.js-based Object Relational Mapper that makes it easy to work with MySQL, MariaDB, SQLite, PostgreSQL databases, and more. An Object Relational Mapper performs functions like handling database records by representing the data as objects. Sequelize has a powerful migration mechanism that can transform existing database schemas into new versions. Overall, Sequelize provides excellent support for database synchronization, eager loading, associations, transactions, and database migrations while reducing development time and preventing SQL injections.', 3, '2024-05-20 17:33:39', '2024-05-20 17:49:34'),
+(3, 'My First Blog Recreated', 'This is the content of my first blog post.', 3, '2024-05-20 17:51:44', '2024-05-20 17:51:44');
 
 -- --------------------------------------------------------
 
@@ -114,53 +123,6 @@ CREATE TABLE `doctor` (
 
 INSERT INTO `doctor` (`doctor_id`, `title`, `first_name`, `last_name`, `email`, `password`, `street`, `city`, `postcode`, `state`, `country`, `role`, `location`, `createdAt`, `updatedAt`) VALUES
 (1, 'Dr.', 'Sara', 'Schmidt', 'sara.schmidt@mail.com', '$2a$10$zwwKXpMHQy9RrKL5Az/8Y.liWDOp/a/yMZ/lRHSYrd2mX6n/hhTpK', 'Alois-Gaessl 4', 'pfarrkirchen', 84347, 'Bayern', 'Germany', 'doctor', NULL, '2024-05-04 21:13:33', '2024-05-04 21:13:33');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `doctor_language`
---
-
-CREATE TABLE `doctor_language` (
-  `doctor_id` int(11) NOT NULL,
-  `language_id` int(11) NOT NULL,
-  `createdAt` datetime NOT NULL,
-  `updatedAt` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `doctor_language`
---
-
-INSERT INTO `doctor_language` (`doctor_id`, `language_id`, `createdAt`, `updatedAt`) VALUES
-(1, 1, '2024-05-04 21:13:33', '2024-05-04 21:13:33'),
-(1, 5, '2024-05-04 21:13:33', '2024-05-04 21:13:33'),
-(1, 7, '2024-05-04 21:13:33', '2024-05-04 21:13:33');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `doctor_specialization`
---
-
-CREATE TABLE `doctor_specialization` (
-  `doctor_id` int(11) NOT NULL,
-  `specialization_id` int(11) NOT NULL,
-  `createdAt` datetime NOT NULL,
-  `updatedAt` datetime NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `doctor_specialization`
---
-
-INSERT INTO `doctor_specialization` (`doctor_id`, `specialization_id`, `createdAt`, `updatedAt`) VALUES
-(11, 1, '2024-05-13 15:25:16', '2024-05-13 15:25:16'),
-(11, 3, '2024-05-13 15:25:16', '2024-05-13 15:25:16'),
-(11, 6, '2024-05-13 15:25:16', '2024-05-13 15:25:16'),
-(14, 2, '2024-05-14 14:50:52', '2024-05-14 14:50:52'),
-(14, 5, '2024-05-14 14:50:52', '2024-05-14 14:50:52'),
-(14, 6, '2024-05-14 14:50:52', '2024-05-14 14:50:52');
 
 -- --------------------------------------------------------
 
@@ -254,13 +216,10 @@ CREATE TABLE `user` (
   `last_name` varchar(35) NOT NULL,
   `email` varchar(125) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `street` varchar(100) NOT NULL,
-  `city` varchar(35) NOT NULL,
-  `postcode` int(11) NOT NULL,
-  `state` varchar(45) NOT NULL,
-  `country` varchar(25) NOT NULL,
+  `address` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`address`)),
   `location` point DEFAULT NULL,
   `role` varchar(25) NOT NULL DEFAULT 'normal_user',
+  `specialization_id` int(11) DEFAULT NULL,
   `createdAt` datetime NOT NULL,
   `updatedAt` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -269,10 +228,11 @@ CREATE TABLE `user` (
 -- Dumping data for table `user`
 --
 
-INSERT INTO `user` (`id`, `title`, `first_name`, `last_name`, `email`, `password`, `street`, `city`, `postcode`, `state`, `country`, `location`, `role`, `createdAt`, `updatedAt`) VALUES
-(11, 'Dr', 'Olivia', 'Okoro', 'olivia.okoro@mail.com', '$2a$10$flvzMHOYKAkbLMZFpbG/.elo0wt/aQHG.pw2qF9wDiVlZZ8E/6dOC', 'Alois-Gaessl 4', 'pfarrkirchen', 84347, 'Bayern', 'Germany', NULL, 'doctor', '2024-05-13 15:25:16', '2024-05-13 15:25:16'),
-(14, 'Dr', 'Michelle', 'Schmidt', 'michelle.schmidt@mail.com', '$2a$10$RCb0omSDBQZPMem.YejxVe1kCBukFb0/PZ.D.bx7UQXmmDP0FJWI.', 'Alois-Gaessl 4', 'pfarrkirchen', 84347, 'Bayern', 'Germany', NULL, 'doctor', '2024-05-14 14:50:52', '2024-05-14 14:50:52'),
-(15, 'Ms', 'Helana', 'Mensah', 'helena.mensah@mail.com', '$2a$10$.L.P7haf.7BxdWCVVWQ2M.C/CEToEEivzldRtVsKCb6qYrcmT92GS', 'Alois-Gaessl 4', 'pfarrkirchen', 84347, 'Bayern', 'Germany', NULL, 'normal_user', '2024-05-14 16:24:47', '2024-05-14 16:24:47');
+INSERT INTO `user` (`id`, `title`, `first_name`, `last_name`, `email`, `password`, `address`, `location`, `role`, `specialization_id`, `createdAt`, `updatedAt`) VALUES
+(1, 'Mr', 'John', 'Griffineth ', 'griffin@mail.com', '$2a$10$Sm4H3pzHnuL5MGZl.OWk0eoZ4YtlkX8pvxLC5zdWh185.p.q0nd5e', '{\"street\":\" Baumgarten Street 8\",\"city\":\"Mooshof \",\"postcode\":94249,\"state\":\" Bavaria\",\"country\":\"Germany\"}', NULL, 'normal_user', NULL, '2024-05-20 15:09:53', '2024-05-20 16:45:25'),
+(3, 'Ms', 'Olivia', 'Okoro', 'olivia@mail.com', '$2a$10$bAJ5MNOz2bh.qDjFBa1AsOtCTHB8aAxjqUrLQ04i3F4CLDHtR2xjq', '{\"street\":\"Alois-Gaessl 4\",\"city\":\"Pfarrkirchen\",\"postcode\":84347,\"state\":\"Bavaria\",\"country\":\"Germany\"}', NULL, 'admin', NULL, '2024-05-20 15:30:20', '2024-05-20 15:30:20'),
+(5, 'Dr', 'John', 'Monroe', 'monroe@mail.com', '$2a$10$83Cs26ndy/3nhDVihnUpvuF.FvgJ2kgXlDCLcV2bgNDnK/XP2nM9m', '{\"street\":\" Am Burggraben 6\",\"city\":\"Pfarrkirchen\",\"postcode\":84347,\"state\":\" Bavaria\",\"country\":\"Germany\"}', NULL, 'doctor', 2, '2024-05-20 15:34:03', '2024-05-20 15:34:03'),
+(7, 'Dr', 'Anita', 'Mayer', 'meyer@mail.com', '$2a$10$uZsfugehHiOUjiiAcUhHeOGbrq67jTrvNq87NuCX.LhmCE8zBKAVG', '{\"street\":\"Passauer Street 10\",\"city\":\"Pfarrkirchen\",\"postcode\":84347,\"state\":\" Bavaria\",\"country\":\"Germany\"}', NULL, 'doctor', 6, '2024-05-20 18:34:16', '2024-05-20 18:34:16');
 
 -- --------------------------------------------------------
 
@@ -292,15 +252,17 @@ CREATE TABLE `user_language` (
 --
 
 INSERT INTO `user_language` (`user_id`, `language_id`, `createdAt`, `updatedAt`) VALUES
-(11, 1, '2024-05-13 15:25:16', '2024-05-13 15:25:16'),
-(11, 2, '2024-05-13 15:25:16', '2024-05-13 15:25:16'),
-(11, 7, '2024-05-13 15:25:16', '2024-05-13 15:25:16'),
-(14, 1, '2024-05-14 14:50:52', '2024-05-14 14:50:52'),
-(14, 6, '2024-05-14 14:50:52', '2024-05-14 14:50:52'),
-(14, 8, '2024-05-14 14:50:52', '2024-05-14 14:50:52'),
-(15, 1, '2024-05-14 16:24:47', '2024-05-14 16:24:47'),
-(15, 6, '2024-05-14 16:24:47', '2024-05-14 16:24:47'),
-(15, 8, '2024-05-14 16:24:47', '2024-05-14 16:24:47');
+(1, 1, '2024-05-20 15:09:53', '2024-05-20 15:09:53'),
+(1, 2, '2024-05-20 15:09:53', '2024-05-20 15:09:53'),
+(1, 7, '2024-05-20 15:09:53', '2024-05-20 15:09:53'),
+(3, 1, '2024-05-20 15:30:20', '2024-05-20 15:30:20'),
+(3, 2, '2024-05-20 15:30:20', '2024-05-20 15:30:20'),
+(3, 6, '2024-05-20 15:30:20', '2024-05-20 15:30:20'),
+(5, 1, '2024-05-20 15:34:03', '2024-05-20 15:34:03'),
+(5, 2, '2024-05-20 15:34:03', '2024-05-20 15:34:03'),
+(5, 6, '2024-05-20 15:34:03', '2024-05-20 15:34:03'),
+(7, 1, '2024-05-20 18:34:16', '2024-05-20 18:34:16'),
+(7, 2, '2024-05-20 18:34:16', '2024-05-20 18:34:16');
 
 --
 -- Indexes for dumped tables
@@ -326,7 +288,7 @@ ALTER TABLE `availability`
 -- Indexes for table `blog`
 --
 ALTER TABLE `blog`
-  ADD PRIMARY KEY (`blog_id`),
+  ADD PRIMARY KEY (`id`),
   ADD KEY `created_by` (`created_by`);
 
 --
@@ -334,21 +296,6 @@ ALTER TABLE `blog`
 --
 ALTER TABLE `doctor`
   ADD PRIMARY KEY (`doctor_id`);
-
---
--- Indexes for table `doctor_language`
---
-ALTER TABLE `doctor_language`
-  ADD PRIMARY KEY (`doctor_id`,`language_id`),
-  ADD KEY `language_id` (`language_id`);
-
---
--- Indexes for table `doctor_specialization`
---
-ALTER TABLE `doctor_specialization`
-  ADD PRIMARY KEY (`doctor_id`,`specialization_id`),
-  ADD UNIQUE KEY `doctor_specialization_specialization_id_user_id_unique` (`doctor_id`,`specialization_id`),
-  ADD KEY `specialization_id` (`specialization_id`);
 
 --
 -- Indexes for table `language`
@@ -367,7 +314,8 @@ ALTER TABLE `specialization`
 --
 ALTER TABLE `user`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`);
+  ADD UNIQUE KEY `email` (`email`),
+  ADD KEY `specialization_id` (`specialization_id`);
 
 --
 -- Indexes for table `user_language`
@@ -385,19 +333,19 @@ ALTER TABLE `user_language`
 -- AUTO_INCREMENT for table `appointment`
 --
 ALTER TABLE `appointment`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `availability`
 --
 ALTER TABLE `availability`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `blog`
 --
 ALTER TABLE `blog`
-  MODIFY `blog_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `doctor`
@@ -421,7 +369,7 @@ ALTER TABLE `specialization`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Constraints for dumped tables
@@ -433,7 +381,7 @@ ALTER TABLE `user`
 ALTER TABLE `appointment`
   ADD CONSTRAINT `appointment_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `appointment_ibfk_2` FOREIGN KEY (`doctor_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `appointment_ibfk_3` FOREIGN KEY (`availability_id`) REFERENCES `availability` (`id`);
+  ADD CONSTRAINT `appointment_ibfk_3` FOREIGN KEY (`availability_id`) REFERENCES `availability` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
 -- Constraints for table `availability`
@@ -448,18 +396,10 @@ ALTER TABLE `blog`
   ADD CONSTRAINT `blog_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `doctor_language`
+-- Constraints for table `user`
 --
-ALTER TABLE `doctor_language`
-  ADD CONSTRAINT `doctor_language_ibfk_1` FOREIGN KEY (`doctor_id`) REFERENCES `doctor` (`doctor_id`),
-  ADD CONSTRAINT `doctor_language_ibfk_2` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`);
-
---
--- Constraints for table `doctor_specialization`
---
-ALTER TABLE `doctor_specialization`
-  ADD CONSTRAINT `doctor_specialization_ibfk_1` FOREIGN KEY (`doctor_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `doctor_specialization_ibfk_2` FOREIGN KEY (`specialization_id`) REFERENCES `specialization` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `user`
+  ADD CONSTRAINT `user_ibfk_1` FOREIGN KEY (`specialization_id`) REFERENCES `specialization` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
 -- Constraints for table `user_language`
