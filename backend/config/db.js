@@ -3,6 +3,7 @@ module.exports = {
     USER: process.env.DB_USER || 'root',
     PASSWORD: '' 
     // || process.env.DB_PASSWORD 
+    // the line above should be uncommented when running the app via docker
     ,
     DB: process.env.DB_NAME ||  'health_hub',
     dialect: 'mysql',
