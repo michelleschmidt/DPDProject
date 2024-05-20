@@ -1,15 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { Circle, MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
-import L, { LatLngTuple } from "leaflet";
+import { LatLngTuple, LatLngExpression } from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-interface MapProps {
-  radius: number; // Specify the type of the radius prop as number
+interface DoctorData {
+  id: number;
+  name: string;
+  longitude: number;
+  latitude: number;
 }
 
-const Map: React.FC<MapProps> = ({ radius }) => {
-  // Define MapProps as the type of props for Map component
-  const [userLocation, setUserLocation] = useState<LatLngTuple | null>(null);
+interface UserLocation {
+  latitude: number;
+  longitude: number;
+}
+
+interface MapProps {
+  radius: number;
+  doctors?: DoctorData[];
+  setUserLocation: React.Dispatch<React.SetStateAction<UserLocation | null>>;
+}
+
+const Map: React.FC<MapProps> = ({ radius, doctors, setUserLocation }) => {
+  const [userLocationState, setUserLocationState] =
+    useState<UserLocation | null>(null);
 
   useEffect(() => {
     console.log("Attempting to retrieve user location...");
@@ -17,10 +31,16 @@ const Map: React.FC<MapProps> = ({ radius }) => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           console.log("User location retrieved successfully:", position.coords);
-          setUserLocation([
-            position.coords.latitude,
-            position.coords.longitude,
-          ]);
+          setUserLocationState({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          });
+          if (setUserLocation) {
+            setUserLocation({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            });
+          }
         },
         (error) => {
           console.error("Error getting user location:", error);
@@ -29,32 +49,37 @@ const Map: React.FC<MapProps> = ({ radius }) => {
     } else {
       console.error("Geolocation not supported.");
     }
-  }, []);
+  }, [setUserLocation]);
 
-  if (userLocation === null) {
+  if (userLocationState === null) {
     return null; // Render nothing while waiting for user location
   }
 
   return (
     <MapContainer
-      center={userLocation} // Use userLocation directly
+      center={[userLocationState.latitude, userLocationState.longitude]}
       zoom={13}
-      style={{ height: "400px", width: "100vw" }}
+      style={{ height: "100%", width: "100%" }}
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {/* Additional map layers or components can be added here */};
-      <Marker position={userLocation}>
-        {/* Popup that shows user's location */}
+      {doctors?.map((doctor) => (
+        <Marker key={doctor.id} position={[doctor.latitude, doctor.longitude]}>
+          <Popup>{doctor.name}</Popup>
+        </Marker>
+      ))}
+      <Marker
+        position={[userLocationState.latitude, userLocationState.longitude]}
+      >
         <Popup>
-          Your location <br /> Lat: {userLocation[0]}, Lng: {userLocation[1]}
+          Your location <br /> Lat: {userLocationState.latitude}, Lng:{" "}
+          {userLocationState.longitude}
         </Popup>
       </Marker>
-      {/* Circle representing a radius around the user's location */}
       <Circle
-        center={userLocation}
+        center={[userLocationState.latitude, userLocationState.longitude]}
         radius={radius}
         fillColor="blue"
         fillOpacity={0.1}
