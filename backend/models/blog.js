@@ -2,17 +2,12 @@ module.exports = (sequelize, DataTypes) => {
   const Blog = sequelize.define(
     "blog",
     {
-      blog_id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
       title: {
         type: DataTypes.STRING(100),
         allowNull: false,
       },
-      body: {
-        type: DataTypes.STRING(),
+      content: {
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       created_by: {
@@ -20,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         references: {
           model: "user",
-          key: "user_id",
+          key: "id",
         },
       },
     },

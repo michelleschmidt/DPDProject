@@ -9,6 +9,7 @@ const blogRoutes = require("./routes/blogRoutes.js");
 const appointmentRoutes = require("./routes/appointmentRoutes.js");
 const availabilityRoutes = require("./routes/availabilityRoutes.js");
 
+const errorHandler = require('./middleware/errorHandler');
 const cookieParser = require('cookie-parser');
 
 
@@ -28,6 +29,10 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/availabilities", availabilityRoutes);
 
 app.use("/api/v1/appointments", appointmentRoutes);
+
+
+
+app.use(errorHandler);
 
 //port
 const PORT = process.env.PORT || 7000;

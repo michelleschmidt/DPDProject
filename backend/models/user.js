@@ -24,36 +24,9 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      street: {
-        type: DataTypes.STRING(100),
-        allowNull: false,
+      address:{
+        type: DataTypes.JSON,
       },
-      city: {
-        type: DataTypes.STRING(35),
-        allowNull: false,
-      },
-      postcode: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      state: {
-        type: DataTypes.STRING(45),
-        allowNull: false,
-      },
-      country: {
-        type: DataTypes.STRING(25),
-        allowNull: false,
-      },
-      address: {
-        type: DataTypes.VIRTUAL,
-        get() {
-          return `${this.street}, ${this.postcode}, ${this.city}, ${this.state}, ${this.country}`;
-        },
-        set(value) {
-          throw new Error("Do not try to set the address directly!");
-        },
-      },
-
       location: {
         type: DataTypes.GEOMETRY("POINT"),
       },      
@@ -62,12 +35,18 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: "normal_user",
       },
+      specialization_id: {
+        type: DataTypes.INTEGER,
+        references: {
+            model: 'specialization',
+            key: 'id'
+        }
+      },
 
     },
     {
       freezeTableName: true,
     }
   );
-
   return User;
 };

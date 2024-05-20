@@ -6,13 +6,14 @@ const { isLoggedIn } = require("../middleware/isLoggedIn");
 const { roleCheck } = require("../middleware/roleCheck");
 
 
-blogRouter.post('/new-blog', isLoggedIn, BlogController.createBlog);
+blogRouter.post('/new-blog', isLoggedIn, roleCheck('admin'), BlogController.createBlog);
 
 blogRouter.get('/', BlogController.getAllBlogs);
 
 blogRouter.get('/user/blogs', isLoggedIn, BlogController.getAllBlogsByUser);
 
 blogRouter.get('/:id', isLoggedIn, BlogController.getBlogById);
+
 blogRouter.put('/:id', isLoggedIn, roleCheck('admin'), BlogController.updateBlog);
 blogRouter.delete('/:id', isLoggedIn, roleCheck('admin'), BlogController.deleteBlog);
 
