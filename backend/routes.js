@@ -7,7 +7,6 @@ const availabilityRoutes = require("./routes/availabilityRoutes.js");
 
 
 app.use("/api/v1/users", userRoutes);
-app.use("/api/v1/doctors", doctorRoutes);
 
 app.use("/api/v1/blogs", blogRoutes);
 

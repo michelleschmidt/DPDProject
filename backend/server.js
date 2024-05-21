@@ -3,7 +3,6 @@ require("dotenv").config();
 const express = require("express");
 
 const userRoutes = require("./routes/userRoutes.js");
-const doctorRoutes = require("./routes/doctorRoutes.js");
 const authRoutes = require("./routes/authRoutes.js");
 const blogRoutes = require("./routes/blogRoutes.js");
 const appointmentRoutes = require("./routes/appointmentRoutes.js");
