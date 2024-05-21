@@ -1,0 +1,14 @@
+{
+
+    "remoteEnv": {
+      "SECRETE": "${{ secrets.SECRETE }}",
+      "MYSQL_DATABASE": "${{ secrets.MYSQL_DATABASE }}",
+      "MYSQL_ROOT_PASSWORD": "${{ secrets.MYSQL_ROOT_PASSWORD }}",
+      "DB_HOST": "${{ secrets.DB_HOST }}",
+      "DB_USER": "${{ secrets.DB_USER }}",
+      "DB_PASSWORD": "${{ secrets.DB_PASSWORD }}",
+      "DB_NAME": "${{ secrets.DB_NAME }}",
+      "PORT": "${{ secrets.PORT }}"
+    },
+    "forwardPorts": [7000, "3307:3306"]
+  }
