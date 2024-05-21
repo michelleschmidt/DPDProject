@@ -1,5 +1,7 @@
 {
-
+    "dockerComposeFile": "../backend/docker-compose.yml",
+    "service": "app",
+    "workspaceFolder": "/usr/src/app",
     "remoteEnv": {
       "SECRETE": "${{ secrets.SECRETE }}",
       "MYSQL_DATABASE": "${{ secrets.MYSQL_DATABASE }}",
@@ -10,5 +12,11 @@
       "DB_NAME": "${{ secrets.DB_NAME }}",
       "PORT": "${{ secrets.PORT }}"
     },
+    "shutdownAction": "stopCompose",
+    "postCreateCommand": "apt-get update && apt-get install -y curl",
+    "mounts": [
+      "source=project-database,target=/var/lib/mysql,type=volume"
+    ],
     "forwardPorts": [7000, "3307:3306"]
   }
+  
