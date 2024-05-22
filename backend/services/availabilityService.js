@@ -3,8 +3,6 @@ const { where } = require("sequelize");
 db = require("../models");
 
 const Availability = db.Availability;
-const User = db.User;
-
 class AvailabilityService {
   async createAvailability(data) {
     const availability = await Availability.create(data);
@@ -43,13 +41,13 @@ class AvailabilityService {
   }
 
   async deleteAvailability(id) {
-    const availability = await Availability.findByPk(id);
-    if (!availability) {
-      throw new Error("Availability not found");
+    const result = await Availability.destroy({ where: { id: id } });
+    if (result === 0) {
+      throw new Error("Entry not found or already deleted.");
     }
-    await availability.destroy();
-    return { message: "Entry deleted successfully" };
+    return ("Appointment deleted successfully.");
   }
+
 }
 
 module.exports = new AvailabilityService();

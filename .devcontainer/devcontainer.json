@@ -1,5 +1,4 @@
-  {
-    "name": "olivia codespace",
+{
     "dockerComposeFile": "../backend/docker-compose.yml",
     "service": "app",
     "workspaceFolder": "/usr/src/app",
@@ -14,11 +13,10 @@
       "PORT": "${{ secrets.PORT }}"
     },
     "shutdownAction": "stopCompose",
-    "postCreateCommand": "service docker start && apt-get update && apt-get install -y curl && curl -L https://github.com/docker/compose/releases/download/v2.27.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose && npm install",
-  
+    "postCreateCommand": "apt-get update && apt-get install -y curl",
     "mounts": [
       "source=project-database,target=/var/lib/mysql,type=volume"
     ],
-    "forwardPorts": [3000]
+    "forwardPorts": [7000, "3307:3306"]
   }
   

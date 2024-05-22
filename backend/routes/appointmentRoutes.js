@@ -10,7 +10,7 @@ appointmentRouter.post("/create-new", isLoggedIn, appointmentController.createAp
 
 appointmentRouter.get("/user/appointments", isLoggedIn, appointmentController.getUserAppointments);
 
-appointmentRouter.get("/user/appointments", isLoggedIn, appointmentController.getDoctorAppointments);
+appointmentRouter.get("/doctor/appointments", isLoggedIn, appointmentController.getDoctorAppointments);
 
 appointmentRouter.get("/", isLoggedIn, appointmentController.getAllAppointments);
 

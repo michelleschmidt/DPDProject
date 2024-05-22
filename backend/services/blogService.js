@@ -5,75 +5,53 @@ const Blog = db.Blog;
 
 class BlogService {
   async createBlog(blogData) {
-    const user = await User.findOne({
-      where: {
-        user_id: blogData.user_id,
-      },
-    });
-    if (!user) {
-      throw new Error("No user found");
-    }
-      return await Blog.create(blogData);
+    const blog = await Blog.create(blogData);
+    return blog;
   }
 
   async getAllBlogs() {
-    try {
-      return await Blog.findAll();
-    } catch (error) {
-      throw error;
-    }
+    const blogs = await Blog.findAll();
+    return blogs;
   }
 
   async getAllBlogsByUser(userId) {
-    try {
-      return await Blog.findAll({
-        where: {
-          user_id: userId,
+    const userBlogs = await Blog.findAll({
+      where: {
+        created_by: userId,
+      },
+      include: [
+        {
+          model: User,
+          attributes: ["first_name", "last_name"],
         },
-        include: [
-          {
-            model: User,
-            attributes: ["first_name", "last_name"],
-          },
-        ],
-      });
-    } catch (error) {
-      throw error;
-    }
+      ],
+    });
+    return userBlogs;
   }
 
   async getBlogById(blogId) {
-    try {
-      return await Blog.findByPk(blogId);
-    } catch (error) {
-      throw error;
-    }
+   const blog = await Blog.findByPk(blogId);
+ return blog;
   }
 
   async updateBlog(blogId, updates) {
-    try {
-      const blog = await getBlogById(blogId);
+      const blog = await Blog.findByPk(blogId);
       if (!blog) {
         throw new Error("Blog not found");
       }
-      return await blog.update(updates);
-    } catch (error) {
-      throw error;
-    }
+      await blog.update(updates);
+      return blog;
+
   }
 
   async deleteBlog(blogId) {
-    try {
-      const blog = await getBlogById(blogId);
-      if (!blog) {
-        throw new Error("Blog not found");
-      }
-      await blog.destroy({
-        where: { blog_id: blogId },
+      const result = await Blog.destroy({
+        where: { id: blogId },
       });
-    } catch (error) {
-      throw error;
-    }
+      if (result === 0) {
+        throw new Error("Blog not found or already deleted.");
+      }
+      return ("Blog deleted successfully.");
   }
 }
 

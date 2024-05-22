@@ -1,78 +1,61 @@
 const BlogService  = require("../services/blogService");
 
 class BlogController {
-  async createBlog(req, res) {
+  async createBlog(req, res, next) {
     try {
+      req.body.created_by = req.user.userId;
       const blog = await BlogService.createBlog(req.body);
       res.status(201).json(blog);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      next(error);
     }
   }
 
-  async getAllBlogs(req, res) {
+  async getAllBlogs(req, res, next) {
     try {
       const blogs = await BlogService.getAllBlogs();
-      if (blogs.length === 0) {
-        return res.status(404).json({ message: "No Blog found" });
-      }
       res.status(200).json(blogs);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      next(error);
     }
   }
 
-  async getAllBlogsByUser(req, res) {
+  async getAllBlogsByUser(req, res, next) {
     try {
-      const blogs = await BlogService.getAllBlogsByUser();
-      if (blogs.length === 0) {
-        return res.status(404).json({ message: "No Blog found" });
-      }
+      const blogs = await BlogService.getAllBlogsByUser(req.user.userId);
       res.status(200).json(blogs);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      next(error);
     }
   }
 
-  async getBlogById(req, res) {
+  async getBlogById(req, res, next) {
     try {
-      const blog = await BlogService.getBlogById(req.body.blog_id);
-      if (blog.length === 0) {
-        res.status(200).json(blog);
-      } else {
-        res.status(404).json({ message: "Blog not found" });
-      }
+      const blog = await BlogService.getBlogById(req.params.id);
+      res.status(201).json(blog);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      next(error);
     }
   }
 
-  async updateBlog(req, res) {
+  async updateBlog(req, res, next) {
     try {
-      const updatedBlog = await BlogService.updateBlog(
-        req.body.blog_id,
-        req.body
-      );
-      if (!updatedBlog) {
-        return res.status(404).json({ message: "Update not successful" });
-      }
-      res
-        .status(200)
-        .json({ message: "Blog updated successfully!", updatedBlog });
+      const updatedBlog = await BlogService.updateBlog(req.params.id, req.body);
+      res.status(201).json({ message: "Blog updated successfully!", updatedBlog });
     } catch (error) {
-      res.status(400).json({ message: error.message });
+      next(error);
     }
   }
 
-  async deleteBlog(req, res) {
-    const blogId = req.body.blog_id;
+  async deleteBlog(req, res, next) {
     try {
-      await BlogService.deleteBlog(blogId);
-      res.status(204).send("Blog deleted successfully");
+      const result = await BlogService.deleteBlog(req.params.id);
+      res.status(200).json({ message: result });
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      next(error);
     }
   }
+
 }
 
 module.exports = new BlogController();

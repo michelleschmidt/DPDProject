@@ -3,6 +3,7 @@ const AppointmentService = require("../services/appointmentService");
 class AppointmentController {
   async createAppointment(req, res, next) {
     try {
+      req.body.user_id = req.user.userId;
       const appointment = await AppointmentService.createAppointment(req.body);
       res.status(201).json(appointment);
     } catch (error) {
@@ -12,11 +13,11 @@ class AppointmentController {
 
   async getUserAppointments(req, res, next) {
     try {
-// Need to work on retrieving the address correctly
+      // Need to work on retrieving the address correctly
       const appointments = await AppointmentService.getUserAppointments(
         req.user.userId
       );
-      res.json(appointments);
+      res.status(201).json(appointments);
     } catch (error) {
       next(error);
     }
@@ -28,7 +29,7 @@ class AppointmentController {
       const appointments = await AppointmentService.getDoctorAppointments(
         doctorId
       );
-      res.json(appointments);
+      res.status(201).json(appointments);
     } catch (error) {
       next(error);
     }
@@ -37,7 +38,7 @@ class AppointmentController {
   async getAllAppointments(req, res, next) {
     try {
       const appointments = await AppointmentService.getAllAppointments();
-      res.json(appointments);
+      res.status(201).json(appointments);
     } catch (error) {
       next(error);
     }
@@ -45,7 +46,10 @@ class AppointmentController {
 
   async updateAppointment(req, res, next) {
     try {
-      const updatedAppointment = await AppointmentService.updateAppointment(req.params.id,req.body);
+      const updatedAppointment = await AppointmentService.updateAppointment(
+        req.params.id,
+        req.body
+      );
       res.status(201).json(updatedAppointment);
     } catch (error) {
       next(error);
@@ -55,7 +59,7 @@ class AppointmentController {
   async deleteAppointment(req, res, next) {
     try {
       const result = await AppointmentService.deleteAppointment(req.params.id);
-      res.sendStatus(204).send(result);
+      res.status(200).json({ message: result });
     } catch (error) {
       next(error);
     }

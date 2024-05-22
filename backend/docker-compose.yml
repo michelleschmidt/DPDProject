@@ -1,7 +1,7 @@
 
 services:
   db:
-    image: mysql:latest
+    image: mysql:8.4.0
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
@@ -9,7 +9,7 @@ services:
       - "3307:3306"
     volumes:
       - project-database:/var/lib/mysql
-      - ./mysql/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - ../mysql/schema.sql:/docker-entrypoint-initdb.d/schema.sql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
@@ -29,7 +29,7 @@ services:
       db:
         condition: service_healthy
     ports:
-      - "3000:3000"
+      - "7000:7000"
     volumes:
       - .:/usr/src/app
 

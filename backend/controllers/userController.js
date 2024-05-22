@@ -6,7 +6,7 @@ class UserController {
       const user = await UserService.createUser(req.body);
       res.status(201).json(user);
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      next(error);
     }
   }
 
@@ -18,8 +18,6 @@ class UserController {
       next(error);
     }
   }
-
-
 
   async getDoctorById(req, res, next) {
     try {
@@ -49,7 +47,6 @@ class UserController {
     }
   }
 
-
   async updateUser(req, res, next) {
     try {
       const updatedUser = await UserService.updateUser(req.params.id, req.body);
@@ -62,12 +59,11 @@ class UserController {
   async deleteUser(req, res, next) {
     try {
       const result = await UserService.deleteUser(req.params.id);
-      res.sendStatus(204).send(result);
+      res.status(200).json({ message: result });
     } catch (error) {
       next(error);
     }
   }
-
 }
 
 module.exports = new UserController();

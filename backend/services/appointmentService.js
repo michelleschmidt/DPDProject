@@ -22,8 +22,9 @@ class AppointmentService {
     const availability = await Availability.findOne({
       where: {
         id: data.availability_id,
+        doctor_id: data.doctor_id,
         active: true,
-        availability: {
+        availability_date: {
           [Op.gt]: currentTime,
         },
       },
@@ -42,7 +43,7 @@ class AppointmentService {
       where: { user_id: userId },
       include: [
         { model: User, as: "doctor",
-        attributes: ['first_name', 'last_name'], },
+        attributes: ['first_name', 'last_name', 'address'], },
         {
           model: db.Availability,
           as: "availability",
@@ -53,33 +54,6 @@ class AppointmentService {
     return appointments;
   }
 
-  // Includes address but still not sure if necessary
-  // async getUserAppointments(userId) {
-  //   const appointments = await Appointment.findAll({
-  //     where: { user_id: userId },
-  //     include: [
-  //       {
-  //         model: User,
-  //         as: "doctor",
-  //         attributes: ['first_name', 'last_name', 'street', 'city', 'postcode', 'state', 'country'], // Include all fields needed for the address
-  //       },
-  //       {
-  //         model: db.Availability,
-  //         as: "availability",
-  //         attributes: ['availability_date'],
-  //       },
-  //     ],
-  //   });
-  //   // Manually append the address to each doctor object
-  //   appointments.forEach(appointment => {
-  //     if (appointment.doctor) {
-  //       appointment.doctor.dataValues.address = `${appointment.doctor.street}, ${appointment.doctor.postcode}, ${appointment.doctor.city}, ${appointment.doctor.state}, ${appointment.doctor.country}`;
-  //     }
-  //   });
-  //   return appointments;
-  // }
-
-  
   async getDoctorAppointments(doctorId) {
     const appointments = await Appointment.findAll({
       where: { doctor_id: doctorId },
@@ -109,7 +83,8 @@ class AppointmentService {
     if (!appointment) {
       throw new Error("Appointment not found");
     }
-    return await appointment.update(updates);
+     await appointment.update(updates);
+     return appointment;
   }
 
   async deleteAppointment(appointmentId) {
@@ -117,7 +92,7 @@ class AppointmentService {
     if (result === 0) {
       throw new Error("Appointment not found or already deleted.");
     }
-    return "Appointment deleted successfully.";
+    return ("Appointment deleted successfully.");
   }
 }
 

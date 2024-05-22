@@ -7,28 +7,12 @@ const Specialization = db.Specialization;
 const Language = db.Language;
 
 class AuthService {
-  // async register(data) {
-
-  //   let user = await User.findOne({ where: { email: data.email } });
-  //   if (user) {
-  //     throw new Error("email already exists");
-  //   }
-  //   data.email = data.email.toLowerCase();
-  //   const hashedPassword = await bcrypt.hash(data.password, 10);
-
-  //   user = await User.create({
-  //     ...data,
-  //     password: hashedPassword,
-  //   });
-  //   return user;
-  // }
-
   async register(data) {
-    data.email = data.email.toLowerCase();
     let user = await User.findOne({ where: { email: data.email } });
     if (user) {
-      throw new Error("Email already exists");
+      throw new Error("email already exists");
     }
+    data.email = data.email.toLowerCase();
     const hashedPassword = await bcrypt.hash(data.password, 10);
     data.password = hashedPassword;
     // Creating the user within a transaction to ensure data is saved correctly
@@ -44,18 +28,10 @@ class AuthService {
         });
         await user.addLanguages(languages, { transaction: t });
       }
-      if (data.specialization && data.specialization.length > 0) {
-        const specializations = await Specialization.findAll({
-          where: {
-            id: data.specialization,
-          },
-        });
-        await user.addSpecializations(specializations, { transaction: t });
-      }
-
       return user;
     });
   }
+
 
 
   async login(data) {

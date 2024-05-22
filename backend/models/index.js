@@ -2,9 +2,7 @@ require('dotenv').config();
 
 const dbConfig = require("../config/db.js");
 
-
 const { Sequelize, DataTypes, Op } = require("sequelize");
-
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
   host: dbConfig.HOST,
   dialect: dbConfig.dialect,
@@ -37,29 +35,25 @@ db.UserLanguage = require("./user_language.js")(sequelize, DataTypes);
 
 db.Language = require("./language.js")(sequelize, DataTypes);
 
-// db.DoctorLanguage = require("./doctor_language.js")(sequelize, DataTypes);
 db.Specialization = require("./specialization.js")(sequelize, DataTypes);
-db.DoctorSpecialization = require("./doctor_specialization.js")(sequelize, DataTypes);
-db.Doctor = require("./doctor.js")(sequelize, DataTypes);
-
 db.Appointment = require("./appointment.js")(sequelize, DataTypes);
 db.Availability = require("./availability.js")(sequelize, DataTypes);
 
 db.Blog = require("./blog.js")(sequelize, DataTypes);
-//
 
 
 // Define relationships
-db.User.belongsToMany(db.Specialization, {
-  through: "doctor_specialization",
-  foreignKey: "user_id",
-  otherKey: "specialization_id",
+
+db.User.belongsTo(db.Specialization, {
+  foreignKey: 'specialization_id',
 });
-db.Specialization.belongsToMany(db.User, {
-  through: "doctor_specialization",
-  foreignKey: "specialization_id",
-  otherKey: "user_id",
+
+db.Specialization.hasMany(db.User, {
+  foreignKey: 'specialization_id',
 });
+
+
+
 
 db.User.belongsToMany(db.Language, {
   through: "user_language",
@@ -103,7 +97,6 @@ db.Appointment.belongsTo(db.User, {
   foreignKey: "doctor_id",
   as: 'doctor',
 });
-
 
 
 db.User.hasMany(db.Availability, {

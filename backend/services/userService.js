@@ -23,50 +23,45 @@ class UserService {
   //   return user;
   // }
 
+
   async createUser(data) {
+    data.email = data.email.toLowerCase();
     let user = await User.findOne({ where: { email: data.email } });
     if (user) {
-      throw new Error("email already exists");
+      throw new Error("Email already exists");
     }
-    user = await User.create({
-      ...data,
-      password: hashedPassword,
-    });
-    data.email = data.email.toLowerCase();
     const hashedPassword = await bcrypt.hash(data.password, 10);
+    data.password = hashedPassword;
 
-    if (data.language && data.language.length > 0) {
-      for (const lang of data.language) {
-        const language = await Language.findOne({
+    // Creating the user within a transaction to ensure data is saved correctly
+    // into all tables at once
+    return await db.sequelize.transaction(async (t) => {
+      user = await User.create(data, { transaction: t });
+
+      if (data.language && data.language.length > 0) {
+        const languages = await Language.findAll({
           where: {
-            id: lang,
+            id: data.language,
           },
         });
-        if (language) {
-          await user.addLanguage(language);
-        }
+        await user.addLanguages(languages, { transaction: t });
       }
-    }
-    if (data.specialization && data.specialization.length > 0) {
-      for (const spec of data.specialization) {
-        const specialization = await Specialization.findOne({
+      data.specialization_id = await Specialization.findOne({
           where: {
-            id: spec,
+            id: data.specialization_id,
           },
         });
-        if (specialization) {
-          await user.addSpecialization(specialization);
-        }
-      }
-    }
-    return user;
+      return user;
+    });
   }
 
-
-
-
   async getUsers() {
-    const user = await User.findAll();
+    const user = await User.findAll({
+      include: [
+        { model: Language,
+          attributes: ['language_name'], }
+      ]});
+    
     return user;
   }
 
@@ -75,7 +70,12 @@ class UserService {
       where: {
         role: "doctor",
       },
-      include: [Specialization, Language],
+      include: [
+        { model: Specialization,
+          attributes: ['area_of_specialization'], },
+        { model: Language,
+          attributes: ['language_name'], }
+      ]
     });
     if (!doctors) {
       throw new Error("No doctor found");
@@ -84,20 +84,23 @@ class UserService {
   }
 
 
-
-  
-
   async getDoctorById(id) {
     const doctor = await User.findByPk(id, {
       include: [
-        { model: Specialization },
-        { model: Language }
+        { model: Specialization,
+          attributes: ['area_of_specialization'], },
+        { model: Language,
+          attributes: ['language_name'], }
       ]
     });
     if (!doctor) {
       throw new Error("Doctor not found");
     }
-    return doctor;
+  //  return doctor;
+  const processedDoctor = doctor.toJSON();
+  processedDoctor.languages = processedDoctor.languages.map(language => language.language_name);
+
+  return processedDoctor;
   }
 
 
@@ -105,7 +108,11 @@ class UserService {
     const user = await User.findByPk(userId, {
       include: [Language],
     });
-    return user;
+   // return user;
+    const processedUser = user.toJSON();
+    processedUser.languages = processedUser.languages.map(language => language.language_name);
+  
+    return processedUser;
   }
 
   // used in verifying logged-in user
@@ -130,7 +137,7 @@ class UserService {
       throw new Error("User not found");
     }
     await user.destroy();
-    return { message: "User deleted successfully" };
+    return ("User deleted successfully") ;
   }
 }
 

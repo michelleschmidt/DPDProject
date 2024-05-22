@@ -5,13 +5,13 @@ class AvailabilityController {
 
     async createAvailability(req, res, next) {
         try {
+          req.body.doctor_id = req.user.userId;
           const availability = await AvailabilityService.createAvailability(req.body);
           res.status(201).json(availability);
         } catch (error) {
           next(error);
         }
       }
-
 
       async getAvailabilityById(req, res, next) {
         try {
@@ -24,7 +24,7 @@ class AvailabilityController {
 
       async getDoctorAvailabilities(req, res, next) {
         try {
-          const availabilities = await AvailabilityService.getDoctorAvailabilities(req.params.doctor_id);
+          const availabilities = await AvailabilityService.getDoctorAvailabilities(req.user.userId);
           res.status(200).json(availabilities);
         } catch (error) {
           next(error);
@@ -52,7 +52,7 @@ class AvailabilityController {
       async deleteAvailability(req, res, next) {
         try {
           const result = await AvailabilityService.deleteAvailability(req.params.id);
-          res.sendStatus(204).send(result);
+          res.status(200).json({ message: result });
         } catch (error) {
           next(error);
         }
