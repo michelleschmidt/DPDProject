@@ -1,21 +1,12 @@
 import React, { useState } from "react";
+import { useLocation } from "react-router-dom";
 import Map from "./components/Map";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import DoctorList from "./components/DoctorList";
+import { Modal, Button } from "react-bootstrap";
 import { Range } from "react-range";
-
-interface DoctorData {
-  id: number;
-  name: string;
-  specialty: string;
-  address: string;
-  language: string;
-  image: string;
-  longitude: number;
-  latitude: number;
-  distance: number;
-}
+import DoctorList, { DoctorData } from "./components/cards/DoctorList";
+import GenericForm from "./components/forms/GenericForm";
 
 interface UserLocation {
   latitude: number;
@@ -25,9 +16,34 @@ interface UserLocation {
 function DocFind() {
   const [radius, setRadius] = useState<number>(2.5); // Default radius is 2.5 km
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedDoctor, setSelectedDoctor] = useState<DoctorData | null>(null);
+  const [appointmentDate, setAppointmentDate] = useState("");
+  const [appointmentTime, setAppointmentTime] = useState("");
+  const [nextSteps, setNextSteps] = useState("");
+  const [newAppointmentDate, setNewAppointmentDate] = useState("");
+  const [newAppointmentTime, setNewAppointmentTime] = useState("");
+
+  const location = useLocation();
+  const { formData } = location.state || {};
 
   const handleSliderChange = (values: number[]) => {
     setRadius(values[0]);
+  };
+
+  const handleCardClick = (doctor: DoctorData) => {
+    setSelectedDoctor(doctor);
+    setShowModal(true);
+  };
+
+  const handleFormSubmit = (formData: any) => {
+    console.log("Form submitted:", formData);
+    setShowModal(false);
+  };
+
+  const handleReschedule = () => {
+    console.log("Appointment rescheduled");
+    setShowModal(false);
   };
 
   // Function to calculate the distance between two coordinates using the Haversine formula
@@ -111,25 +127,28 @@ function DocFind() {
     },
   ];
 
+  const filteredDoctors = doctors.filter((doctor) => {
+    if (formData && formData.showPreferredLanguageDoctors) {
+      return doctor.language === formData.preferredLanguage;
+    }
+    return true;
+  });
+
   return (
     <div className="docfind-container">
       <Header />
       <div className="docfind-content">
-        <div className="doctor-list">
-          {userLocation && (
-            <DoctorList
-              doctors={doctors}
-              userLocation={userLocation}
-              onSelectDoctor={(doctor) => {
-                console.log("Selected doctor:", doctor);
-              }}
-            />
-          )}
-        </div>
+        <DoctorList
+          doctors={filteredDoctors}
+          onSelectDoctor={(doctor) => {
+            handleCardClick(doctor);
+          }}
+          heading="Available Doctors"
+        />
         <div style={{ flex: "3rem" }}>
           <div className="map-container">
             <Map
-              doctors={doctors}
+              doctors={filteredDoctors}
               radius={radius * 1000}
               setUserLocation={setUserLocation}
             />
@@ -186,6 +205,27 @@ function DocFind() {
         </div>
       </div>
       <Footer />
+
+      {/* Modal for Booking Appointment */}
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Book Appointment</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <GenericForm
+            fields={[
+              {
+                name: "availableAppointments",
+                type: "date",
+                label: "Available Appointments",
+                showTimeSelect: true,
+              },
+            ]}
+            onSubmit={handleFormSubmit}
+            buttonText="Schedule"
+          />
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }
