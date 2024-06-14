@@ -6,16 +6,16 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-          model: "user", 
-          key: "id", 
+          model: "user",
+          key: "id",
         },
       },
       doctor_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-          model: "user", 
-          key: "id", 
+          model: "user",
+          key: "id",
         },
       },
       availability_id: {
@@ -27,7 +27,9 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
     },
-
+    {
+      freezeTableName: true,
+    }
   );
 
   return Appointment;

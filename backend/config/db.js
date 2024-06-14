@@ -10,7 +10,11 @@ module.exports = {
         ,
     DB: process.env.DB_NAME || 'health_hub',
     dialect: 'mysql',
-
+    dialectOptions: {
+        ssl: {
+            ca: fs.readFileSync(path.resolve(__dirname, './DigiCertGlobalRootCA.crt.pem'))
+        },
+    },
 
     pool: {
         max: 8,
@@ -18,8 +22,4 @@ module.exports = {
         acquire: 50000,
         idle: 10000
     },
-    define: {
-        // Prevent sequelize from pluralizing table names
-        freezeTableName: true
-    }
 }

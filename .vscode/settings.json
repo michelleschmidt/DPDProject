@@ -1,0 +1,4 @@
+{
+  "appService.defaultWebAppToDeploy": "undefined/subscriptions/b3ef863b-d6ad-4c34-8e3d-d4b5c3223a98/resourceGroups/HealthConnect/providers/Microsoft.Web/sites/health-connect",
+  "appService.deploySubpath": "backend"
+}

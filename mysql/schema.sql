@@ -18,10 +18,10 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `health_hub`
+-- Database: `health_connect`
 --
-CREATE DATABASE IF NOT EXISTS `health_hub` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `health_hub`;
+CREATE DATABASE IF NOT EXISTS `health_connect` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `health_connect`;
 
 -- --------------------------------------------------------
 
