@@ -17,7 +17,7 @@ const Header: React.FC = () => {
             className="d-inline-block align-top"
             alt="HealthHub logo"
           />
-          HealthHub
+          HealthConnect
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
