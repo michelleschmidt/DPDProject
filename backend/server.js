@@ -19,15 +19,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 
-app.use("/api/v1/users", userRoutes);
+app.use("/api/users", userRoutes);
 
-app.use("/api/v1/blogs", blogRoutes);
+app.use("/api/blogs", blogRoutes);
 
-app.use("/api/v1/auth", authRoutes);
+app.use("/api/auth", authRoutes);
 
-app.use("/api/v1/availabilities", availabilityRoutes);
+app.use("/api/availabilities", availabilityRoutes);
 
-app.use("/api/v1/appointments", appointmentRoutes);
+app.use("/api/appointments", appointmentRoutes);
 
 
 
