@@ -12,8 +12,7 @@ module.exports = {
     dialect: 'mysql',
     dialectOptions: {
         ssl: {
-            ca: fs.readFileSync(path.resolve(__dirname, './DigiCertGlobalRootG2.crt.pem')),
-            rejectUnauthorized: false // Allow self-signed certificates
+            ca: fs.readFileSync(path.resolve(__dirname, './DigiCertGlobalRootCA.crt.pem'))
         },
     },
 
@@ -23,8 +22,4 @@ module.exports = {
         acquire: 50000,
         idle: 10000
     },
-    define: {
-        // Prevent sequelize from pluralizing table names
-        freezeTableName: true
-    }
 }
