@@ -5,7 +5,6 @@ interface Props {
   onClose: () => void;
 }
 
-
 const Alert = ({ children, onClose }: Props) => {
   return (
     <div className="alert alert-primary alert-dismissible">

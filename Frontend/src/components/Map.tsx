@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Circle, MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
-import { LatLngTuple, LatLngExpression } from "leaflet";
+import { LatLngTuple } from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 interface DoctorData {
@@ -25,6 +25,7 @@ const Map: React.FC<MapProps> = ({ radius, doctors, setUserLocation }) => {
   const [userLocationState, setUserLocationState] =
     useState<UserLocation | null>(null);
 
+  // Fetch user location using geolocation API
   useEffect(() => {
     console.log("Attempting to retrieve user location...");
     if ("geolocation" in navigator) {
@@ -51,8 +52,9 @@ const Map: React.FC<MapProps> = ({ radius, doctors, setUserLocation }) => {
     }
   }, [setUserLocation]);
 
+  // Render nothing while waiting for user location
   if (userLocationState === null) {
-    return null; // Render nothing while waiting for user location
+    return null;
   }
 
   return (
@@ -65,19 +67,22 @@ const Map: React.FC<MapProps> = ({ radius, doctors, setUserLocation }) => {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
+      {/* Render doctors' markers on the map */}
       {doctors?.map((doctor) => (
         <Marker key={doctor.id} position={[doctor.latitude, doctor.longitude]}>
           <Popup>{doctor.name}</Popup>
         </Marker>
       ))}
+      {/* Marker for user's current location */}
       <Marker
         position={[userLocationState.latitude, userLocationState.longitude]}
       >
         <Popup>
-          Your location <br /> Lat: {userLocationState.latitude}, Lng:{" "}
-          {userLocationState.longitude}
+          Your location <br />
+          Lat: {userLocationState.latitude}, Lng: {userLocationState.longitude}
         </Popup>
       </Marker>
+      {/* Circle representing search radius around user's location */}
       <Circle
         center={[userLocationState.latitude, userLocationState.longitude]}
         radius={radius}
