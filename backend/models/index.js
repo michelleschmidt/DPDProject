@@ -6,6 +6,7 @@ const { Sequelize, DataTypes, Op } = require("sequelize");
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
   host: dbConfig.HOST,
   dialect: dbConfig.dialect,
+  dialectOptions: dbConfig.dialectOptions,
 
   pool: {
     max: dbConfig.pool.max,
@@ -30,12 +31,12 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 db.Op = Op;
 
+db.Specialization = require("./specialization.js")(sequelize, DataTypes);
 db.User = require("./user.js")(sequelize, DataTypes);
 db.UserLanguage = require("./user_language.js")(sequelize, DataTypes);
 
 db.Language = require("./language.js")(sequelize, DataTypes);
 
-db.Specialization = require("./specialization.js")(sequelize, DataTypes);
 db.Appointment = require("./appointment.js")(sequelize, DataTypes);
 db.Availability = require("./availability.js")(sequelize, DataTypes);
 
@@ -43,16 +44,12 @@ db.Blog = require("./blog.js")(sequelize, DataTypes);
 
 
 // Define relationships
-
-db.User.belongsTo(db.Specialization, {
-  foreignKey: 'specialization_id',
-});
-
 db.Specialization.hasMany(db.User, {
   foreignKey: 'specialization_id',
 });
-
-
+db.User.belongsTo(db.Specialization, {
+  foreignKey: 'specialization_id',
+});
 
 
 db.User.belongsToMany(db.Language, {
@@ -105,7 +102,6 @@ db.User.hasMany(db.Availability, {
 db.Availability.belongsTo(db.User, {
   foreignKey: "doctor_id",
 });
-
 
 db.sequelize.sync({ force: false }).then(() => {});
 
