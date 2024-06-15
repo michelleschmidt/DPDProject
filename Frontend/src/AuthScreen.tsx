@@ -1,18 +1,21 @@
 import React from "react";
+import axiosInstance from "./Axios"; // Import the Axios instance
 import GenericForm, { FormField } from "./components/forms/GenericForm";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import { Button } from "react-bootstrap";
+import { useNavigate } from "react-router-dom"; // Import useHistory for redirection
 
 interface AuthSideProps {
   onSubmit: (
     email: string,
     password: string,
     name: string,
+    title: string,
+    firstname: string,
     healthInsuranceType: string,
     dob: string,
     role: string,
-    emailDoctor: string,
     oneTimePassword: string,
     gender: string,
     preferredLanguage: string[],
@@ -24,6 +27,9 @@ interface AuthSideProps {
 }
 
 const AuthSide: React.FC<AuthSideProps> = ({ onSubmit }) => {
+  const history = useNavigate();
+  const [isRegistration, setIsRegistration] = React.useState<boolean>(false);
+
   const handleNotRegisteredClick = () => {
     setIsRegistration(true);
   };
@@ -115,25 +121,37 @@ const AuthSide: React.FC<AuthSideProps> = ({ onSubmit }) => {
     },
   ];
 
-  const [isRegistration, setIsRegistration] = React.useState<boolean>(false);
-
   const handleSubmit = (formData: any) => {
-    onSubmit(
-      formData.emailDoctor,
-      formData.password,
-      formData.name,
-      formData.healthInsuranceType,
-      formData.dob,
-      formData.role,
-      formData.emailDoctor,
-      formData.oneTimePassword,
-      formData.gender,
-      formData.preferredLanguage,
-      formData.contactInformation,
-      formData.emergencyContactDetails,
-      formData.address,
-      formData.accessibilityNeeds
-    );
+    if (isRegistration) {
+      // Register request
+      axiosInstance
+        .post("/register", formData)
+        .then((response) => {
+          console.log("Registration successful:", response.data);
+          // Redirect to dashboard after successful registration
+          history("/dashboard");
+        })
+        .catch((error) => {
+          console.error("Registration error:", error);
+          // Handle registration error
+        });
+    } else {
+      // Login request
+      axiosInstance
+        .post("/login", {
+          email: formData.emailDoctor,
+          password: formData.password,
+        })
+        .then((response) => {
+          console.log("Login successful:", response.data);
+          // Redirect to dashboard after successful login
+          history("/dashboard");
+        })
+        .catch((error) => {
+          console.error("Login error:", error);
+          // Handle login error
+        });
+    }
   };
 
   return (
