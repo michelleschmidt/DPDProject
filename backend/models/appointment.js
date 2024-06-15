@@ -26,6 +26,11 @@ module.exports = (sequelize, DataTypes) => {
           key: "id",
         },
       },
+      insurance_type: {
+        type: DataTypes.ENUM,
+        values: ["public", "private"],
+        allowNull: false,
+      },
     },
     {
       freezeTableName: true,
