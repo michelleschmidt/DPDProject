@@ -2,11 +2,11 @@ module.exports = (sequelize, DataTypes) => {
   const Blog = sequelize.define(
     "blog",
     {
-      title: {
+      blog_title: {
         type: DataTypes.STRING(100),
         allowNull: false,
       },
-      content: {
+      blog_content: {
         type: DataTypes.TEXT,
         allowNull: false,
       },

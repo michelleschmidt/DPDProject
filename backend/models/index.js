@@ -103,6 +103,6 @@ db.Availability.belongsTo(db.User, {
   foreignKey: "doctor_id",
 });
 
-db.sequelize.sync({ force: false }).then(() => {});
+db.sequelize.sync({ alter: true }).then(() => {});
 
 module.exports = db;
