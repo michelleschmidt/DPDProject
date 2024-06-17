@@ -6,7 +6,6 @@ const Availability = db.Availability;
 const User = db.User;
 
 class AppointmentService {
-
   // async createAppointment(data) {
   //   const availability = await Availability.findByPk(data.availability_id);
   //   if (!availability) {
@@ -30,7 +29,12 @@ class AppointmentService {
       },
     });
     const appointment = await db.sequelize.transaction(async (t) => {
-      const appointment = await Appointment.create(data, { transaction: t });
+      const appointment = await Appointment.create(
+        {
+          ...data,
+          insurance_type: data.insurance_type,},
+        { transaction: t }
+      );
       await availability.update({ active: false }, { transaction: t });
       return appointment;
     });
@@ -42,12 +46,15 @@ class AppointmentService {
     const appointments = await Appointment.findAll({
       where: { user_id: userId },
       include: [
-        { model: User, as: "doctor",
-        attributes: ['first_name', 'last_name', 'address'], },
+        {
+          model: User,
+          as: "doctor",
+          attributes: ["first_name", "last_name", "address"],
+        },
         {
           model: db.Availability,
           as: "availability",
-          attributes: ['availability_date'],
+          attributes: ["availability_date"],
         },
       ],
     });
@@ -58,10 +65,16 @@ class AppointmentService {
     const appointments = await Appointment.findAll({
       where: { doctor_id: doctorId },
       include: [
-        { model: User, as: "patient",
-        attributes: ['first_name', 'last_name', 'address'], },
-        { model: Availability, as: "availability",
-        attributes: ['availability_date'], },
+        {
+          model: User,
+          as: "patient",
+          attributes: ["first_name", "last_name", "address"],
+        },
+        {
+          model: Availability,
+          as: "availability",
+          attributes: ["availability_date"],
+        },
       ],
     });
     return appointments;
@@ -83,8 +96,8 @@ class AppointmentService {
     if (!appointment) {
       throw new Error("Appointment not found");
     }
-     await appointment.update(updates);
-     return appointment;
+    await appointment.update(updates);
+    return appointment;
   }
 
   async deleteAppointment(appointmentId) {
@@ -92,7 +105,7 @@ class AppointmentService {
     if (result === 0) {
       throw new Error("Appointment not found or already deleted.");
     }
-    return ("Appointment deleted successfully.");
+    return "Appointment deleted successfully.";
   }
 }
 
