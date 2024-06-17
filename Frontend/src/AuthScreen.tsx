@@ -4,7 +4,7 @@ import GenericForm, { FormField } from "./components/forms/GenericForm";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import { Button } from "react-bootstrap";
-import { useNavigate } from "react-router-dom"; // Import useHistory for redirection
+import { useNavigate } from "react-router-dom";
 
 interface AuthSideProps {
   onSubmit: (
@@ -125,7 +125,7 @@ const AuthSide: React.FC<AuthSideProps> = ({ onSubmit }) => {
     if (isRegistration) {
       // Register request
       axiosInstance
-        .post("/register", formData)
+        .post("/auth//register", formData)
         .then((response) => {
           console.log("Registration successful:", response.data);
           // Redirect to dashboard after successful registration
@@ -138,7 +138,7 @@ const AuthSide: React.FC<AuthSideProps> = ({ onSubmit }) => {
     } else {
       // Login request
       axiosInstance
-        .post("/login", {
+        .post("/auth/login", {
           email: formData.emailDoctor,
           password: formData.password,
         })

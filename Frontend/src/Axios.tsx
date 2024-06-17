@@ -5,7 +5,8 @@ import axios, {
 } from "axios";
 
 // Define the base URL for your API
-const baseURL = "https://health-ct.azurewebsites.net";
+const baseURL =
+  /*"https://health-ct.azurewebsites.net"*/ "http://localhost:7000/api";
 
 // Create an instance of Axios with default configuration
 const axiosInstance: AxiosInstance = axios.create({
