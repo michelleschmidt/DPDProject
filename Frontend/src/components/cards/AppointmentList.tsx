@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Card, Modal, Button, Form } from "react-bootstrap";
 import GenericForm from "../forms/GenericForm";
 
-interface DoctorData {
+export interface DoctorData {
   distance: number;
   id: number;
   name: string;
@@ -13,14 +13,14 @@ interface DoctorData {
 
 interface Props {
   doctors: DoctorData[];
-  onSelectDoctor: (doctor: DoctorData) => void;
+  onSelectAppointment: (doctor: DoctorData) => void;
   heading: string;
   modalType: string;
 }
 
-const DoctorList: React.FC<Props> = ({
+const AppointmentList: React.FC<Props> = ({
   doctors,
-  onSelectDoctor,
+  onSelectAppointment,
   heading,
   modalType,
 }) => {
@@ -28,7 +28,6 @@ const DoctorList: React.FC<Props> = ({
   const [selectedDoctor, setSelectedDoctor] = useState<DoctorData | null>(null);
   const [appointmentDate, setAppointmentDate] = useState("");
   const [appointmentTime, setAppointmentTime] = useState("");
-  const [nextSteps, setNextSteps] = useState("");
   const [newAppointmentDate, setNewAppointmentDate] = useState("");
   const [newAppointmentTime, setNewAppointmentTime] = useState("");
   const [rejectReason, setRejectReason] = useState("");
@@ -47,21 +46,6 @@ const DoctorList: React.FC<Props> = ({
 
   const handleFormSubmit = (formData: any) => {
     console.log("Form submitted:", formData);
-    setShowModal(false);
-  };
-
-  const handleReject = () => {
-    if (rejectReason) {
-      console.log("Appointment rejected with reason:", rejectReason);
-      setShowModal(false);
-      setShowRejectReason(false);
-    } else {
-      setShowRejectReason(true);
-    }
-  };
-
-  const handleApprove = () => {
-    console.log("Appointment approved");
     setShowModal(false);
   };
 
@@ -113,10 +97,13 @@ const DoctorList: React.FC<Props> = ({
           <p>Date: {appointmentDate}</p>
           <p>Time: {appointmentTime}</p>
           <p>Reason: {appointmentInfo[0].reason}</p>
-          <p>Description: {nextSteps}</p>
+          <p>Description: {}</p>
           <div className="d-flex justify-content-around mt-3">
             <Button variant="danger" onClick={handleDelete}>
               Cancel Appointment
+            </Button>
+            <Button variant="danger" onClick={handleReschedule}>
+              Reschedule Appointment
             </Button>
           </div>
           <GenericForm
@@ -137,4 +124,4 @@ const DoctorList: React.FC<Props> = ({
   );
 };
 
-export default DoctorList;
+export default AppointmentList;

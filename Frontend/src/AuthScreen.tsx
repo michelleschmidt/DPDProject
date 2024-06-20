@@ -24,6 +24,7 @@ interface AuthSideProps {
     address?: string,
     accessibilityNeeds?: string
   ) => void;
+  isRegistration: boolean;
 }
 
 const AuthSide: React.FC<AuthSideProps> = ({ onSubmit }) => {

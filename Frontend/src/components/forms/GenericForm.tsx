@@ -13,12 +13,13 @@ export interface FormField {
     | "password"
     | "tel"
     | "checkbox"
-    | "textarea"; // Added "textarea"
+    | "textarea";
   label: string;
   options?: string[];
   placeholder?: string;
   multiple?: boolean;
   showTimeSelect?: boolean;
+  isRequired?: boolean;
 }
 
 interface GenericFormProps {
@@ -38,7 +39,8 @@ const GenericForm: React.FC<GenericFormProps> = ({
 }) => {
   const [formData, setFormData] = useState(
     fields.reduce((acc, field) => {
-      acc[field.name] = initialData[field.name] || "";
+      acc[field.name] =
+        initialData[field.name] || (field.type === "date" ? null : "");
       return acc;
     }, {} as any)
   );
@@ -102,17 +104,24 @@ const GenericForm: React.FC<GenericFormProps> = ({
           <Form.Label>{field.label}</Form.Label>
           {field.type === "text" ||
           field.type === "email" ||
-          field.type === "password" ||
-          field.type === "textarea" ? ( // Include "textarea" type
+          field.type === "password" ? (
             <Form.Control
-              as={field.type === "textarea" ? "textarea" : "input"} // Use "textarea" for type "textarea"
-              type={field.type === "textarea" ? undefined : field.type} // Set type for other input types
+              type={field.type}
               name={field.name}
-              value={formData[field.name]}
+              value={formData[field.name] || ""}
               onChange={handleChange}
               isInvalid={!!errors[field.name]}
               placeholder={field.placeholder}
-              rows={field.type === "textarea" ? 4 : undefined} // Adjust rows for textarea
+            />
+          ) : field.type === "textarea" ? (
+            <Form.Control
+              as="textarea"
+              name={field.name}
+              value={formData[field.name] || ""}
+              onChange={handleChange}
+              isInvalid={!!errors[field.name]}
+              placeholder={field.placeholder}
+              rows={4} // Adjust rows for textarea
             />
           ) : field.type === "select" ? (
             <Form.Select

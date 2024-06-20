@@ -5,7 +5,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { Modal, Button } from "react-bootstrap";
 import { Range } from "react-range";
-import DoctorList, { DoctorData } from "./components/cards/DoctorList";
+import DoctorList, { DoctorDatawithImage } from "./components/cards/DoctorList";
 import GenericForm from "./components/forms/GenericForm";
 
 interface UserLocation {
@@ -17,7 +17,8 @@ function DocFind() {
   const [radius, setRadius] = useState<number>(2.5); // Default radius is 2.5 km
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [selectedDoctor, setSelectedDoctor] = useState<DoctorData | null>(null);
+  const [selectedDoctor, setSelectedDoctor] =
+    useState<DoctorDatawithImage | null>(null);
   const [appointmentDate, setAppointmentDate] = useState("");
   const [appointmentTime, setAppointmentTime] = useState("");
   const [nextSteps, setNextSteps] = useState("");
@@ -31,7 +32,7 @@ function DocFind() {
     setRadius(values[0]);
   };
 
-  const handleCardClick = (doctor: DoctorData) => {
+  const handleCardClick = (doctor: DoctorDatawithImage) => {
     setSelectedDoctor(doctor);
     setShowModal(true);
   };
@@ -67,7 +68,7 @@ function DocFind() {
     return Number(distance.toFixed(3));
   };
 
-  const doctors: DoctorData[] = [
+  const doctors: DoctorDatawithImage[] = [
     {
       id: 1,
       name: "Dr. Jane Doe",
@@ -144,6 +145,7 @@ function DocFind() {
             handleCardClick(doctor);
           }}
           heading="Available Doctors"
+          modalType={""}
         />
         <div style={{ flex: "3rem" }}>
           <div className="map-container">

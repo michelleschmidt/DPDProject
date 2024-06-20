@@ -98,6 +98,7 @@ const App = () => (
             onSubmit={function (email: string, password: string): void {
               throw new Error("Function not implemented.");
             }}
+            isRegistration={false}
           />
         }
       />

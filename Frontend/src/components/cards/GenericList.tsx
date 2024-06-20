@@ -10,23 +10,27 @@ interface ListItem {
   distance?: number;
 }
 
-interface Props {
-  items: ListItem[];
+interface Props<T extends ListItem> {
+  items: T[];
   heading: string;
-  onItemClick: (item: ListItem) => void;
+  onItemClick: (item: T) => void;
 }
 
-const GenericList: React.FC<Props> = ({ items, heading, onItemClick }) => {
+const GenericList = <T extends ListItem>({
+  items,
+  heading,
+  onItemClick,
+}: Props<T>) => {
   return (
-    <div className="doctor-list">
+    <div className="generic-list">
       <h2>{heading}</h2>
-      <div className="doctor-cards-container">
-        <div className="doctor-cards">
+      <div className="generic-cards-container">
+        <div className="generic-cards">
           {items.map((item) => (
-            <div key={item.id} className="doctor-card">
+            <div key={item.id} className="generic-card">
               <Card onClick={() => onItemClick(item)}>
                 <Card.Body>
-                  <div className="doctor-info">
+                  <div className="generic-info">
                     <h3>{item.name}</h3>
                     {item.specialty && <p>Specialty: {item.specialty}</p>}
                     {item.address && <p>Address: {item.address}</p>}

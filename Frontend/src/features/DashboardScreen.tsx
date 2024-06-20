@@ -1,23 +1,17 @@
 import React from "react";
-import DoctorList from "../components/cards/DoctorList";
+import DoctorList, {
+  DoctorDatawithImage,
+} from "../components/cards/DoctorList";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import Button from "../components/Button";
 import AppointmentBookingForm from "../components/forms/AppointmentBookingForm";
-import AppointmentList from "../components/cards/AppointmentList";
-
-interface DoctorData {
-  distance: number;
-  id: number;
-  name: string;
-  specialty: string;
-  address: string;
-  language: string;
-  image: string;
-}
+import AppointmentList, {
+  DoctorData,
+} from "../components/cards/AppointmentList"; // Import DoctorData type
 
 const Dashboard: React.FC = () => {
-  const doctors: DoctorData[] = [
+  const doctors: DoctorDatawithImage[] = [
     {
       distance: 5.2,
       id: 1,
@@ -26,6 +20,8 @@ const Dashboard: React.FC = () => {
       address: "123 Heart St, Medical City",
       language: "English",
       image: "doctor_image_url",
+      latitude: 0,
+      longitude: 0,
     },
     {
       distance: 3.4,
@@ -35,11 +31,17 @@ const Dashboard: React.FC = () => {
       address: "456 Skin Ave, Health Town",
       language: "Spanish",
       image: "doctor_image_url",
+      latitude: 0,
+      longitude: 0,
     },
     // Add more doctor data as needed
   ];
 
-  const handleSelectDoctor = (doctor: DoctorData) => {};
+  const handleSelectDoctor = (doctor: DoctorDatawithImage) => {};
+
+  function handleSelectAppointment(doctor: DoctorData): void {
+    throw new Error("Function not implemented.");
+  }
 
   return (
     <>
@@ -49,7 +51,7 @@ const Dashboard: React.FC = () => {
           <div className="doctor-list-container">
             <AppointmentList
               doctors={doctors}
-              onSelectDoctor={handleSelectDoctor}
+              onSelectAppointment={handleSelectAppointment}
               heading="Upcoming Appointments"
               modalType="upcomingAppointment"
             />

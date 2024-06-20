@@ -111,7 +111,14 @@ const PhoneDashboard: React.FC = () => {
           </select>
         </div>
         <PatientList
-          patients={filteredPatients}
+          patients={filteredPatients.map((patient) => ({
+            id: patient.patientId,
+            name: patient.name,
+            insurance: patient.insurance,
+            reason: patient.appointmentReason,
+            language: patient.language,
+            appointmentNeeds: patient.appointmentNeeds,
+          }))}
           heading="Patients Needing New Appointments"
           modalType="newAppointment"
         />

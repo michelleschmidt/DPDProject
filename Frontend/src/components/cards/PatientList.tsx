@@ -11,38 +11,17 @@ interface PatientData {
   appointmentNeeds: string;
 }
 
-const PatientList: React.FC = () => {
+interface Props {
+  patients: PatientData[];
+  heading: string;
+  modalType: string;
+}
+
+const PatientList: React.FC<Props> = ({ patients, heading, modalType }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<PatientData | null>(
     null
   );
-
-  const patients: PatientData[] = [
-    {
-      id: 1,
-      name: "John Doe",
-      insurance: "Health Insurance A",
-      reason: "Check-up",
-      language: "English",
-      appointmentNeeds: "Routine check-up and evaluation",
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      insurance: "Health Insurance B",
-      reason: "Diagnostic appointment",
-      language: "Spanish",
-      appointmentNeeds: "Detailed examination and tests",
-    },
-    {
-      id: 3,
-      name: "Emily Brown",
-      insurance: "Health Insurance C",
-      reason: "Follow-up",
-      language: "French",
-      appointmentNeeds: "Review of treatment progress",
-    },
-  ];
 
   const handleCardClick = (patient: PatientData) => {
     setSelectedPatient(patient);
@@ -60,7 +39,7 @@ const PatientList: React.FC = () => {
     <>
       <GenericList
         items={patients}
-        heading="Patients List"
+        heading={heading} // Use the provided heading prop
         onItemClick={handleCardClick}
       />
       <Modal show={showModal} onHide={() => setShowModal(false)}>
