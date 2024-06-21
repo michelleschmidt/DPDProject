@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Card, Modal, Button, Form } from "react-bootstrap";
-import GenericForm from "../forms/GenericForm";
+import AppointmentBookingForm from "../forms/AppointmentBookingForm";
 
 interface ListItem {
   id: number;
@@ -93,14 +93,13 @@ const DoctorList: React.FC<Props> = ({
                 <Card.Body>
                   <div className="doctor-info">
                     <div className="appointment-info">
-                      <p>Date: {appointmentInfo[0].date}</p>
-                      <p>Time: {appointmentInfo[0].time}</p>
-                      <p>Reason: {appointmentInfo[0].reason}</p>
+                      <h3>{doctor.name}</h3>
+                      <img src={doctor.image} alt={`Image of ${doctor.name}`} />
                     </div>
                     <div className="doctor-details">
-                      <h3>{doctor.name}</h3>
-                      <p>{doctor.specialty}</p>
+                      <h4>{doctor.specialty}</h4>
                       <p>{doctor.address}</p>
+                      <p>Language: {doctor.language}</p>{" "}
                       <p>Distance: {doctor.distance.toFixed(2)} km</p>
                     </div>
                   </div>
@@ -112,32 +111,10 @@ const DoctorList: React.FC<Props> = ({
       </div>
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>View Appointment Details</Modal.Title>
+          <Modal.Title>Make a new Appointment</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <h4>Appointment Information:</h4>
-          <p>Doctor: {selectedDoctor?.name}</p>
-          <p>Date: {appointmentDate}</p>
-          <p>Time: {appointmentTime}</p>
-          <p>Reason: {appointmentInfo[0].reason}</p>
-          <p>Description: {nextSteps}</p>
-          <div className="d-flex justify-content-around mt-3">
-            <Button variant="danger" onClick={handleDelete}>
-              Cancel Appointment
-            </Button>
-          </div>
-          <GenericForm
-            fields={[
-              {
-                name: "newAppointment",
-                type: "date",
-                label: "New Appointment",
-                showTimeSelect: true,
-              },
-            ]}
-            onSubmit={handleFormSubmit}
-            buttonText="Reschedule"
-          />
+          <AppointmentBookingForm />
         </Modal.Body>
       </Modal>
     </div>

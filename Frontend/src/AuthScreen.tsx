@@ -126,7 +126,7 @@ const AuthSide: React.FC<AuthSideProps> = ({ onSubmit }) => {
     if (isRegistration) {
       // Register request
       axiosInstance
-        .post("/auth//register", formData)
+        .post("/api/auth/register", formData)
         .then((response) => {
           console.log("Registration successful:", response.data);
           // Redirect to dashboard after successful registration
@@ -139,7 +139,7 @@ const AuthSide: React.FC<AuthSideProps> = ({ onSubmit }) => {
     } else {
       // Login request
       axiosInstance
-        .post("/auth/login", {
+        .post("/api/auth/login", {
           email: formData.emailDoctor,
           password: formData.password,
         })

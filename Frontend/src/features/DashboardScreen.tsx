@@ -4,8 +4,6 @@ import DoctorList, {
 } from "../components/cards/DoctorList";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
-import Button from "../components/Button";
-import AppointmentBookingForm from "../components/forms/AppointmentBookingForm";
 import AppointmentList, {
   DoctorData,
 } from "../components/cards/AppointmentList"; // Import DoctorData type
