@@ -1,11 +1,16 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import axiosInstance from "./Axios"; // Import the Axios instance
 import GenericForm, { FormField } from "./components/forms/GenericForm";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import Map from "./components/Map";
 
+interface UserLocation {
+  latitude: number;
+  longitude: number;
+}
 interface AuthSideProps {
   onSubmit: (
     email: string,
@@ -27,10 +32,15 @@ interface AuthSideProps {
   isRegistration: boolean;
 }
 
+interface Language {
+  id: number;
+  language_name: string;
+}
+
 const AuthSide: React.FC<AuthSideProps> = ({ onSubmit }) => {
   const history = useNavigate();
   const [isRegistration, setIsRegistration] = React.useState<boolean>(false);
-
+  const [languages, setLanguages] = useState<Language[]>([]);
   const handleNotRegisteredClick = () => {
     setIsRegistration(true);
   };
@@ -38,6 +48,15 @@ const AuthSide: React.FC<AuthSideProps> = ({ onSubmit }) => {
   const handleAlreadyRegisteredClick = () => {
     setIsRegistration(false);
   };
+
+  useEffect(() => {
+    // Fetch languages from the backend
+    axiosInstance.get('/api/search/languages')
+      .then(response => setLanguages(response.data))
+      .catch(error => console.error('Error fetching languages:', error));
+  }, []);
+
+
 
   const fields: FormField[] = [
     {
@@ -55,19 +74,38 @@ const AuthSide: React.FC<AuthSideProps> = ({ onSubmit }) => {
   ];
 
   const registrationFields: FormField[] = [
+
     {
-      name: "role",
-      type: "select",
-      label: "Register as",
-      options: ["patient", "doctor"],
-      placeholder: "Select role",
+      name: "title",
+      type: "text",
+      label: "Title",
+      placeholder: "Dr, Ms., Mr, Prof",
+    },
+    {
+      name: "first_name",
+      type: "text",
+      label: "First Name",
+      placeholder: "Enter First name",
+    },
+    {
+      name: "emailDoctor",
+      type: "email",
+      label: "Email address",
+      placeholder: "Enter email",
+    },
+    {
+      name: "password",
+      type: "password",
+      label: "Password",
+      placeholder: "Password",
     },
     {
       name: "name",
       type: "text",
-      label: "Full Name",
-      placeholder: "Enter full name",
+      label: "last Name",
+      placeholder: "Enter Last name",
     },
+
     {
       name: "dob",
       type: "date",
@@ -78,32 +116,65 @@ const AuthSide: React.FC<AuthSideProps> = ({ onSubmit }) => {
       name: "contactInformation",
       type: "text",
       label: "Contact Information",
-      placeholder: "Enter contact information",
+      placeholder: "+49 (0) 12368544",
     },
     {
-      name: "emergencyContactDetails",
+      name: "emergency_contact",
       type: "text",
-      label: "Emergency Contact Details",
-      placeholder: "Enter emergency contact details",
+      label: "Emergency Contact Person",
+      placeholder: "Enter Name",
     },
     {
-      name: "address",
+      name: "relationship",
       type: "text",
-      label: "Address",
-      placeholder: "Enter address",
+      label: "Relationship",
+      placeholder: "Brother, Father, Mother",
+    },
+    {
+      name: "phone_number",
+      type: "text",
+      label: "Phone Number",
+      placeholder: "+49(0)1236547",
+    },
+
+    {
+      name: "street",
+      type: "text",
+      label: "Street",
+      placeholder: "Enter street name and house number",
+    },
+    {
+      name: "postcode",
+      type: "text",
+      label: "Postcode",
+      placeholder: "Enter postcode",
+    },
+    {
+      name: "city",
+      type: "text",
+      label: "City",
+      placeholder: "Enter City",
+    },
+    {
+      name: "state",
+      type: "text",
+      label: "State",
+      placeholder: "Enter State",
+    },
+    {
+      name: "country",
+      type: "text",
+      label: "Country",
+      placeholder: "Enter Country",
     },
     {
       name: "preferredLanguage",
       type: "select",
       label: "Preferred Language",
-      options: [
-        "English",
-        "Spanish",
-        "French",
-        "German",
-        "Chinese",
-        "nopreference",
-      ],
+      optionsdb: languages.map(language => ({
+        value: language.id.toString(), // Convert to string if number
+        label: language.language_name
+      })),
       placeholder: "Select preferred language",
       multiple: true,
     },
@@ -113,24 +184,54 @@ const AuthSide: React.FC<AuthSideProps> = ({ onSubmit }) => {
       label: "Accessibility Needs",
       placeholder: "Enter accessibility needs",
     },
-    {
-      name: "healthInsuranceType",
-      type: "select",
-      label: "Health Insurance Type",
-      options: ["public", "private"],
-      placeholder: "Select type",
-    },
+    // {
+    //   name: "healthInsuranceType",
+    //   type: "select",
+    //   label: "Health Insurance Type",
+    //   options: ["public", "private"],
+    //   placeholder: "Select type",
+    // },
   ];
+
+
+
+
+
 
   const handleSubmit = (formData: any) => {
     if (isRegistration) {
       // Register request
       axiosInstance
-        .post("/api/auth/register", formData)
+        .post("https://health-connect-kyp7.onrender.com/api/auth/register", {
+
+
+          title: formData.title, // Assuming title is a constant or derived from other fields
+          first_name: formData.first_name,
+          last_name: formData.name,
+          date_of_birth: formData.dob,
+          phone_number: formData.contactInformation,
+          email: formData.emailDoctor,
+          password: formData.password,
+          role: formData.role,
+          address: {
+            street: formData.street,
+            city: formData.city,
+            state: formData.state,
+            postcode: formData.postcode,
+            country: formData.country
+          },
+          accessibility_needs: formData.accessibilityNeeds,
+          emergency_contact_details: {
+            name: formData.emergency_contact,
+            relationship: formData.relationship,
+            phone_number: formData.phone_number
+          },
+          languages: formData.preferredLanguage
+        })
         .then((response) => {
           console.log("Registration successful:", response.data);
           // Redirect to dashboard after successful registration
-          history("/dashboard");
+          history("/");
         })
         .catch((error) => {
           console.error("Registration error:", error);
@@ -158,13 +259,15 @@ const AuthSide: React.FC<AuthSideProps> = ({ onSubmit }) => {
   return (
     <>
       <Header />
-      <Button
-        className="centered-button"
+
+      <div className="centered-button">
+              <Button
         variant="link"
         onClick={() => setIsRegistration(!isRegistration)}
       >
         {isRegistration ? "Already have an account? Sign In" : "Register Here"}
       </Button>
+      </div>
       {isRegistration ? (
         <GenericForm
           fields={registrationFields}
@@ -178,6 +281,13 @@ const AuthSide: React.FC<AuthSideProps> = ({ onSubmit }) => {
           buttonText="Sign In"
         />
       )}
+         
+          <div className="map-container-login">
+            <Map radius={0} setUserLocation={function (value: React.SetStateAction<UserLocation | null>): void {
+            throw new Error("Function not implemented.");
+          } }            />
+          </div>
+        
       <Footer />
     </>
   );
