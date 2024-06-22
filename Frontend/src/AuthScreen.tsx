@@ -5,7 +5,12 @@ import Footer from "./components/Footer";
 import Header from "./components/Header";
 import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import Map from "./components/Map";
 
+interface UserLocation {
+  latitude: number;
+  longitude: number;
+}
 interface AuthSideProps {
   onSubmit: (
     email: string,
@@ -29,7 +34,7 @@ interface AuthSideProps {
 
 interface Language {
   id: number;
-  name: string;
+  language_name: string;
 }
 
 const AuthSide: React.FC<AuthSideProps> = ({ onSubmit }) => {
@@ -43,7 +48,6 @@ const AuthSide: React.FC<AuthSideProps> = ({ onSubmit }) => {
   const handleAlreadyRegisteredClick = () => {
     setIsRegistration(false);
   };
-
 
   useEffect(() => {
     // Fetch languages from the backend
@@ -82,6 +86,18 @@ const AuthSide: React.FC<AuthSideProps> = ({ onSubmit }) => {
       type: "text",
       label: "First Name",
       placeholder: "Enter First name",
+    },
+    {
+      name: "emailDoctor",
+      type: "email",
+      label: "Email address",
+      placeholder: "Enter email",
+    },
+    {
+      name: "password",
+      type: "password",
+      label: "Password",
+      placeholder: "Password",
     },
     {
       name: "name",
@@ -156,8 +172,8 @@ const AuthSide: React.FC<AuthSideProps> = ({ onSubmit }) => {
       type: "select",
       label: "Preferred Language",
       optionsdb: languages.map(language => ({
-        value: typeof language.id === 'string' ? language.id : language.id.toString(), // Convert to string if number
-        label: language.name
+        value: language.id.toString(), // Convert to string if number
+        label: language.language_name
       })),
       placeholder: "Select preferred language",
       multiple: true,
@@ -215,7 +231,7 @@ const AuthSide: React.FC<AuthSideProps> = ({ onSubmit }) => {
         .then((response) => {
           console.log("Registration successful:", response.data);
           // Redirect to dashboard after successful registration
-          history("/dashboard");
+          history("/");
         })
         .catch((error) => {
           console.error("Registration error:", error);
@@ -243,13 +259,15 @@ const AuthSide: React.FC<AuthSideProps> = ({ onSubmit }) => {
   return (
     <>
       <Header />
-      <Button
-        className="centered-button"
+
+      <div className="centered-button">
+              <Button
         variant="link"
         onClick={() => setIsRegistration(!isRegistration)}
       >
         {isRegistration ? "Already have an account? Sign In" : "Register Here"}
       </Button>
+      </div>
       {isRegistration ? (
         <GenericForm
           fields={registrationFields}
@@ -263,6 +281,13 @@ const AuthSide: React.FC<AuthSideProps> = ({ onSubmit }) => {
           buttonText="Sign In"
         />
       )}
+         
+          <div className="map-container-login">
+            <Map radius={0} setUserLocation={function (value: React.SetStateAction<UserLocation | null>): void {
+            throw new Error("Function not implemented.");
+          } }            />
+          </div>
+        
       <Footer />
     </>
   );
