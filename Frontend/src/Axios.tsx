@@ -6,7 +6,7 @@ import axios, {
 
 // Define the base URL for your API
 const baseURL =
-  /*"https://health-ct.azurewebsites.net"*/ "http://localhost:7000/api";
+  /*"https://health-ct.azurewebsites.net"*/ "https://health-connect-kyp7.onrender.com";
 
 // Create an instance of Axios with default configuration
 const axiosInstance: AxiosInstance = axios.create({

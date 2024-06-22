@@ -102,9 +102,6 @@ const AppointmentList: React.FC<Props> = ({
             <Button variant="danger" onClick={handleDelete}>
               Cancel Appointment
             </Button>
-            <Button variant="danger" onClick={handleReschedule}>
-              Reschedule Appointment
-            </Button>
           </div>
           <GenericForm
             fields={[
