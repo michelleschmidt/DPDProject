@@ -15,6 +15,7 @@ export interface FormField {
     | "checkbox"
     | "textarea";
   label: string;
+  optionsdb?: { value: string; label: string }[];
   options?: string[];
   placeholder?: string;
   multiple?: boolean;
@@ -132,9 +133,11 @@ const GenericForm: React.FC<GenericFormProps> = ({
               multiple={field.multiple}
             >
               <option value="">{field.placeholder}</option>
-              {field.options?.map((option) => (
-                <option key={option} value={option}>
-                  {option}
+              {field.optionsdb?.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {" "}
+                  {/* Access value property */}
+                  {option.label}
                 </option>
               ))}
             </Form.Select>
