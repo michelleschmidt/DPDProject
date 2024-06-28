@@ -1,19 +1,11 @@
 import React from "react";
 import { Navbar, Container, Nav } from "react-bootstrap";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Image from "../assets/icon/LOGO.png";
-import { useAuth } from "./auth/AuthContext"; // Import the useAuth hook
 
 const Header: React.FC = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const isRootPath = location.pathname === "/";
-  const { logout } = useAuth(); // Destructure logout from useAuth
-
-  const handleLogout = () => {
-    logout();
-    navigate("/"); // Redirect to the root path after logging out
-  };
 
   return (
     <Navbar bg="light" expand="lg">
@@ -34,12 +26,15 @@ const Header: React.FC = () => {
             {!isRootPath && (
               <>
                 <Nav.Link as={Link} to="/booking">
-                  Booking
+                  Patients
                 </Nav.Link>
                 <Nav.Link as={Link} to="/profile">
-                  My Profile
+                  Doctors
                 </Nav.Link>
-                <Nav.Link as={Link} to="/" onClick={handleLogout}>
+                <Nav.Link as={Link} to="/booking">
+                  Live Translators
+                </Nav.Link>
+                <Nav.Link as={Link} to="/logout">
                   Logout
                 </Nav.Link>
               </>

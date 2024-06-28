@@ -145,7 +145,7 @@ function DocFind() {
             handleCardClick(doctor);
           }}
           heading="Available Doctors"
-          modalType={""}
+          modalType={"DocFind"}
         />
         <div style={{ flex: "3rem" }}>
           <div className="map-container">

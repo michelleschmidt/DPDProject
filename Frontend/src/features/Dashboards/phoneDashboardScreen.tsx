@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import PatientList from "../components/cards/PatientList"; // Import PatientList component
-import Footer from "../components/Footer";
-import Header from "../components/Header";
-import { Modal, Button, Form } from "react-bootstrap";
+import PatientList from "../../components/cards/PatientList"; // Import PatientList component
+import Footer from "../../components/Footer";
+import Header from "../../components/Header";
 
 interface DoctorData {
   distance: number;

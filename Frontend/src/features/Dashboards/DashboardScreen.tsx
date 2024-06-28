@@ -1,12 +1,13 @@
 import React from "react";
 import DoctorList, {
   DoctorDatawithImage,
-} from "../components/cards/DoctorList";
-import Footer from "../components/Footer";
-import Header from "../components/Header";
+} from "../../components/cards/DoctorList";
+import Footer from "../../components/Footer";
+import Header from "../../components/Header";
 import AppointmentList, {
   DoctorData,
-} from "../components/cards/AppointmentList"; // Import DoctorData type
+} from "../../components/cards/AppointmentList"; // Import DoctorData type
+import { useAuth } from "../../components/auth/AuthContext";
 
 const Dashboard: React.FC = () => {
   const doctors: DoctorDatawithImage[] = [
@@ -34,6 +35,8 @@ const Dashboard: React.FC = () => {
     },
     // Add more doctor data as needed
   ];
+
+  console.log("Login successful:", useAuth());
 
   const handleSelectDoctor = (doctor: DoctorDatawithImage) => {};
 
@@ -63,7 +66,7 @@ const Dashboard: React.FC = () => {
               doctors={doctors}
               onSelectDoctor={handleSelectDoctor}
               heading="Your Doctors"
-              modalType="doctors"
+              modalType="dashboard"
             />
           </div>
         </div>

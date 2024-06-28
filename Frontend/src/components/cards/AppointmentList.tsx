@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Card, Modal, Button, Form } from "react-bootstrap";
 import GenericForm from "../forms/GenericForm";
+import "./Cards.css";
 
 export interface DoctorData {
   distance: number;
@@ -60,10 +61,10 @@ const AppointmentList: React.FC<Props> = ({
   };
 
   return (
-    <div className="doctor-list">
+    <div className="list">
       <h2>{heading}</h2>
-      <div className="appointment-cards-container">
-        <div className="appointment-cards">
+      <div className="cards-container">
+        <div className="cards">
           {doctors.map((doctor) => (
             <div key={doctor.id} className="appointment-card">
               <Card onClick={() => handleCardClick(doctor)}>

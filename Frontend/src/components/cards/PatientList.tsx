@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import GenericList from "./GenericList";
+import "./Cards.css";
 
 interface PatientData {
   id: number;

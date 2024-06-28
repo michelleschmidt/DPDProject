@@ -12,7 +12,7 @@ const AppointmentReBookingForm: React.FC = () => {
 
   const handleFieldChange = (
     name: string,
-    value: string | Date | boolean | null
+    value: string | boolean | string[] | Date | null
   ) => {
     if (name === "reason") {
       setSelectedReason(value as string);

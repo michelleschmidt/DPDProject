@@ -1,23 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import GenericForm, { FormField } from "./GenericForm";
+import axiosInstance from "../../Axios";
+import { useAuth } from "../auth/AuthContext"; // Import useAuth hook
+
+interface Specialist {
+  id: number;
+  area_of_specialization: string;
+}
 
 const AppointmentBookingForm: React.FC = () => {
   const [selectedReason, setSelectedReason] = useState<string | null>(null);
   const [appointmentOptions, setAppointmentOptions] = useState<string[]>([]);
-  const [showPreferredLanguageDoctors, setShowPreferredLanguageDoctors] =
-    useState(false);
-
-  const navigate = useNavigate();
+  const [showOtherText, setShowOtherText] = useState(false);
+  const [specialist, setSpecialist] = useState<Specialist[]>([]);
+  const { token } = useAuth(); // Use useAuth hook to access token
+  const history = useNavigate();
 
   const handleFieldChange = (
     name: string,
-    value: string | Date | boolean | null
+    value: string | boolean | string[] | Date | null
   ) => {
     if (name === "reason") {
       setSelectedReason(value as string);
-    } else if (name === "showPreferredLanguageDoctors") {
-      setShowPreferredLanguageDoctors(value as boolean);
+    } else if (name === "appointmentType") {
+      setShowOtherText(value === "Other");
     }
   };
 
@@ -52,10 +59,19 @@ const AppointmentBookingForm: React.FC = () => {
 
   useEffect(() => {
     if (selectedReason) {
-      const options = getAppointmentOptions(selectedReason);
-      setAppointmentOptions(options);
+      setAppointmentOptions(getAppointmentOptions(selectedReason));
     }
   }, [selectedReason]);
+
+  useEffect(() => {
+    // Fetch specialisations from the backend
+    axiosInstance
+      .get("/api/search/specializations") //check spelling
+      .then((response) => setSpecialist(response.data))
+      .catch((error) =>
+        console.error("Error fetching specializations:", error)
+      );
+  }, []);
 
   const appointmentFields: FormField[] = [
     {
@@ -69,18 +85,34 @@ const AppointmentBookingForm: React.FC = () => {
       ],
       placeholder: "Select reason",
     },
-    {
-      name: "appointmentType",
-      type: "select",
-      label: "Appointment Type",
-      options: appointmentOptions,
-      placeholder: "Select appointment type",
-    },
+    ...(selectedReason
+      ? [
+          {
+            name: "appointmentType",
+            type: "select",
+            label: "Appointment Type",
+            options: appointmentOptions,
+            placeholder: "Select appointment type",
+          } as FormField,
+        ]
+      : []),
+    ...(showOtherText
+      ? [
+          {
+            name: "otherReason",
+            type: "text",
+            label: "Please specify other reason",
+          } as FormField,
+        ]
+      : []),
     {
       name: "specialist",
       type: "select",
       label: "Specialist needed",
-      options: ["Cardiologist", "GP", "Gyno"], // Make sure `specialistOptions` is defined elsewhere
+      optionsdb: specialist.map((specialist) => ({
+        value: specialist.id.toString(), // Convert to string if number
+        label: specialist.area_of_specialization,
+      })),
       placeholder: "Select specialist",
     },
     {
@@ -102,21 +134,55 @@ const AppointmentBookingForm: React.FC = () => {
     },
   ];
 
+  console.log(token);
+
   const handleSubmit = (formData: any) => {
-    console.log("Form Data:", formData);
-    navigate("/find-doctors", { state: { formData } });
+    // Data to be sent to the backend immediately
+    const dataToSend = {
+      language: formData.showPreferredLanguageDoctors,
+      specialization: formData.specialist,
+      address: "",
+      radius: 2.5,
+    };
+
+    // Data to be stored for later use
+    const dataToStore = {
+      reason: formData.reason,
+      appointmentType: formData.appointmentType,
+      otherReason: formData.otherReason,
+      description: formData.description,
+      preferredConsultationMethod: formData.preferredConsultationMethod,
+    };
+
+    axiosInstance
+      .get("https://health-connect-kyp7.onrender.com/api/search", {
+        params: dataToSend,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        console.log("Appointment booked successfully:", response.data);
+
+        // Store the data for later use
+        localStorage.setItem("appointmentData", JSON.stringify(dataToStore));
+
+        // Navigate to the find-doctor page
+        history("/find", { state: { appointmentData: dataToStore } });
+      })
+      .catch((error) => {
+        console.error("Appointment booking error:", error);
+      });
   };
 
   return (
-    <div>
-      <GenericForm
-        fields={appointmentFields}
-        onSubmit={handleSubmit}
-        buttonText="Book Appointment"
-        initialData={{ reason: selectedReason }}
-        onFieldChange={handleFieldChange}
-      />
-    </div>
+    <GenericForm
+      fields={appointmentFields}
+      onSubmit={handleSubmit}
+      buttonText="Book Appointment"
+      initialData={{ reason: selectedReason }}
+      onFieldChange={handleFieldChange}
+    />
   );
 };
 

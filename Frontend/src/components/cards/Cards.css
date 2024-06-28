@@ -1,0 +1,67 @@
+
+.list {
+    flex: 2;
+    padding-right: 1rem;
+  }
+  
+.cards-container {
+    overflow-x: auto;
+    white-space: nowrap;
+    width: 100%;
+  }
+  
+  .cards {
+    flex-direction: column; /* Ensure cards stack vertically */
+  }
+
+  .appointment-info img{
+    width: 150px; /* Adjust the size as needed */
+    height: 150px; /* Ensure the height and width are equal */
+    border-radius: 50%;
+    object-fit: cover; /* This ensures the image covers the entire container without distortion */
+  }
+
+  .appointment-card {
+    display: inline-block;
+    margin-right: 10px; /* Add some margin between cards */
+    cursor: pointer;
+    margin-bottom: 1rem;
+    width: 450px; /* Set a fixed width */
+    height: 200px; /* Set a fixed height */
+  }
+  
+  .doctor-card {
+    display: block;
+    cursor: pointer;
+    margin-bottom: 10px;
+    width: 450px; /* Set a fixed width */
+    height: 200px; /* Set a fixed height */
+  }
+
+  
+  .doctor-details {
+    flex: 1; /* Expand to fill available space */
+    margin-left: 1rem;
+  }
+  
+  .doctor-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: left;
+  }
+  
+  .doctor-appointment {
+    margin-top: 1rem;
+  }
+  
+  .doctor-appointment p {
+    font-weight: bold; /* Make the appointment time more prominent */
+  }
+  
+  .doctor-divider {
+    width: 100%;
+    height: 1px;
+    background-color: #ccc;
+    margin: 10px 0;
+  }
+

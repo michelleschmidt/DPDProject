@@ -1,5 +1,6 @@
 import React from "react";
 import { Card } from "react-bootstrap";
+import "./Cards.css";
 
 interface ListItem {
   id: number;

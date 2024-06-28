@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { Card, Modal, Button, Form } from "react-bootstrap";
 import AppointmentBookingForm from "../forms/AppointmentBookingForm";
+import GenericForm from "../forms/GenericForm";
+import "./Cards.css";
+
+//MAKE THE STYLING DIFFERNT AS ENDPOINT
 
 interface ListItem {
   id: number;
@@ -30,16 +34,14 @@ const DoctorList: React.FC<Props> = ({
   heading,
   modalType,
 }) => {
-  const [showModal, setShowModal] = useState(false);
+  const [showModalDashboard, setShowModalDashboard] = useState(false);
+  const [showModalFind, setShowModalFind] = useState(false);
   const [selectedDoctor, setSelectedDoctor] =
     useState<DoctorDatawithImage | null>(null);
   const [appointmentDate, setAppointmentDate] = useState("");
   const [appointmentTime, setAppointmentTime] = useState("");
-  const [nextSteps, setNextSteps] = useState("");
   const [newAppointmentDate, setNewAppointmentDate] = useState("");
   const [newAppointmentTime, setNewAppointmentTime] = useState("");
-  const [rejectReason, setRejectReason] = useState("");
-  const [showRejectReason, setShowRejectReason] = useState(false);
 
   const appointmentInfo = [
     { reason: "heart failure", date: "2024-06-15", time: "10:00 AM" },
@@ -49,46 +51,26 @@ const DoctorList: React.FC<Props> = ({
 
   const handleCardClick = (doctor: DoctorDatawithImage) => {
     setSelectedDoctor(doctor);
-    setShowModal(true);
+    if (modalType === "dashboard") {
+      setShowModalDashboard(true);
+    } else if (modalType === "DocFind") {
+      setShowModalFind(true);
+    }
   };
 
   const handleFormSubmit = (formData: any) => {
     console.log("Form submitted:", formData);
-    setShowModal(false);
-  };
-
-  const handleReject = () => {
-    if (rejectReason) {
-      console.log("Appointment rejected with reason:", rejectReason);
-      setShowModal(false);
-      setShowRejectReason(false);
-    } else {
-      setShowRejectReason(true);
-    }
-  };
-
-  const handleApprove = () => {
-    console.log("Appointment approved");
-    setShowModal(false);
-  };
-
-  const handleDelete = () => {
-    console.log("Appointment deleted");
-    setShowModal(false);
-  };
-
-  const handleReschedule = () => {
-    console.log("Appointment rescheduled");
-    setShowModal(false);
+    setShowModalDashboard(false);
+    setShowModalFind(false);
   };
 
   return (
-    <div className="doctor-list">
+    <div className="list">
       <h2>{heading}</h2>
-      <div className="appointment-cards-container">
-        <div className="appointment-cards">
+      <div className="cards-container">
+        <div className="cards">
           {doctors.map((doctor) => (
-            <div key={doctor.id} className="appointment-card">
+            <div key={doctor.id} className="doctor-card">
               <Card onClick={() => handleCardClick(doctor)}>
                 <Card.Body>
                   <div className="doctor-info">
@@ -109,12 +91,42 @@ const DoctorList: React.FC<Props> = ({
           ))}
         </div>
       </div>
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
+      <Modal
+        show={showModalDashboard}
+        onHide={() => setShowModalDashboard(false)}
+      >
         <Modal.Header closeButton>
           <Modal.Title>Make a new Appointment</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <AppointmentBookingForm />
+        </Modal.Body>
+      </Modal>
+
+      <Modal show={showModalFind} onHide={() => setShowModalFind(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Make an Appointment</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <GenericForm
+            fields={[
+              {
+                name: "appointment",
+                type: "date",
+                label: "Appointment",
+                showTimeSelect: true,
+              },
+              {
+                name: "phone",
+                type: "checkbox",
+                label: "Do you need live translation?",
+              },
+            ]}
+            onSubmit={function (formData: any): void {
+              throw new Error("Function not implemented.");
+            }}
+            buttonText={"Book"}
+          />
         </Modal.Body>
       </Modal>
     </div>

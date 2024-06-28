@@ -13,9 +13,10 @@ export interface FormField {
     | "password"
     | "tel"
     | "checkbox"
-    | "textarea";
+    | "textarea"; // Ensure type is explicitly set
   label: string;
   options?: string[];
+  optionsdb?: { value: string; label: string }[];
   placeholder?: string;
   multiple?: boolean;
   showTimeSelect?: boolean;
@@ -27,7 +28,10 @@ interface GenericFormProps {
   onSubmit: (formData: any) => void;
   buttonText: string;
   initialData?: any;
-  onFieldChange?: (name: string, value: string | Date | boolean | null) => void;
+  onFieldChange?: (
+    name: string,
+    value: string | string[] | Date | boolean | null
+  ) => void; // Updated type for onFieldChange
 }
 
 const GenericForm: React.FC<GenericFormProps> = ({
@@ -78,6 +82,24 @@ const GenericForm: React.FC<GenericFormProps> = ({
     }
   };
 
+  const handleMultiSelectChange = (
+    e: React.ChangeEvent<HTMLSelectElement>,
+    name: string
+  ) => {
+    const selectedOptions = Array.from(
+      e.target.selectedOptions,
+      (option) => option.value
+    );
+    setFormData({
+      ...formData,
+      [name]: selectedOptions,
+    });
+    setErrors({ ...errors, [name]: "" });
+    if (onFieldChange) {
+      onFieldChange(name, selectedOptions);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     let formIsValid = true;
@@ -96,6 +118,9 @@ const GenericForm: React.FC<GenericFormProps> = ({
       onSubmit(formData);
     }
   };
+
+  // Logging selected options for debugging
+  console.log("Selected Languages:", formData.preferredConsultationMethod);
 
   return (
     <Form onSubmit={handleSubmit} className="auth-form">
@@ -127,14 +152,17 @@ const GenericForm: React.FC<GenericFormProps> = ({
             <Form.Select
               name={field.name}
               value={formData[field.name]}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e)}
               isInvalid={!!errors[field.name]}
               multiple={field.multiple}
             >
               <option value="">{field.placeholder}</option>
-              {field.options?.map((option) => (
-                <option key={option} value={option}>
-                  {option}
+              {(field.optionsdb || field.options)?.map((option) => (
+                <option
+                  key={typeof option === "string" ? option : option.value}
+                  value={typeof option === "string" ? option : option.value}
+                >
+                  {typeof option === "string" ? option : option.label}
                 </option>
               ))}
             </Form.Select>
