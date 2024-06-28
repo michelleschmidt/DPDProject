@@ -25,6 +25,10 @@ interface User {
   address: string;
 }
 
+interface UserLocation {
+  latitude: number;
+  longitude: number;
+}
 interface AuthSideProps {
   onSubmit: (
     email: string,
@@ -44,6 +48,11 @@ interface AuthSideProps {
     accessibilityNeeds?: string
   ) => void;
   isRegistration: boolean;
+}
+
+interface Language {
+  id: number;
+  language_name: string;
 }
 
 interface Language {
@@ -81,7 +90,30 @@ const AuthSide: React.FC<AuthSideProps> = ({ onSubmit }) => {
   ];
 
   const registrationFields: FormField[] = [
+
     {
+      name: "title",
+      type: "text",
+      label: "Title",
+      placeholder: "Dr, Ms., Mr, Prof",
+    },
+    {
+      name: "first_name",
+      type: "text",
+      label: "First Name",
+      placeholder: "Enter First name",
+    },
+    {
+      name: "emailDoctor",
+      type: "email",
+      label: "Email address",
+      placeholder: "Enter email",
+    },
+    {
+      name: "password",
+      type: "password",
+      label: "Password",
+      placeholder: "Password",
       name: "title",
       type: "text",
       label: "Title",
@@ -135,8 +167,47 @@ const AuthSide: React.FC<AuthSideProps> = ({ onSubmit }) => {
       type: "text",
       label: "Relationship",
       placeholder: "Brother, Father, Mother",
+      placeholder: "+49 (0) 12368544",
     },
     {
+      name: "emergency_contact",
+      type: "text",
+      label: "Emergency Contact Person",
+      placeholder: "Enter Name",
+    },
+    {
+      name: "relationship",
+      type: "text",
+      label: "Relationship",
+      placeholder: "Brother, Father, Mother",
+    },
+    {
+      name: "phone_number",
+      type: "text",
+      label: "Phone Number",
+      placeholder: "+49(0)1236547",
+    },
+
+    {
+      name: "street",
+      type: "text",
+      label: "Street",
+      placeholder: "Enter street name and house number",
+    },
+    {
+      name: "postcode",
+      type: "text",
+      label: "Postcode",
+      placeholder: "Enter postcode",
+    },
+    {
+      name: "city",
+      type: "text",
+      label: "City",
+      placeholder: "Enter City",
+    },
+    {
+      name: "state",
       name: "phone_number",
       type: "text",
       label: "Phone Number",
@@ -177,10 +248,14 @@ const AuthSide: React.FC<AuthSideProps> = ({ onSubmit }) => {
       name: "preferredLanguage",
       type: "select",
       label: "Preferred Language",
-      optionsdb: languages.map((language) => ({
-        value: language.id.toString(), // Convert to string if number
-        label: language.language_name,
-      })),
+      options: [
+        "English",
+        "Spanish",
+        "French",
+        "German",
+        "Chinese",
+        "nopreference",
+      ],
       placeholder: "Select preferred language",
       multiple: true,
     },
@@ -190,7 +265,19 @@ const AuthSide: React.FC<AuthSideProps> = ({ onSubmit }) => {
       label: "Accessibility Needs",
       placeholder: "Enter accessibility needs",
     },
+    {
+      name: "healthInsuranceType",
+      type: "select",
+      label: "Health Insurance Type",
+      options: ["public", "private"],
+      placeholder: "Select type",
+    },
   ];
+
+
+
+
+
 
   const handleSubmit = (formData: any) => {
     console.log("Form Submitted with data:", formData); // Log form data
@@ -198,30 +285,7 @@ const AuthSide: React.FC<AuthSideProps> = ({ onSubmit }) => {
     if (isRegistration) {
       // Register request
       axiosInstance
-        .post("https://health-connect-kyp7.onrender.com/api/auth/register", {
-          title: formData.title, // Assuming title is a constant or derived from other fields
-          first_name: formData.first_name,
-          last_name: formData.name,
-          date_of_birth: formData.dob,
-          phone_number: formData.contactInformation,
-          email: formData.emailDoctor,
-          password: formData.password,
-          role: formData.role,
-          address: {
-            street: formData.street,
-            city: formData.city,
-            state: formData.state,
-            postcode: formData.postcode,
-            country: formData.country,
-          },
-          accessibility_needs: formData.accessibilityNeeds,
-          emergency_contact_details: {
-            name: formData.emergency_contact,
-            relationship: formData.relationship,
-            phone_number: formData.phone_number,
-          },
-          languages: formData.preferredLanguage,
-        })
+        .post("/api/auth/register", formData)
         .then((response) => {
           console.log("Registration successful:", response.data);
           // Redirect to dashboard after successful registration
@@ -255,43 +319,28 @@ const AuthSide: React.FC<AuthSideProps> = ({ onSubmit }) => {
   };
 
   return (
-    <div className="centered-content">
-      <div>
-        <div className="centered-button">
-          <Button
-            variant="link"
-            onClick={() => setIsRegistration(!isRegistration)}
-          >
-            {isRegistration
-              ? "Already have an account? Sign In"
-              : "Register Here"}
-          </Button>
-        </div>
-        {isRegistration ? (
-          <GenericForm
-            fields={registrationFields}
-            onSubmit={handleSubmit}
-            buttonText="Register"
-          />
-        ) : (
-          <GenericForm
-            fields={fields}
-            onSubmit={handleSubmit}
-            buttonText="Sign In"
-          />
-        )}
-
-        <div className="map-container-login">
-          <MapLogin
-            radius={0}
-            setUserLocation={function (
-              value: React.SetStateAction<UserLocation | null>
-            ): void {
-              throw new Error("Function not implemented.");
-            }}
-          />
-        </div>
-      </div>
+    <>
+      <Header />
+      <Button
+        className="centered-button"
+        variant="link"
+        onClick={() => setIsRegistration(!isRegistration)}
+      >
+        {isRegistration ? "Already have an account? Sign In" : "Register Here"}
+      </Button>
+      {isRegistration ? (
+        <GenericForm
+          fields={registrationFields}
+          onSubmit={handleSubmit}
+          buttonText="Register"
+        />
+      ) : (
+        <GenericForm
+          fields={fields}
+          onSubmit={handleSubmit}
+          buttonText="Sign In"
+        />
+      )}
       <Footer />
     </div>
   );

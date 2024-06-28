@@ -59,6 +59,11 @@
   box-sizing: border-box;
 }
 
+.doctor-list {
+  flex: 2;
+  padding-right: 1rem;
+}
+
 .map-container {
   flex: 1;
   display: flex;
@@ -84,6 +89,63 @@
   border: 1px solid #ddd;
 }
 
+.appointment-cards-container {
+  overflow-x: auto;
+  white-space: nowrap;
+}
+.doctor-cards-container{
+  width: 100%;
+}
+.appointment-card {
+  display: inline-block;
+  margin-right: 10px; /* Add some margin between cards */
+  cursor: pointer;
+  margin-bottom: 1rem;
+  width: 450px; /* Set a fixed width */
+  height: 200px; /* Set a fixed height */
+}
+
+.doctor-card{
+  display: block;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  width: 450px; /* Set a fixed width */
+  height: 200px; /* Set a fixed height */
+  
+}
+
+.appointment-cards{
+  flex-direction: column; /* Ensure cards stack vertically */
+
+}
+
+.doctor-details {
+  flex: 1; /* Expand to fill available space */
+  margin-left: 1rem;
+}
+
+
+
+.doctor-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: left;
+}
+
+.doctor-appointment {
+  margin-top: 1rem;
+}
+
+.doctor-appointment p {
+  font-weight: bold; /* Make the appointment time more prominent */
+}
+
+.doctor-divider {
+  width: 100%;
+  height: 1px;
+  background-color: #ccc;
+  margin: 10px 0;
+}
 .auth-form {
   max-width: 400px;
   background-color: rgba(251, 252, 251, 0.89);
@@ -137,16 +199,7 @@
 
 
 .centered-button {
-  background-color: rgba(251, 252, 251, 0.89);
-  display: flex; 
-  justify-content: flex-end; 
-  padding: 1rem; 
-  width: fit-content; 
-  position: fixed;
-  border-radius: 10px;
-  right: 0; 
-}
-
-.centered-content {
-  margin-top: auto; /* Push down to the middle */
+  display: flex;
+  justify-content: center;
+  align-self: center !important;
 }
