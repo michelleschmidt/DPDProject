@@ -15,7 +15,6 @@ export interface FormField {
     | "checkbox"
     | "textarea"; // Ensure type is explicitly set
   label: string;
-  optionsdb?: { value: string; label: string }[];
   options?: string[];
   optionsdb?: { value: string; label: string }[];
   placeholder?: string;

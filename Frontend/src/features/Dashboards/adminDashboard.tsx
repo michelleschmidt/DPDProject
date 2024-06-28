@@ -3,7 +3,7 @@ import DoctorList, {
   DoctorDatawithImage,
 } from "../../components/cards/DoctorList";
 import Footer from "../../components/Footer";
-import Header from "../../components/Header";
+import adminHeader from "../../components/adminHeader";
 import AppointmentList, {
   DoctorData,
 } from "../../components/cards/AppointmentList"; // Import DoctorData type
@@ -46,7 +46,7 @@ const adminDashboard: React.FC = () => {
 
   return (
     <>
-      <Header />
+      <adminHeader />
       <div className="docfind-container">
         <div className="docfind-content">
           <div className="doctor-list-container">

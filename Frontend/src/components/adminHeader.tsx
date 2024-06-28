@@ -3,7 +3,7 @@ import { Navbar, Container, Nav } from "react-bootstrap";
 import { Link, useLocation } from "react-router-dom";
 import Image from "../assets/icon/LOGO.png";
 
-const Header: React.FC = () => {
+const adminHeader: React.FC = () => {
   const location = useLocation();
   const isRootPath = location.pathname === "/";
 
@@ -46,4 +46,4 @@ const Header: React.FC = () => {
   );
 };
 
-export default Header;
+export default adminHeader;

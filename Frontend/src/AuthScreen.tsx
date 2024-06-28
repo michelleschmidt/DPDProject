@@ -6,6 +6,7 @@ import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import MapLogin from "./components/MapLogin";
 import { useAuth } from "./components/auth/AuthContext";
+import Header from "./components/Header";
 
 interface UserLocation {
   latitude: number;
