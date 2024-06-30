@@ -5,14 +5,22 @@ class AvailabilityController {
 
     async createAvailability(req, res, next) {
         try {
-          req.body.doctor_id = req.user.userId;
           const availability = await AvailabilityService.createAvailability(req.body);
           res.status(201).json(availability);
         } catch (error) {
           next(error);
         }
       }
-
+      async createAvailabilityByDoctor(req, res, next) {
+        try {
+          req.body.doctor_id = req.user.userId;
+          const availability = await AvailabilityService.createAvailabilityByDoctor(req.body);
+          res.status(201).json(availability);
+        } catch (error) {
+          next(error);
+        }
+      }
+      
       async getAvailabilityById(req, res, next) {
         try {
           const availability = await AvailabilityService.getAvailabilityById(req.params.id);

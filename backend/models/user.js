@@ -15,13 +15,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING(35),
         allowNull: false,
       },
-      date_of_birth: {
-        type: DataTypes.DATE,
-        allowNull: false,
-      },
-      phone_number: {
-        type: DataTypes.STRING(25),
-      },
       email: {
         type: DataTypes.STRING(125),
         allowNull: false,
@@ -30,11 +23,21 @@ module.exports = (sequelize, DataTypes) => {
       password: {
         type: DataTypes.STRING,
         allowNull: false,
+      },
+      date_of_birth: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
+      phone_number: {
+        type: DataTypes.STRING(25),
+      },
+      gender: {
+        type: DataTypes.STRING(15),
       },      
-      role: {
+      insurance_type: {
         type: DataTypes.STRING(25),
         allowNull: false,
-        defaultValue: "normal_user",
+        defaultValue: "public",
       },
       address:{
         type: DataTypes.JSON,
@@ -42,6 +45,11 @@ module.exports = (sequelize, DataTypes) => {
       },
       location: {
         type: DataTypes.GEOMETRY("POINT"),
+      },      
+      role: {
+        type: DataTypes.STRING(25),
+        allowNull: false,
+        defaultValue: "normal_user",
       },
       accessibility_needs: {
         type: DataTypes.STRING(),

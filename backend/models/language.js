@@ -15,3 +15,6 @@ module.exports = (sequelize, DataTypes) => {
 
   return Language;
 };
+
+
+

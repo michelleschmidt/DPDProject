@@ -29,12 +29,7 @@ class AppointmentService {
       },
     });
     const appointment = await db.sequelize.transaction(async (t) => {
-      const appointment = await Appointment.create(
-        {
-          ...data,
-          insurance_type: data.insurance_type,},
-        { transaction: t }
-      );
+      const appointment = await Appointment.create(data, { transaction: t });
       await availability.update({ active: false }, { transaction: t });
       return appointment;
     });
@@ -52,7 +47,12 @@ class AppointmentService {
           attributes: ["first_name", "last_name", "address"],
         },
         {
-          model: db.Availability,
+          model: Specialization,
+          as: "specialization",
+          attributes: ["area_of_specialization"],
+        },
+        {
+          model: Availability,
           as: "availability",
           attributes: ["availability_date"],
         },
@@ -107,6 +107,49 @@ class AppointmentService {
     }
     return "Appointment deleted successfully.";
   }
+
+  // async deleteAppointment(appointmentId) {
+  //   return await db.sequelize.transaction(async (t) => {
+  //     // Fetch the appointment with associated availability
+  //     const appointment = await Appointment.findOne({
+  //       where: { id: appointmentId },
+  //       include: [{
+  //         model: Availability,
+  //         as: 'availability',
+  //         attributes: ['id', 'availability_date', 'active']
+  //       }],
+  //       transaction: t
+  //     });
+  
+  //     if (!appointment) {
+  //       throw new Error("Appointment not found.");
+  //     }
+  
+  //     const currentTime = new Date();
+  //     const appointmentDate = new Date(appointment.availability.availability_date);
+  
+  //     // Check if the appointment date is in the future
+  //     if (appointmentDate > currentTime) {
+  //       // Update the availability to active: true
+  //       await Availability.update(
+  //         { active: true },
+  //         { 
+  //           where: { id: appointment.availability.id },
+  //           transaction: t
+  //         }
+  //       );
+  //     }
+  
+  //     // Delete the appointment
+  //     await appointment.destroy({ transaction: t });
+  
+  //     return "Appointment deleted successfully.";
+  //   });
+  // }
+  
+  
+
+
 }
 
 module.exports = new AppointmentService();

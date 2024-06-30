@@ -10,25 +10,25 @@ app.use("/api/v1/users", userRoutes);
 
 
 
-userRouter.get('/api/users/all-users', isLoggedIn, roleCheck('admin'), userController.getUsers);
+userRouter.get('/api/v1/users/all-users', isLoggedIn, roleCheck('admin'), userController.getUsers);
 
-userRouter.get('/api/users', isLoggedIn, userController.getDoctors);
+userRouter.get('/api/v1/users', isLoggedIn, userController.getDoctors);
 
-userRouter.post('/api/users/admin-create', isLoggedIn, roleCheck('admin'), userController.createUser);
+userRouter.post('/api/v1/users/admin-create', isLoggedIn, roleCheck('admin'), userController.createUser);
 
-userRouter.get('/api/users/:id', isLoggedIn, userController.getUserById);
-userRouter.get('/api/users/doctor/:id', isLoggedIn, userController.getDoctorById);
+userRouter.get('/api/v1/users/:id', isLoggedIn, userController.getUserById);
+userRouter.get('/api/v1/users/doctor/:id', isLoggedIn, userController.getDoctorById);
 
-userRouter.put('/api/users/:id', isLoggedIn, userController.updateUser);
+userRouter.put('/api/v1/users/:id', isLoggedIn, userController.updateUser);
 
-userRouter.delete('/api/users/:id', isLoggedIn, roleCheck('admin'), userController.deleteUser);
-
-
+userRouter.delete('/api/v1/users/:id', isLoggedIn, roleCheck('admin'), userController.deleteUser);
 
 
-app.use("/api/blogs", blogRoutes);
 
-app.use("/api/auth", authRoutes);
+
+app.use("/api/v1/blogs", blogRoutes);
+
+app.use("/api/v1/auth", authRoutes);
 
 app.use("/api/v1/availabilities", availabilityRoutes);
 

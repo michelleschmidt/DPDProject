@@ -5,6 +5,12 @@ db = require("../models");
 const Availability = db.Availability;
 class AvailabilityService {
   async createAvailability(data) {
+    const availability = await Availability.bulkCreate(data);
+    return availability;
+  }
+
+
+  async createAvailabilityByDoctor(data) {
     const availability = await Availability.create(data);
     return availability;
   }

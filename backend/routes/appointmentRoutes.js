@@ -12,7 +12,7 @@ appointmentRouter.get("/user/appointments", isLoggedIn, appointmentController.ge
 
 appointmentRouter.get("/doctor/appointments", isLoggedIn, appointmentController.getDoctorAppointments);
 
-appointmentRouter.get("/", isLoggedIn, appointmentController.getAllAppointments);
+appointmentRouter.get("/", isLoggedIn, roleCheck('admin'), appointmentController.getAllAppointments);
 
 appointmentRouter.put("/:id", isLoggedIn, appointmentController.updateAppointment);
 appointmentRouter.delete("/:id", isLoggedIn, appointmentController.deleteAppointment);

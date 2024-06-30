@@ -3,7 +3,6 @@ const { Request, Response } = require("express");
 const AuthService = require("../services/authService");
 
 class AuthController {
-
   async register(req, res, next) {
     try {
       const user = await AuthService.register(req.body);
@@ -25,38 +24,12 @@ class AuthController {
         })
         .status(201)
         .json({
-          firstname: user.first_name,
-          lastname: user.last_name,
+          first_name: user.first_name,
+          last_name: user.last_name,
           role: user.role,
           email: user.email,
           address: user.address,
-        });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-
-  async doctorLogin(req, res, next) {
-    try {
-      // const service = new authService();
-      const { doctor, token } = await AuthService.doctorLogin(req.body);
-      res
-        .cookie("token", token, {
-          httpOnly: true,
-          secure: false,
-          sameSite: "none",
-          expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
-        })
-        .status(201)
-        .json({
-          firstname: doctor.first_name,
-          lastname: doctor.last_name,
-          role: doctor.role,
-          email: doctor.email,
-          address: doctor.address,
-          language: doctor.language,
-          specialization: doctor.specialization,
+          languages: user.languages,
         });
     } catch (error) {
       next(error);

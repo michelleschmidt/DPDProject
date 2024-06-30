@@ -7,7 +7,9 @@ const { roleCheck } = require("../middleware/roleCheck");
 
 
 
-availabilityRouter.post('/', isLoggedIn, AvailabilityController.createAvailability);
+availabilityRouter.post('/', isLoggedIn, roleCheck('admin'), AvailabilityController.createAvailability);
+
+availabilityRouter.post('/doctor-create', isLoggedIn, AvailabilityController.createAvailability);
 
 availabilityRouter.get('/:id', isLoggedIn, AvailabilityController.getAvailabilityById);
 
