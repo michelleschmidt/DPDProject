@@ -136,7 +136,7 @@ const PhoneDashboard: React.FC = () => {
           modalType="viewAppointment"
         />
       </div>
-      <Footer />
+      <Footer isFixed={false} />
     </>
   );
 };

@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import Map from "./components/Map";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
+import Map from "../../components/Map";
+import Header from "../../components/Header";
+import Footer from "../../components/Footer";
 import { Modal } from "react-bootstrap";
 import { Range } from "react-range";
-import DoctorList from "./components/cards/DoctorList";
-import { DoctorDatawithImage } from "./components/Types";
-import GenericForm from "./components/forms/GenericForm";
+import DoctorList from "../../components/cards/DoctorList";
+import { DoctorDatawithImage } from "../../components/Types";
+import GenericForm from "../../components/forms/GenericForm";
 import "./DocFind.css";
 
 interface UserLocation {

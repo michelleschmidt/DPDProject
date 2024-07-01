@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../../Axios";
-import "./App.css";
+import "../../App.css";
 
 interface Patient {
   id: number;

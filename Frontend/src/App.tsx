@@ -3,17 +3,16 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./components/auth/AuthContext";
 import PrivateRoute from "./components/auth/PrivateRoute";
 
-import DocSearch from "./DocSearchScreen";
-import DocFind from "./DocFindScreen";
+import DocSearch from "./features/patient/DocSearchScreen";
+import DocFind from "./features/patient/DocFindScreen";
 import AuthSide from "./AuthScreen";
 import "vite/modulepreload-polyfill";
-import Dashboard from "./features/Dashboards/DashboardScreen";
-import PhoneDashboard from "./features/Dashboards/phoneDashboardScreen";
-import ProfileScreen from "./features/user/Profile";
+import Dashboard from "./features/patient/DashboardScreen";
+import PhoneDashboard from "./features/phone/phoneDashboardScreen";
+import ProfileScreen from "./features/patient/Profile";
+import ManageInteractions from "./features/admin/adminDashboard";
 
 const App = () => {
-  const [isRegistration, setIsRegistration] = useState(false);
-
   return (
     <AuthProvider>
       <Router>
@@ -33,7 +32,7 @@ const App = () => {
           />
           <Route
             path="/dashboard"
-            element={<PrivateRoute element={<Dashboard />} />}
+            element={<PrivateRoute element={<ManageInteractions />} />}
           />
           <Route
             path="/phonedashboard"
