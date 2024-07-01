@@ -137,10 +137,11 @@ const AppointmentBookingForm: React.FC = () => {
   console.log(token);
 
   const handleSubmit = (formData: any) => {
-    // Data to be sent to the backend immediately
+    history("/find");
+    /* // Data to be sent to the backend immediately
     const dataToSend = {
-      language: formData.showPreferredLanguageDoctors,
-      specialization: formData.specialist,
+      language_name: formData.showPreferredLanguageDoctors,
+      specialization_id: parseInt(formData.specialist, 10), // Convert specialization_id to an integer
       address: "",
       radius: 2.5,
     };
@@ -172,7 +173,7 @@ const AppointmentBookingForm: React.FC = () => {
       })
       .catch((error) => {
         console.error("Appointment booking error:", error);
-      });
+      }); */
   };
 
   return (

@@ -1,14 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Circle, MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
-import { LatLngTuple } from "leaflet";
+import L, { LatLngTuple } from "leaflet";
 import "leaflet/dist/leaflet.css";
-
-interface DoctorData {
-  id: number;
-  name: string;
-  longitude: number;
-  latitude: number;
-}
+import "../App.css"; // Import your custom CSS file
+import { DoctorDatawithImage } from "./Types";
 
 interface UserLocation {
   latitude: number;
@@ -17,7 +12,7 @@ interface UserLocation {
 
 interface MapProps {
   radius: number;
-  doctors?: DoctorData[];
+  doctors?: DoctorDatawithImage[];
   setUserLocation: React.Dispatch<React.SetStateAction<UserLocation | null>>;
 }
 
@@ -58,43 +53,53 @@ const Map: React.FC<MapProps> = ({ radius, doctors, setUserLocation }) => {
   }
 
   return (
-    <MapContainer
-      center={[userLocationState.latitude, userLocationState.longitude]}
-      zoom={13}
-      style={{height: '100vh', width: '100vw', position: 'fixed', top: 0, left: 0, zIndex: -1  }}
-
-
-    >
-
-
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        opacity={0.5}
-      />
-      {/* Render doctors' markers on the map */}
-      {doctors?.map((doctor) => (
-        <Marker key={doctor.id} position={[doctor.latitude, doctor.longitude]}>
-          <Popup>{doctor.name}</Popup>
-        </Marker>
-      ))}
-      {/* Marker for user's current location */}
-      <Marker
-        position={[userLocationState.latitude, userLocationState.longitude]}
-      >
-        <Popup>
-          Your location <br />
-          Lat: {userLocationState.latitude}, Lng: {userLocationState.longitude}
-        </Popup>
-      </Marker>
-      {/* Circle representing search radius around user's location */}
-      <Circle
+    <div className="map-container">
+      <MapContainer
         center={[userLocationState.latitude, userLocationState.longitude]}
-        radius={radius}
-        fillColor="blue"
-        fillOpacity={0.1}
-      />
-    </MapContainer>
+        zoom={13}
+        style={{
+          height: "100%",
+          width: "100%",
+        }}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          opacity={1}
+        />
+        {/* Render doctors' markers on the map */}
+        {doctors?.map((doctor) => (
+          <Marker
+            key={doctor.id}
+            position={[doctor.latitude, doctor.longitude]}
+            icon={L.icon({
+              iconUrl: doctor.image, // Use the doctor's image URL for the icon
+              iconSize: [32, 32], // Adjust icon size as needed
+              iconAnchor: [16, 32], // Adjust icon anchor as needed
+              popupAnchor: [0, -32], // Adjust popup anchor as needed
+            })}
+          >
+            <Popup>
+              <b>{doctor.name}</b> <br></br> {doctor.specialty}
+              <br></br> {doctor.language}
+            </Popup>
+          </Marker>
+        ))}
+        {/* Marker for user's current location */}
+        <Marker
+          position={[userLocationState.latitude, userLocationState.longitude]}
+        >
+          <Popup>Your location</Popup>
+        </Marker>
+        {/* Circle representing search radius around user's location */}
+        <Circle
+          center={[userLocationState.latitude, userLocationState.longitude]}
+          radius={radius}
+          fillColor="blue"
+          fillOpacity={0.1}
+        />
+      </MapContainer>
+    </div>
   );
 };
 

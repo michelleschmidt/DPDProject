@@ -1,0 +1,46 @@
+
+.docfind-contents {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    padding-top: 60px; /* Adjust based on header height */
+    padding-bottom: 60px; /* Adjust based on footer height */
+  }
+  .doctor-list-containers {
+    flex: 1;
+    overflow-y: auto;
+  }
+  
+  .map-slider-container {
+    flex: 1;
+    position: relative;
+  }
+  
+  .slider-container {
+    display: flex;
+    align-items: center;
+    margin: 1rem;
+    padding: 0.5rem;
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    position: absolute;
+    top: 0;
+    width: calc(100% - 2rem);
+    z-index: 1000;
+  }
+  
+  .slider-label {
+    margin-right: 1rem;
+  }
+  
+  .slider-value {
+    margin-left: 1rem;
+  }
+  
+  .map-container {
+    position: absolute;
+    top: 60px; /* Adjust based on slider height */
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }

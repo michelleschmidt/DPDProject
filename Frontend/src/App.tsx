@@ -18,17 +18,7 @@ const App = () => {
     <AuthProvider>
       <Router>
         <Routes>
-          <Route
-            path="/"
-            element={
-              <AuthSide
-                onSubmit={(email, password) => {
-                  console.log("Submitted", email, password);
-                }}
-                isRegistration={isRegistration}
-              />
-            }
-          />
+          <Route path="/" element={<AuthSide />} />
           <Route
             path="/find"
             element={<PrivateRoute element={<DocFind />} />}

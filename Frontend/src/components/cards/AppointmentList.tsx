@@ -1,16 +1,9 @@
 import React, { useState } from "react";
-import { Card, Modal, Button, Form } from "react-bootstrap";
+import { Card, Modal, Button } from "react-bootstrap";
 import GenericForm from "../forms/GenericForm";
 import "./Cards.css";
-
-export interface DoctorData {
-  distance: number;
-  id: number;
-  name: string;
-  specialty: string;
-  address: string;
-  language: string;
-}
+import { DoctorData } from "../Types";
+import { alldoctors, standardappointmentInfo } from "../../assets/FakeData";
 
 interface Props {
   doctors: DoctorData[];
@@ -27,36 +20,28 @@ const AppointmentList: React.FC<Props> = ({
 }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState<DoctorData | null>(null);
-  const [appointmentDate, setAppointmentDate] = useState("");
-  const [appointmentTime, setAppointmentTime] = useState("");
-  const [newAppointmentDate, setNewAppointmentDate] = useState("");
-  const [newAppointmentTime, setNewAppointmentTime] = useState("");
-  const [rejectReason, setRejectReason] = useState("");
-  const [showRejectReason, setShowRejectReason] = useState(false);
-
-  const appointmentInfo = [
-    { reason: "heart failure", date: "2024-06-15", time: "10:00 AM" },
-    { reason: "checkup", date: "2024-06-16", time: "11:30 AM" },
-    { reason: "child", date: "2024-06-17", time: "02:00 PM" },
-  ];
+  const [selectedAppointmentIndex, setSelectedAppointmentIndex] = useState(0);
+  const [newAppointmentDateTime, setNewAppointmentDateTime] = useState("");
 
   const handleCardClick = (doctor: DoctorData) => {
     setSelectedDoctor(doctor);
     setShowModal(true);
   };
 
-  const handleFormSubmit = (formData: any) => {
-    console.log("Form submitted:", formData);
-    setShowModal(false);
-  };
-
   const handleDelete = () => {
     console.log("Appointment deleted");
+    // Simulate appointment deletion
+    standardappointmentInfo.splice(selectedAppointmentIndex, 1);
+    setSelectedAppointmentIndex(0);
     setShowModal(false);
   };
 
   const handleReschedule = () => {
     console.log("Appointment rescheduled");
+    // Simulate appointment rescheduling
+    const newDateTime = newAppointmentDateTime.split("T");
+    standardappointmentInfo[selectedAppointmentIndex].date = newDateTime[0];
+    standardappointmentInfo[selectedAppointmentIndex].time = newDateTime[1];
     setShowModal(false);
   };
 
@@ -71,9 +56,21 @@ const AppointmentList: React.FC<Props> = ({
                 <Card.Body>
                   <div className="doctor-info">
                     <div className="appointment-info">
-                      <p>Date: {appointmentInfo[0].date}</p>
-                      <p>Time: {appointmentInfo[0].time}</p>
-                      <p>Reason: {appointmentInfo[0].reason}</p>
+                      <p>
+                        Date:{" "}
+                        {standardappointmentInfo[selectedAppointmentIndex].date}
+                      </p>
+                      <p>
+                        Time:{" "}
+                        {standardappointmentInfo[selectedAppointmentIndex].time}
+                      </p>
+                      <p>
+                        Reason:{" "}
+                        {
+                          standardappointmentInfo[selectedAppointmentIndex]
+                            .reason
+                        }
+                      </p>
                     </div>
                     <div className="doctor-details">
                       <h3>{doctor.name}</h3>
@@ -94,11 +91,18 @@ const AppointmentList: React.FC<Props> = ({
         </Modal.Header>
         <Modal.Body>
           <h4>Appointment Information:</h4>
+          <h4>Appointment Information:</h4>
           <p>Doctor: {selectedDoctor?.name}</p>
-          <p>Date: {appointmentDate}</p>
-          <p>Time: {appointmentTime}</p>
-          <p>Reason: {appointmentInfo[0].reason}</p>
-          <p>Description: {}</p>
+          <p>Date: {standardappointmentInfo[selectedAppointmentIndex].date}</p>
+          <p>Time: {standardappointmentInfo[selectedAppointmentIndex].time}</p>
+          <p>
+            Reason: {standardappointmentInfo[selectedAppointmentIndex].reason}
+          </p>
+          <p>
+            Description:{" "}
+            {standardappointmentInfo[selectedAppointmentIndex].details ||
+              "No description provided"}
+          </p>
           <div className="d-flex justify-content-around mt-3">
             <Button variant="danger" onClick={handleDelete}>
               Cancel Appointment
@@ -113,7 +117,7 @@ const AppointmentList: React.FC<Props> = ({
                 showTimeSelect: true,
               },
             ]}
-            onSubmit={handleFormSubmit}
+            onSubmit={handleReschedule}
             buttonText="Reschedule"
           />
         </Modal.Body>

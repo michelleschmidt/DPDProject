@@ -8,7 +8,7 @@ interface Props {
   to?: string;
   onClick?: () => void;
   color?: string;
-  function?: (arg: string) => void; // Adjust the type according to your function's requirements
+  function?: (arg: string) => void;
 }
 
 const Button = ({ children, onClick, to = "/", color = "primary" }: Props) => {

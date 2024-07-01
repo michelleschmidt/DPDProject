@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Circle, MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
-import { LatLngTuple } from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 interface DoctorData {
@@ -21,7 +20,7 @@ interface MapProps {
   setUserLocation: React.Dispatch<React.SetStateAction<UserLocation | null>>;
 }
 
-const MapLogin: React.FC<MapProps> = ({ radius, doctors, setUserLocation }) => {
+const LoginMap: React.FC<MapProps> = ({ radius, doctors, setUserLocation }) => {
   const [userLocationState, setUserLocationState] =
     useState<UserLocation | null>(null);
 
@@ -101,4 +100,4 @@ const MapLogin: React.FC<MapProps> = ({ radius, doctors, setUserLocation }) => {
   );
 };
 
-export default MapLogin;
+export default LoginMap;

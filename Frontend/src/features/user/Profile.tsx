@@ -1,8 +1,9 @@
-import React, { useState } from "react";
-import { Container, Row, Col, Form, Button, Alert } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { Container, Row, Col, Alert } from "react-bootstrap";
 import Footer from "../../components/Footer";
 import Header from "../../components/Header";
 import GenericForm, { FormField } from "../../components/forms/GenericForm";
+import axiosInstance from "../../Axios";
 
 const ProfileScreen = () => {
   const [user, setUser] = useState({
@@ -20,19 +21,46 @@ const ProfileScreen = () => {
       state: "",
       zip: "",
     },
-    preferredLanguage: "",
+    preferredLanguage: [],
     newPassword: "",
     confirmPassword: "",
   });
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [languages, setLanguages] = useState<
+    { id: number; language_name: string }[]
+  >([]);
+
+  axiosInstance
+    .get("/api/users/:id")
+    .then((response) => {
+      setUser(response.data);
+    })
+    .catch((error) => {
+      console.error("Error fetching user data:", error);
+      setError("Failed to load user data");
+    });
+
+  useEffect(() => {
+    // Fetch languages
+    axiosInstance
+      .get("/api/search/languages")
+      .then((response) => setLanguages(response.data))
+      .catch((error) => console.error("Error fetching languages:", error));
+  }, []);
 
   const handleSubmit = (formData: any) => {
-    // Call API to update user profile
-    // For demo purposes, just log the updated user data
-    console.log("Updated user data:", formData);
-    setSuccess("Profile updated successfully!");
+    axiosInstance
+      .put("/api/users/:id", formData)
+      .then((response) => {
+        console.log("Profile updated successfully:", response.data);
+        setSuccess("Profile updated successfully!");
+      })
+      .catch((error) => {
+        console.error("Profile update error:", error);
+        setError("Failed to update profile");
+      });
   };
 
   const fields: FormField[] = [
@@ -72,7 +100,6 @@ const ProfileScreen = () => {
       label: "City",
       placeholder: "City",
     },
-
     {
       name: "address.zip",
       type: "text",
@@ -83,15 +110,7 @@ const ProfileScreen = () => {
       name: "preferredLanguage",
       type: "select",
       label: "Preferred Language",
-      options: [
-        "English",
-        "Spanish",
-        "French",
-        "German",
-        "Chinese",
-        "Arabic",
-        "No Preference",
-      ],
+      options: languages.map((lang) => lang.language_name),
       placeholder: "Select preferred language",
       multiple: true,
     },
@@ -124,7 +143,7 @@ const ProfileScreen = () => {
           />
         </Col>
       </Row>
-      <Footer />
+      <Footer isFixed={false} />
     </Container>
   );
 };

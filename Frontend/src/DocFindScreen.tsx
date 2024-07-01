@@ -1,12 +1,14 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Map from "./components/Map";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import { Modal, Button } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 import { Range } from "react-range";
-import DoctorList, { DoctorDatawithImage } from "./components/cards/DoctorList";
+import DoctorList from "./components/cards/DoctorList";
+import { DoctorDatawithImage } from "./components/Types";
 import GenericForm from "./components/forms/GenericForm";
+import "./DocFind.css";
 
 interface UserLocation {
   latitude: number;
@@ -17,13 +19,9 @@ function DocFind() {
   const [radius, setRadius] = useState<number>(2.5); // Default radius is 2.5 km
   const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const history = useNavigate();
   const [selectedDoctor, setSelectedDoctor] =
     useState<DoctorDatawithImage | null>(null);
-  const [appointmentDate, setAppointmentDate] = useState("");
-  const [appointmentTime, setAppointmentTime] = useState("");
-  const [nextSteps, setNextSteps] = useState("");
-  const [newAppointmentDate, setNewAppointmentDate] = useState("");
-  const [newAppointmentTime, setNewAppointmentTime] = useState("");
 
   const location = useLocation();
   const { formData } = location.state || {};
@@ -40,14 +38,9 @@ function DocFind() {
   const handleFormSubmit = (formData: any) => {
     console.log("Form submitted:", formData);
     setShowModal(false);
+    history("/dashboard");
   };
 
-  const handleReschedule = () => {
-    console.log("Appointment rescheduled");
-    setShowModal(false);
-  };
-
-  // Function to calculate the distance between two coordinates using the Haversine formula
   const calculateDistance = (
     lat1: number,
     lon1: number,
@@ -139,33 +132,20 @@ function DocFind() {
     <div className="docfind-container">
       <Header />
       <div className="docfind-content">
-        <DoctorList
-          doctors={filteredDoctors}
-          onSelectDoctor={(doctor) => {
-            handleCardClick(doctor);
-          }}
-          heading="Available Doctors"
-          modalType={"DocFind"}
-        />
-        <div style={{ flex: "3rem" }}>
-          <div className="map-container">
-            <Map
-              doctors={filteredDoctors}
-              radius={radius * 1000}
-              setUserLocation={setUserLocation}
-            />
-          </div>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              marginTop: "1rem",
-              padding: "0.5rem",
-              backgroundColor: "#f5f5f5",
-              border: "1px solid #ddd",
+        <div className="doctor-list-container">
+          <DoctorList
+            doctors={filteredDoctors}
+            onSelectDoctor={(doctor) => {
+              handleCardClick(doctor);
             }}
-          >
-            <label htmlFor="radius" style={{ marginRight: "1rem" }}>
+            heading="Available Doctors"
+            modalType={"DocFind"}
+            ausrichtung={"doctor-card"}
+          />
+        </div>
+        <div className="map-slider-container">
+          <div className="slider-container">
+            <label htmlFor="radius" className="slider-label">
               Search Radius:
             </label>
             <Range
@@ -202,13 +182,19 @@ function DocFind() {
                 />
               )}
             />
-            <span>{radius.toFixed(1)} km</span>
+            <span className="slider-value">{radius.toFixed(1)} km</span>
+          </div>
+          <div className="map-container">
+            <Map
+              doctors={filteredDoctors}
+              radius={radius * 1000}
+              setUserLocation={setUserLocation}
+            />
           </div>
         </div>
       </div>
-      <Footer />
+      <Footer isFixed={true} />
 
-      {/* Modal for Booking Appointment */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Book Appointment</Modal.Title>
