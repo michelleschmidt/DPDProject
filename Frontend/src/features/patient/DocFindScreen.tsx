@@ -208,6 +208,12 @@ function DocFind() {
                 label: "Available Appointments",
                 showTimeSelect: true,
               },
+              {
+                name: "phone",
+                type: "checkbox",
+                label: "Do you need live translation?",
+                isRequired: false,
+              },
             ]}
             onSubmit={handleFormSubmit}
             buttonText="Schedule"

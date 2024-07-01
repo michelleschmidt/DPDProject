@@ -10,7 +10,7 @@ import "vite/modulepreload-polyfill";
 import Dashboard from "./features/patient/DashboardScreen";
 import PhoneDashboard from "./features/phone/phoneDashboardScreen";
 import ProfileScreen from "./features/patient/Profile";
-import ManageInteractions from "./features/admin/adminDashboard";
+import ManageAppointments from "./features/admin/manageAppointments";
 
 const App = () => {
   return (
@@ -32,7 +32,7 @@ const App = () => {
           />
           <Route
             path="/dashboard"
-            element={<PrivateRoute element={<ManageInteractions />} />}
+            element={<PrivateRoute element={<Dashboard />} />}
           />
           <Route
             path="/phonedashboard"

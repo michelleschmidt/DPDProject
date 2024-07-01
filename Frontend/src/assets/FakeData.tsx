@@ -72,17 +72,20 @@ export const standardappointmentInfo = [
     date: "15.07.2024",
     time: "10:00 AM",
     details: "Routine Check-up",
+    interpretation: true,
   },
   {
     reason: "Acute Consultation",
     date: "16.07.2024",
     time: "11:30 AM",
     details: "Acute infection",
+    interpretation: true,
   },
   {
     reason: "Preventive Health Check-Ups",
     date: "30.08.2024",
     time: "02:00 PM",
     details: "Annual Health Check-Up",
+    interpretation: false,
   },
 ];

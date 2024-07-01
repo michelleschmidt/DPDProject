@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Form, Button } from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import "../../App.css";
 
 export interface FormField {
   name: string;
@@ -13,7 +14,8 @@ export interface FormField {
     | "password"
     | "tel"
     | "checkbox"
-    | "textarea"; // Ensure type is explicitly set
+    | "textarea"
+    | "phone";
   label: string;
   options?: string[];
   optionsdb?: { value: string; label: string }[];
@@ -31,7 +33,7 @@ interface GenericFormProps {
   onFieldChange?: (
     name: string,
     value: string | string[] | Date | boolean | null
-  ) => void; // Updated type for onFieldChange
+  ) => void;
 }
 
 const GenericForm: React.FC<GenericFormProps> = ({
@@ -106,7 +108,11 @@ const GenericForm: React.FC<GenericFormProps> = ({
     const newErrors: any = {};
 
     fields.forEach((field) => {
-      if (!formData[field.name] && field.type !== "checkbox") {
+      if (
+        !formData[field.name] &&
+        field.type !== "checkbox" &&
+        field.type !== "phone"
+      ) {
         formIsValid = false;
         newErrors[field.name] = `${field.label} is required`;
       }
@@ -119,73 +125,97 @@ const GenericForm: React.FC<GenericFormProps> = ({
     }
   };
 
-  // Logging selected options for debugging
-  console.log("Selected Languages:", formData.preferredConsultationMethod);
-
   return (
     <Form onSubmit={handleSubmit} className="auth-form">
       {fields.map((field) => (
         <Form.Group controlId={field.name} key={field.name}>
-          <Form.Label>{field.label}</Form.Label>
-          {field.type === "text" ||
-          field.type === "email" ||
-          field.type === "password" ? (
-            <Form.Control
-              type={field.type}
-              name={field.name}
-              value={formData[field.name] || ""}
-              onChange={handleChange}
-              isInvalid={!!errors[field.name]}
-              placeholder={field.placeholder}
-            />
-          ) : field.type === "textarea" ? (
-            <Form.Control
-              as="textarea"
-              name={field.name}
-              value={formData[field.name] || ""}
-              onChange={handleChange}
-              isInvalid={!!errors[field.name]}
-              placeholder={field.placeholder}
-              rows={4} // Adjust rows for textarea
-            />
-          ) : field.type === "select" ? (
-            <Form.Select
-              name={field.name}
-              value={formData[field.name]}
-              onChange={(e) => handleChange(e)}
-              isInvalid={!!errors[field.name]}
-              multiple={field.multiple}
-            >
-              <option value="">{field.placeholder}</option>
-              {(field.optionsdb || field.options)?.map((option) => (
-                <option
-                  key={typeof option === "string" ? option : option.value}
-                  value={typeof option === "string" ? option : option.value}
+          {field.type === "phone" ? (
+            <div className="phone-field">
+              <h5>{field.label}</h5>
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  id={`${field.name}Checkbox`}
+                  name={field.name}
+                  checked={formData[field.name] || false}
+                  onChange={(e) => handleChange(e)}
+                />
+                <label
+                  className="form-check-label"
+                  htmlFor={`${field.name}Checkbox`}
                 >
-                  {typeof option === "string" ? option : option.label}
-                </option>
-              ))}
-            </Form.Select>
-          ) : field.type === "date" ? (
-            <DatePicker
-              selected={formData[field.name]}
-              onChange={(date) => handleDateChange(date, field.name)}
-              showTimeSelect={field.showTimeSelect || false}
-              dateFormat={
-                field.showTimeSelect ? "MMMM d, yyyy h:mm aa" : "MMMM d, yyyy"
-              }
-              className="form-control"
-            />
-          ) : field.type === "checkbox" ? (
-            <Form.Check
-              type="checkbox"
-              name={field.name}
-              checked={formData[field.name]}
-              onChange={handleChange}
-              isInvalid={!!errors[field.name]}
-              label={field.label}
-            />
-          ) : null}
+                  Yes, I do
+                </label>
+              </div>
+            </div>
+          ) : (
+            <>
+              <Form.Label>{field.label}</Form.Label>
+              {field.type === "text" ||
+              field.type === "email" ||
+              field.type === "password" ||
+              field.type === "tel" ? (
+                <Form.Control
+                  type={field.type}
+                  name={field.name}
+                  value={formData[field.name] || ""}
+                  onChange={handleChange}
+                  isInvalid={!!errors[field.name]}
+                  placeholder={field.placeholder}
+                />
+              ) : field.type === "textarea" ? (
+                <Form.Control
+                  as="textarea"
+                  name={field.name}
+                  value={formData[field.name] || ""}
+                  onChange={handleChange}
+                  isInvalid={!!errors[field.name]}
+                  placeholder={field.placeholder}
+                  rows={4}
+                />
+              ) : field.type === "select" ? (
+                <Form.Select
+                  name={field.name}
+                  value={formData[field.name]}
+                  onChange={(e) => handleChange(e)}
+                  isInvalid={!!errors[field.name]}
+                  multiple={field.multiple}
+                >
+                  <option value="">{field.placeholder}</option>
+                  {(field.optionsdb || field.options)?.map((option) => (
+                    <option
+                      key={typeof option === "string" ? option : option.value}
+                      value={typeof option === "string" ? option : option.value}
+                    >
+                      {typeof option === "string" ? option : option.label}
+                    </option>
+                  ))}
+                </Form.Select>
+              ) : field.type === "date" ? (
+                <DatePicker
+                  selected={formData[field.name]}
+                  onChange={(date) => handleDateChange(date, field.name)}
+                  showTimeSelect={field.showTimeSelect || false}
+                  dateFormat={
+                    field.showTimeSelect
+                      ? "MMMM d, yyyy h:mm aa"
+                      : "MMMM d, yyyy"
+                  }
+                  className="form-control"
+                />
+              ) : field.type === "checkbox" ? (
+                <Form.Check
+                  type="checkbox"
+                  name={field.name}
+                  checked={formData[field.name]}
+                  onChange={handleChange}
+                  isInvalid={!!errors[field.name]}
+                  label={field.label}
+                />
+              ) : null}
+            </>
+          )}
           <Form.Control.Feedback type="invalid">
             {errors[field.name]}
           </Form.Control.Feedback>

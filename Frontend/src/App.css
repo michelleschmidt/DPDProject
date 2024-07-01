@@ -6,6 +6,10 @@
   padding: 10px 0; /* Adjust padding as needed */
 }
 
+.regForm{
+  padding-bottom: 20%;
+}
+
 .relative-footer {
   width: 100%;
   background-color: #f8f9fa; /* Example background color */
@@ -197,6 +201,7 @@
   padding: 20px;
   background-color: #f4f4f4;
 }
+
 /* src/components/Sidebar.css */
 .sidebar {
   width: 250px;
@@ -227,6 +232,7 @@
   border-radius: 5px;
   cursor: pointer;
 }
+
 /* src/components/ManageInteractions.css */
 .manage-interactions {
   background-color: #ffffff;
@@ -283,6 +289,17 @@ button:hover {
   background-color: #ddd;
 }
 
+.container {
+  display: flex;
+}
+
+.sidebar {
+  flex: 1;
+}
+
+.manage-interactions {
+  flex: 3;
+}
 
 .docfind-container {
   display: flex;
@@ -299,6 +316,41 @@ button:hover {
 }
 
 
+.phone-field {
+  background-color: #f8f9fa;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.phone-field:hover {
+  background-color: #e9ecef;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.phone-field h5 {
+  margin-bottom: 0.5rem;
+  color: #495057;
+}
+
+.phone-field .form-check {
+  margin-left: 1rem;
+}
+
+.phone-field .form-check-input {
+  margin-right: 0.5rem;
+}
+
+.phone-field .form-check-label {
+  font-weight: bold;
+  color: #495057;
+}
+
+.phone-field .form-check-input:checked + .form-check-label {
+  color: #007bff;
+}
 
 .doctor-list-container {
   flex: 1;
@@ -347,4 +399,31 @@ button:hover {
 
 .slider-value {
   margin-left: 1rem;
+}
+
+.appointment-booking-form .form-check {
+  background-color: #f8f9fa;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.appointment-booking-form .form-check:hover {
+  background-color: #e9ecef;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.appointment-booking-form .form-check-input {
+  margin-right: 0.5rem;
+}
+
+.appointment-booking-form .form-check-label {
+  font-weight: bold;
+  color: #495057;
+}
+
+.appointment-booking-form .form-check-input:checked + .form-check-label {
+  color: #007bff;
 }

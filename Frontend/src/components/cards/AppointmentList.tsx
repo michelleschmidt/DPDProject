@@ -3,7 +3,7 @@ import { Card, Modal, Button } from "react-bootstrap";
 import GenericForm from "../forms/GenericForm";
 import "./Cards.css";
 import { DoctorData } from "../Types";
-import { alldoctors, standardappointmentInfo } from "../../assets/FakeData";
+import { standardappointmentInfo } from "../../assets/FakeData";
 
 interface Props {
   doctors: DoctorData[];
@@ -23,14 +23,14 @@ const AppointmentList: React.FC<Props> = ({
   const [selectedAppointmentIndex, setSelectedAppointmentIndex] = useState(0);
   const [newAppointmentDateTime, setNewAppointmentDateTime] = useState("");
 
-  const handleCardClick = (doctor: DoctorData) => {
+  const handleCardClick = (doctor: DoctorData, index: number) => {
     setSelectedDoctor(doctor);
+    setSelectedAppointmentIndex(index);
     setShowModal(true);
   };
 
   const handleDelete = () => {
     console.log("Appointment deleted");
-    // Simulate appointment deletion
     standardappointmentInfo.splice(selectedAppointmentIndex, 1);
     setSelectedAppointmentIndex(0);
     setShowModal(false);
@@ -38,7 +38,6 @@ const AppointmentList: React.FC<Props> = ({
 
   const handleReschedule = () => {
     console.log("Appointment rescheduled");
-    // Simulate appointment rescheduling
     const newDateTime = newAppointmentDateTime.split("T");
     standardappointmentInfo[selectedAppointmentIndex].date = newDateTime[0];
     standardappointmentInfo[selectedAppointmentIndex].time = newDateTime[1];
@@ -50,27 +49,15 @@ const AppointmentList: React.FC<Props> = ({
       <h2>{heading}</h2>
       <div className="cards-container">
         <div className="cards">
-          {doctors.map((doctor) => (
+          {doctors.map((doctor, index) => (
             <div key={doctor.id} className="appointment-card">
-              <Card onClick={() => handleCardClick(doctor)}>
+              <Card onClick={() => handleCardClick(doctor, index)}>
                 <Card.Body>
                   <div className="doctor-info">
                     <div className="appointment-info">
-                      <p>
-                        Date:{" "}
-                        {standardappointmentInfo[selectedAppointmentIndex].date}
-                      </p>
-                      <p>
-                        Time:{" "}
-                        {standardappointmentInfo[selectedAppointmentIndex].time}
-                      </p>
-                      <p>
-                        Reason:{" "}
-                        {
-                          standardappointmentInfo[selectedAppointmentIndex]
-                            .reason
-                        }
-                      </p>
+                      <p>Date: {standardappointmentInfo[index].date}</p>
+                      <p>Time: {standardappointmentInfo[index].time}</p>
+                      <p>Reason: {standardappointmentInfo[index].reason}</p>
                     </div>
                     <div className="doctor-details">
                       <h3>{doctor.name}</h3>
@@ -90,7 +77,17 @@ const AppointmentList: React.FC<Props> = ({
           <Modal.Title>View Appointment Details</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <h4>Appointment Information:</h4>
+          <div className="d-flex justify-content-around mt-3">
+            <Button
+              variant="primary"
+              disabled={
+                !standardappointmentInfo[selectedAppointmentIndex]
+                  .interpretation
+              }
+            >
+              Call Interpreter
+            </Button>
+          </div>
           <h4>Appointment Information:</h4>
           <p>Doctor: {selectedDoctor?.name}</p>
           <p>Date: {standardappointmentInfo[selectedAppointmentIndex].date}</p>
@@ -103,11 +100,6 @@ const AppointmentList: React.FC<Props> = ({
             {standardappointmentInfo[selectedAppointmentIndex].details ||
               "No description provided"}
           </p>
-          <div className="d-flex justify-content-around mt-3">
-            <Button variant="danger" onClick={handleDelete}>
-              Cancel Appointment
-            </Button>
-          </div>
           <GenericForm
             fields={[
               {
@@ -120,6 +112,12 @@ const AppointmentList: React.FC<Props> = ({
             onSubmit={handleReschedule}
             buttonText="Reschedule"
           />
+
+          <div className="d-flex justify-content-around mt-3">
+            <Button variant="danger" onClick={handleDelete}>
+              Cancel Appointment
+            </Button>
+          </div>
         </Modal.Body>
       </Modal>
     </div>

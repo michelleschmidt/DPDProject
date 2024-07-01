@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import GenericForm, { FormField } from "./GenericForm";
 import axiosInstance from "../../Axios";
 import { useAuth } from "../auth/AuthContext"; // Import useAuth hook
+import "../../App.css";
 
 interface Specialist {
   id: number;
@@ -123,6 +124,13 @@ const AppointmentBookingForm: React.FC = () => {
       label: "Appointment",
       showTimeSelect: true,
     },
+
+    {
+      name: "phone",
+      type: "checkbox",
+      label: "Do you need live translation?",
+      isRequired: false,
+    },
   ];
 
   console.log(token);
@@ -168,13 +176,15 @@ const AppointmentBookingForm: React.FC = () => {
   };
 
   return (
-    <GenericForm
-      fields={appointmentFields}
-      onSubmit={handleSubmit}
-      buttonText="Book Appointment"
-      initialData={{ reason: selectedReason }}
-      onFieldChange={handleFieldChange}
-    />
+    <div className="appointment-booking-form">
+      <GenericForm
+        fields={appointmentFields}
+        onSubmit={handleSubmit}
+        buttonText="Book Appointment"
+        initialData={{ reason: selectedReason }}
+        onFieldChange={handleFieldChange}
+      />
+    </div>
   );
 };
 
