@@ -7,6 +7,7 @@ import RegistrationForm from "./components/forms/RegistrationForm";
 
 const AuthSide: React.FC = () => {
   const [isRegistration, setIsRegistration] = useState<boolean>(false);
+  const [userLocation, setUserLocation] = useState<UserLocation | null>(null);
 
   interface UserLocation {
     latitude: number;
@@ -25,14 +26,7 @@ const AuthSide: React.FC = () => {
       {isRegistration ? <RegistrationForm /> : <LoginForm />}
 
       <div className="map-container-login">
-        <Map
-          radius={0}
-          setUserLocation={function (
-            value: React.SetStateAction<UserLocation | null>
-          ): void {
-            throw new Error("Function not implemented.");
-          }}
-        />
+        <Map radius={0} setUserLocation={setUserLocation} />
       </div>
       <Footer isFixed={true} />
     </>
