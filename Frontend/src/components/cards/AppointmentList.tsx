@@ -99,19 +99,20 @@ const AppointmentList: React.FC<Props> = ({
             {standardappointmentInfo[selectedAppointmentIndex].details ||
               "No description provided"}
           </p>
-          <GenericForm
-            fields={[
-              {
-                name: "newAppointment",
-                type: "date",
-                label: "",
-                showTimeSelect: true,
-              },
-            ]}
-            onSubmit={handleReschedule}
-            buttonText="Reschedule"
-          />
-
+          <div className="centered-button">
+            <GenericForm
+              fields={[
+                {
+                  name: "newAppointment",
+                  type: "date",
+                  label: "",
+                  showTimeSelect: true,
+                },
+              ]}
+              onSubmit={handleReschedule}
+              buttonText="Reschedule"
+            />
+          </div>
           <div className="d-flex justify-content-around mt-3">
             <Button onClick={handleDelete} color="danger" to="#">
               Cancel Appointment

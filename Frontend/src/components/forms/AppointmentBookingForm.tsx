@@ -14,7 +14,7 @@ const AppointmentBookingForm: React.FC = () => {
   const [appointmentOptions, setAppointmentOptions] = useState<string[]>([]);
   const [showOtherText, setShowOtherText] = useState(false);
   const [specialist, setSpecialist] = useState<Specialist[]>([]);
-  const { token } = useAuth(); // Use useAuth hook to access token
+  const { userData } = useAuth(); // Use useAuth hook to access token
   const history = useNavigate();
 
   const handleFieldChange = (
@@ -131,10 +131,9 @@ const AppointmentBookingForm: React.FC = () => {
       name: "showPreferredLanguageDoctors",
       type: "checkbox",
       label: "Only Show Doctors with Preferred Language",
+      checkboxLabel: "Yes, show me only doctors in my preferred Language",
     },
   ];
-
-  console.log(token);
 
   const handleSubmit = (formData: any) => {
     history("/find");

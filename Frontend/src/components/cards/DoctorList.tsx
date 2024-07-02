@@ -4,6 +4,7 @@ import "./Cards.css";
 import { DoctorDatawithImage } from "../Types";
 import AppointmentReBookingForm from "../forms/AppointmentReBookingFrom";
 import GenericForm from "../forms/GenericForm";
+import { Navigate, useNavigate } from "react-router";
 
 interface Props {
   doctors: DoctorDatawithImage[];
@@ -21,6 +22,7 @@ const DoctorList: React.FC<Props> = ({
   modalType,
 }) => {
   const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate();
   const [selectedDoctor, setSelectedDoctor] =
     useState<DoctorDatawithImage | null>(null);
 
@@ -33,10 +35,11 @@ const DoctorList: React.FC<Props> = ({
   const handleFormSubmit = (formData: any) => {
     console.log("Form submitted:", formData);
     setShowModal(false);
+    navigate("/dashboard");
   };
 
   const renderModalContent = () => {
-    if (modalType === "dashboard") {
+    if (modalType === "DocFind") {
       return (
         <GenericForm
           fields={[
@@ -49,16 +52,15 @@ const DoctorList: React.FC<Props> = ({
             {
               name: "phone",
               type: "phone",
-              label: "Do you need live translation?",
+              label: "I need translation assistance",
               isRequired: false,
-              checkboxLabel: "Yes, I need translation assistance",
             },
           ]}
           onSubmit={handleFormSubmit}
           buttonText="Book"
         />
       );
-    } else if (modalType === "DocFind") {
+    } else if (modalType === "dashboard") {
       return <AppointmentReBookingForm />;
     }
   };
@@ -93,7 +95,7 @@ const DoctorList: React.FC<Props> = ({
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>
-            {modalType === "dashboard"
+            {modalType === "DocFind"
               ? "Make a new Appointment"
               : "Make an Appointment"}
           </Modal.Title>

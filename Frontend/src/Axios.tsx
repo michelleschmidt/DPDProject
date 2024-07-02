@@ -19,25 +19,25 @@ const axiosInstance: AxiosInstance = axios.create({
 // Add a request interceptor to include the token and user role in the headers
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const token = localStorage.getItem("token"); // Retrieve the token from localStorage or other storage
-    const userRole = localStorage.getItem("userRole"); // Retrieve the user role from localStorage or other storage
+    // Remove custom headers for the login request
+    if (config.url === "/api/auth/login") {
+      delete config.headers!.Authorization;
+      delete config.headers!.Role;
+    } else {
+      const token = localStorage.getItem("token");
+      const userRole = localStorage.getItem("userRole");
 
-    if (token) {
-      config.headers!.Authorization = `Bearer ${token}`; // Include the token in the Authorization header
-    }
+      if (token) {
+        config.headers!.Authorization = `Bearer ${token}`;
+      }
 
-    if (userRole) {
-      config.headers!.Role = userRole; // Include the user role in the Role header
+      if (userRole) {
+        config.headers!.Role = userRole;
+      }
     }
 
     return config;
   },
-  (error) => Promise.reject(error)
-);
-
-// Add a response interceptor to handle errors or perform additional operations
-axiosInstance.interceptors.response.use(
-  (response) => response,
   (error) => Promise.reject(error)
 );
 

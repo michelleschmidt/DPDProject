@@ -20,31 +20,50 @@ const App = () => {
           <Route path="/" element={<AuthSide />} />
           <Route
             path="/find"
-            element={<PrivateRoute element={<DocFind />} />}
+            element={<PrivateRoute element={<DocFind />} requiredRoles={[]} />}
           />
           <Route
             path="/booking"
-            element={<PrivateRoute element={<DocSearch />} />}
+            element={
+              <PrivateRoute element={<DocSearch />} requiredRoles={[]} />
+            }
           />
           <Route
             path="/docsearch"
-            element={<PrivateRoute element={<DocSearch />} />}
+            element={
+              <PrivateRoute element={<DocSearch />} requiredRoles={[]} />
+            }
           />
           <Route
             path="/dashboard"
-            element={<PrivateRoute element={<Dashboard />} />}
+            element={
+              <PrivateRoute element={<Dashboard />} requiredRoles={[]} />
+            }
+          />
+          <Route
+            path="/admindashboard"
+            element={
+              <PrivateRoute
+                element={<ManageAppointments />}
+                requiredRoles={["normal-user"]}
+              />
+            }
           />
           <Route
             path="/phonedashboard"
-            element={<PrivateRoute element={<PhoneDashboard />} />}
+            element={
+              <PrivateRoute element={<PhoneDashboard />} requiredRoles={[]} />
+            }
           />
           <Route
             path="/profile"
-            element={<PrivateRoute element={<ProfileScreen />} />}
+            element={
+              <PrivateRoute element={<ProfileScreen />} requiredRoles={[]} />
+            }
           />
           <Route
             path="/find-doctors"
-            element={<PrivateRoute element={<DocFind />} />}
+            element={<PrivateRoute element={<DocFind />} requiredRoles={[]} />}
           />
         </Routes>
       </Router>

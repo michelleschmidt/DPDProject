@@ -9,7 +9,7 @@ const AppointmentReBookingForm: React.FC = () => {
   const [selectedReason, setSelectedReason] = useState<string | null>(null);
   const [appointmentOptions, setAppointmentOptions] = useState<string[]>([]);
   const [showOtherText, setShowOtherText] = useState(false);
-  const { token } = useAuth(); // Use useAuth hook to access token
+  const { userData } = useAuth(); // Use useAuth hook to access token
   const history = useNavigate();
 
   const handleFieldChange = (
@@ -111,16 +111,14 @@ const AppointmentReBookingForm: React.FC = () => {
 
     {
       name: "phone",
-      type: "checkbox",
-      label: "Do you need live translation?",
+      type: "phone",
+      label: "I need translation assistance",
       isRequired: false,
     },
   ];
 
-  console.log(token);
-
   const handleSubmit = (formData: any) => {
-    history("/find");
+    //history("/find");
     /* // Data to be sent to the backend immediately
     const dataToSend = {
       language_name: formData.showPreferredLanguageDoctors,

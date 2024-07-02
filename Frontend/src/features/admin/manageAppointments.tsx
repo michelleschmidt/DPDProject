@@ -87,7 +87,6 @@ const ManageAppointments: React.FC = () => {
             interaction.language.toLowerCase() ===
             selectedLanguage.toLowerCase()
         );
-
   return (
     <div className="container">
       <div className="sidebar">

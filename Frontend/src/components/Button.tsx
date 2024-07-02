@@ -7,7 +7,7 @@ interface Props {
   text?: string;
   type?: string;
   to?: string;
-  onClick?: () => void;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   color?: string;
   function?: (arg: string) => void;
 }

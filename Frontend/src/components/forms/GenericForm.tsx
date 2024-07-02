@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { FormEvent, useState } from "react";
 import { Form } from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -86,8 +86,9 @@ const GenericForm: React.FC<GenericFormProps> = ({
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log("Form submitted");
     let formIsValid = true;
     const newErrors: any = {};
 
@@ -105,37 +106,43 @@ const GenericForm: React.FC<GenericFormProps> = ({
     setErrors(newErrors);
 
     if (formIsValid) {
+      console.log("Calling onSubmit with formData:", formData);
       onSubmit(formData);
     }
+  };
+
+  const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    handleSubmit(e as unknown as FormEvent<HTMLFormElement>);
   };
 
   return (
     <Form onSubmit={handleSubmit} className="auth-form">
       {fields.map((field) => (
-        <Form.Group controlId={field.name} key={field.name}>
+        <Form.Group
+          controlId={field.name}
+          key={field.name}
+          className="form-group"
+        >
           {field.type === "phone" ? (
             <div className="phone-field">
-              <h5>{field.label}</h5>
-              <div className="form-check">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id={`${field.name}Checkbox`}
-                  name={field.name}
-                  checked={formData[field.name] || false}
-                  onChange={(e) => handleChange(e)}
-                />
-                <label
-                  className="form-check-label"
-                  htmlFor={`${field.name}Checkbox`}
-                >
-                  {field.checkboxLabel || "Yes, I do"}
-                </label>
-              </div>
+              <Form.Check
+                type="checkbox"
+                id={`${field.name}Checkbox`}
+                name={field.name}
+                checked={formData[field.name] || false}
+                onChange={(e) => handleChange(e)}
+                label={field.label}
+              />
+              {field.checkboxLabel && (
+                <small className="form-text text-muted">
+                  {field.checkboxLabel}
+                </small>
+              )}
             </div>
           ) : (
             <>
-              <Form.Label>{field.label}</Form.Label>
+              {field.type !== "date" && <Form.Label>{field.label}</Form.Label>}
               {field.type === "text" ||
               field.type === "email" ||
               field.type === "password" ||
@@ -177,17 +184,20 @@ const GenericForm: React.FC<GenericFormProps> = ({
                   ))}
                 </Form.Select>
               ) : field.type === "date" ? (
-                <DatePicker
-                  selected={formData[field.name]}
-                  onChange={(date) => handleDateChange(date, field.name)}
-                  showTimeSelect={field.showTimeSelect || false}
-                  dateFormat={
-                    field.showTimeSelect
-                      ? "MMMM d, yyyy h:mm aa"
-                      : "MMMM d, yyyy"
-                  }
-                  className="form-control"
-                />
+                <div className="date-field">
+                  <Form.Label>{field.label}</Form.Label>
+                  <DatePicker
+                    selected={formData[field.name]}
+                    onChange={(date) => handleDateChange(date, field.name)}
+                    showTimeSelect={field.showTimeSelect || false}
+                    dateFormat={
+                      field.showTimeSelect
+                        ? "MMMM d, yyyy h:mm aa"
+                        : "MMMM d, yyyy"
+                    }
+                    className="form-control"
+                  />
+                </div>
               ) : field.type === "checkbox" ? (
                 <Form.Check
                   type="checkbox"
@@ -205,7 +215,7 @@ const GenericForm: React.FC<GenericFormProps> = ({
           </Form.Control.Feedback>
         </Form.Group>
       ))}
-      <Button onClick={() => handleSubmit} color="primary">
+      <Button onClick={handleButtonClick} color="primary">
         {buttonText}
       </Button>
     </Form>

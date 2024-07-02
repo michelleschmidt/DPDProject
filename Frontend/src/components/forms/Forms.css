@@ -38,4 +38,14 @@
     color: #4682b4;
     font-weight: bold;
   }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+  }
+  
+  .date-field {
+    display: flex;
+    flex-direction: column;
+  }
   

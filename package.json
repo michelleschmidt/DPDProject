@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "react-cookie": "^7.1.4",
+    "save-dev": "^0.0.1-security"
+  }
+}

@@ -71,9 +71,11 @@ const RegistrationForm: React.FC = () => {
       },
       {
         name: "title",
-        type: "text",
-        label: isFrench ? "Titre" : "Title",
-        placeholder: isFrench ? "Dr, Mme, M., Prof" : "Dr, Ms., Mr, Prof",
+        type: "select",
+        label: isFrench ? "Langue Préférée" : "Preferred Language",
+        options: ["Mr.", "Mrs.", "Ms.", "Dr.", "Prof."],
+        placeholder: isFrench ? "Choisir la langue préférée" : "Select title",
+        multiple: false,
       },
       {
         name: "first_name",
