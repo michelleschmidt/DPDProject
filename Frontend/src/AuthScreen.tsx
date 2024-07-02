@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button } from "react-bootstrap";
+import Button from "./components/Button";
 import Map from "./components/MapLogin";
 import Footer from "./components/Footer";
 import LoginForm from "./components/forms/LoginForm";
@@ -16,9 +16,9 @@ const AuthSide: React.FC = () => {
   return (
     <>
       <Button
-        className="centered-button"
-        variant="link"
         onClick={() => setIsRegistration(!isRegistration)}
+        color="light"
+        to="#"
       >
         {isRegistration ? "Already have an account? Sign In" : "Register Here"}
       </Button>

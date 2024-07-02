@@ -189,6 +189,8 @@
   display: flex;
   justify-content: center;
   align-self: center !important;
+  margin-bottom: 0.5%;
+  margin-top: 0.5%;
 }
 
 .admin-dashboard {

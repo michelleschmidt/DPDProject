@@ -5,16 +5,10 @@ import axiosInstance from "../../Axios";
 import { useAuth } from "../auth/AuthContext"; // Import useAuth hook
 import "../../App.css";
 
-interface Specialist {
-  id: number;
-  area_of_specialization: string;
-}
-
-const AppointmentBookingForm: React.FC = () => {
+const AppointmentReBookingForm: React.FC = () => {
   const [selectedReason, setSelectedReason] = useState<string | null>(null);
   const [appointmentOptions, setAppointmentOptions] = useState<string[]>([]);
   const [showOtherText, setShowOtherText] = useState(false);
-  const [specialist, setSpecialist] = useState<Specialist[]>([]);
   const { token } = useAuth(); // Use useAuth hook to access token
   const history = useNavigate();
 
@@ -63,16 +57,6 @@ const AppointmentBookingForm: React.FC = () => {
       setAppointmentOptions(getAppointmentOptions(selectedReason));
     }
   }, [selectedReason]);
-
-  useEffect(() => {
-    // Fetch specialisations from the backend
-    axiosInstance
-      .get("/api/search/specializations") //check spelling
-      .then((response) => setSpecialist(response.data))
-      .catch((error) =>
-        console.error("Error fetching specializations:", error)
-      );
-  }, []);
 
   const appointmentFields: FormField[] = [
     {
@@ -188,4 +172,4 @@ const AppointmentBookingForm: React.FC = () => {
   );
 };
 
-export default AppointmentBookingForm;
+export default AppointmentReBookingForm;

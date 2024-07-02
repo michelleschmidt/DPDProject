@@ -1,5 +1,6 @@
 import React, { ReactNode } from "react";
 import { Link } from "react-router-dom";
+import "../App.css";
 
 interface Props {
   children: ReactNode;
@@ -13,11 +14,13 @@ interface Props {
 
 const Button = ({ children, onClick, to = "/", color = "primary" }: Props) => {
   return (
-    <Link to={to}>
-      <button className={`btn btn-${color}`} onClick={onClick}>
-        {children}
-      </button>
-    </Link>
+    <div className="centered-button">
+      <Link to={to}>
+        <button className={`btn btn-${color}`} onClick={onClick}>
+          {children}
+        </button>
+      </Link>
+    </div>
   );
 };
 

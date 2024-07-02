@@ -1,15 +1,15 @@
 import React, { useState } from "react";
-import { Card, Modal, Button } from "react-bootstrap";
-import GenericForm from "../forms/GenericForm";
+import { Card, Modal } from "react-bootstrap";
 import "./Cards.css";
 import { DoctorDatawithImage } from "../Types";
-import AppointmentBookingForm from "../forms/AppointmentReBookingFrom";
+import AppointmentReBookingForm from "../forms/AppointmentReBookingFrom";
+import GenericForm from "../forms/GenericForm";
 
 interface Props {
   doctors: DoctorDatawithImage[];
   onSelectDoctor: (doctor: DoctorDatawithImage) => void;
   heading: string;
-  modalType: string;
+  modalType: "dashboard" | "DocFind";
   ausrichtung: "appointment-card" | "doctor-card";
 }
 
@@ -20,41 +20,47 @@ const DoctorList: React.FC<Props> = ({
   ausrichtung,
   modalType,
 }) => {
-  const [showModalDashboard, setShowModalDashboard] = useState(false);
-  const [showModalFind, setShowModalFind] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [selectedDoctor, setSelectedDoctor] =
     useState<DoctorDatawithImage | null>(null);
-  const [newAppointmentDateTime, setNewAppointmentDateTime] = useState("");
 
   const handleCardClick = (doctor: DoctorDatawithImage) => {
     setSelectedDoctor(doctor);
-    if (modalType === "dashboard") {
-      setShowModalDashboard(true);
-    } else if (modalType === "DocFind") {
-      setShowModalFind(true);
-    }
+    setShowModal(true);
+    onSelectDoctor(doctor);
   };
 
   const handleFormSubmit = (formData: any) => {
-    const newAppointmentDateTime = formData.appointment;
     console.log("Form submitted:", formData);
+    setShowModal(false);
+  };
 
-    // Simulate adding a new appointment
-    const newAppointment = {
-      reason: "New appointment",
-      date: newAppointmentDateTime.split("T")[0],
-      time: newAppointmentDateTime.split("T")[1],
-      details: "", // Ensure details property is included
-    };
-
-    // Here you would typically add the new appointment to your data structure
-    // For demonstration, let's just log it
-    console.log("New Appointment:", newAppointment);
-
-    setNewAppointmentDateTime(newAppointmentDateTime);
-
-    // Close the modal after submitting
-    setShowModalFind(false);
+  const renderModalContent = () => {
+    if (modalType === "dashboard") {
+      return (
+        <GenericForm
+          fields={[
+            {
+              name: "appointment",
+              type: "date",
+              label: "Appointment",
+              showTimeSelect: true,
+            },
+            {
+              name: "phone",
+              type: "phone",
+              label: "Do you need live translation?",
+              isRequired: false,
+              checkboxLabel: "Yes, I need translation assistance",
+            },
+          ]}
+          onSubmit={handleFormSubmit}
+          buttonText="Book"
+        />
+      );
+    } else if (modalType === "DocFind") {
+      return <AppointmentReBookingForm />;
+    }
   };
 
   return (
@@ -74,7 +80,7 @@ const DoctorList: React.FC<Props> = ({
                     <div className="doctor-details">
                       <h4>{doctor.specialty}</h4>
                       <p>{doctor.address}</p>
-                      <p>Language: {doctor.language}</p>{" "}
+                      <p>Language: {doctor.language}</p>
                       <p>Distance: {doctor.distance.toFixed(2)} km</p>
                     </div>
                   </div>
@@ -84,41 +90,15 @@ const DoctorList: React.FC<Props> = ({
           ))}
         </div>
       </div>
-      <Modal
-        show={showModalDashboard}
-        onHide={() => setShowModalDashboard(false)}
-      >
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Make a new Appointment</Modal.Title>
+          <Modal.Title>
+            {modalType === "dashboard"
+              ? "Make a new Appointment"
+              : "Make an Appointment"}
+          </Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          <AppointmentBookingForm />
-        </Modal.Body>
-      </Modal>
-
-      <Modal show={showModalFind} onHide={() => setShowModalFind(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Make an Appointment</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <GenericForm
-            fields={[
-              {
-                name: "appointment",
-                type: "date",
-                label: "Appointment",
-                showTimeSelect: true,
-              },
-              {
-                name: "phone",
-                type: "checkbox",
-                label: "Do you need live translation?",
-              },
-            ]}
-            onSubmit={handleFormSubmit}
-            buttonText={"Book"}
-          />
-        </Modal.Body>
+        <Modal.Body>{renderModalContent()}</Modal.Body>
       </Modal>
     </div>
   );

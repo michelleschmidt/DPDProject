@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Form, Button } from "react-bootstrap";
+import { Form } from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import "../../App.css";
+import "./Forms.css";
+import Button from "../Button"; // Import the custom Button component
 
 export interface FormField {
   name: string;
@@ -23,6 +24,7 @@ export interface FormField {
   multiple?: boolean;
   showTimeSelect?: boolean;
   isRequired?: boolean;
+  checkboxLabel?: string;
 }
 
 interface GenericFormProps {
@@ -84,24 +86,6 @@ const GenericForm: React.FC<GenericFormProps> = ({
     }
   };
 
-  const handleMultiSelectChange = (
-    e: React.ChangeEvent<HTMLSelectElement>,
-    name: string
-  ) => {
-    const selectedOptions = Array.from(
-      e.target.selectedOptions,
-      (option) => option.value
-    );
-    setFormData({
-      ...formData,
-      [name]: selectedOptions,
-    });
-    setErrors({ ...errors, [name]: "" });
-    if (onFieldChange) {
-      onFieldChange(name, selectedOptions);
-    }
-  };
-
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     let formIsValid = true;
@@ -145,7 +129,7 @@ const GenericForm: React.FC<GenericFormProps> = ({
                   className="form-check-label"
                   htmlFor={`${field.name}Checkbox`}
                 >
-                  Yes, I do
+                  {field.checkboxLabel || "Yes, I do"}
                 </label>
               </div>
             </div>
@@ -211,7 +195,7 @@ const GenericForm: React.FC<GenericFormProps> = ({
                   checked={formData[field.name]}
                   onChange={handleChange}
                   isInvalid={!!errors[field.name]}
-                  label={field.label}
+                  label={field.checkboxLabel || field.label}
                 />
               ) : null}
             </>
@@ -221,7 +205,7 @@ const GenericForm: React.FC<GenericFormProps> = ({
           </Form.Control.Feedback>
         </Form.Group>
       ))}
-      <Button variant="primary" type="submit">
+      <Button onClick={() => handleSubmit} color="primary">
         {buttonText}
       </Button>
     </Form>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Card, Modal, Button } from "react-bootstrap";
+import { Card, Modal } from "react-bootstrap";
+import Button from "../Button";
 import GenericForm from "../forms/GenericForm";
 import "./Cards.css";
 import { DoctorData } from "../Types";
@@ -79,13 +80,11 @@ const AppointmentList: React.FC<Props> = ({
         <Modal.Body>
           <div className="d-flex justify-content-around mt-3">
             <Button
-              variant="primary"
-              disabled={
-                !standardappointmentInfo[selectedAppointmentIndex]
-                  .interpretation
-              }
+              onClick={() => console.log("Call Interpreter")}
+              color="warning"
+              to="#"
             >
-              Call Interpreter
+              <b>Call Interpreter</b>
             </Button>
           </div>
           <h4>Appointment Information:</h4>
@@ -105,7 +104,7 @@ const AppointmentList: React.FC<Props> = ({
               {
                 name: "newAppointment",
                 type: "date",
-                label: "New Appointment",
+                label: "",
                 showTimeSelect: true,
               },
             ]}
@@ -114,7 +113,7 @@ const AppointmentList: React.FC<Props> = ({
           />
 
           <div className="d-flex justify-content-around mt-3">
-            <Button variant="danger" onClick={handleDelete}>
+            <Button onClick={handleDelete} color="danger" to="#">
               Cancel Appointment
             </Button>
           </div>

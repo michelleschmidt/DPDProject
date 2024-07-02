@@ -3,11 +3,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Map from "../../components/Map";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
-import { Modal } from "react-bootstrap";
 import { Range } from "react-range";
 import DoctorList from "../../components/cards/DoctorList";
 import { DoctorDatawithImage } from "../../components/Types";
-import GenericForm from "../../components/forms/GenericForm";
 import "./DocFind.css";
 
 interface UserLocation {
@@ -32,13 +30,6 @@ function DocFind() {
 
   const handleCardClick = (doctor: DoctorDatawithImage) => {
     setSelectedDoctor(doctor);
-    setShowModal(true);
-  };
-
-  const handleFormSubmit = (formData: any) => {
-    console.log("Form submitted:", formData);
-    setShowModal(false);
-    history("/dashboard");
   };
 
   const calculateDistance = (
@@ -139,8 +130,8 @@ function DocFind() {
               handleCardClick(doctor);
             }}
             heading="Available Doctors"
-            modalType={"DocFind"}
-            ausrichtung={"doctor-card"}
+            modalType="DocFind"
+            ausrichtung="doctor-card"
           />
         </div>
         <div className="map-slider-container">
@@ -194,32 +185,6 @@ function DocFind() {
         </div>
       </div>
       <Footer isFixed={true} />
-
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Book Appointment</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <GenericForm
-            fields={[
-              {
-                name: "availableAppointments",
-                type: "date",
-                label: "Available Appointments",
-                showTimeSelect: true,
-              },
-              {
-                name: "phone",
-                type: "checkbox",
-                label: "Do you need live translation?",
-                isRequired: false,
-              },
-            ]}
-            onSubmit={handleFormSubmit}
-            buttonText="Schedule"
-          />
-        </Modal.Body>
-      </Modal>
     </div>
   );
 }
