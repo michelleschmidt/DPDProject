@@ -1,31 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../../Axios";
 import "../../App.css";
-import Sidebar from "../../components/adminHeader";
+import AdminHeader from "../../components/website/layout/adminHeader";
+import GenericTable from "../../components/Table";
+import { Interaction, Patient, Doctor } from "../../components/Types";
 
-interface Patient {
-  id: number;
-  name: string;
-  language: string;
-}
-
-interface Doctor {
-  id: number;
-  name: string;
-}
-
-interface Interaction {
-  id: number;
-  patientId: number;
-  doctorId: number;
-  language: string;
-  status: string;
-  translation: string;
-  patientName?: string;
-  doctorName?: string;
-}
-
-const ManageAppointments: React.FC = () => {
+const ManagePatients: React.FC = () => {
   const [interactions, setInteractions] = useState<Interaction[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
@@ -87,13 +67,21 @@ const ManageAppointments: React.FC = () => {
             interaction.language.toLowerCase() ===
             selectedLanguage.toLowerCase()
         );
+
+  const columns: string[] = [
+    "Patient Name",
+    "Doctor Name",
+    "Language",
+    "Status",
+    "Translation",
+  ];
+
   return (
     <div className="container">
-      <div className="sidebar">
-        <Sidebar />
+      <div className="AdminHeader">
+        <AdminHeader />
       </div>
       <div className="manage-interactions">
-        <h2>Manage Interactions</h2>
         <div className="filter-container">
           <label htmlFor="language-filter">Filter by Language:</label>
           <select
@@ -108,38 +96,18 @@ const ManageAppointments: React.FC = () => {
           </select>
           <button className="add-appointment-button">Add Appointment</button>
         </div>
-        <table>
-          <thead>
-            <tr>
-              <th>Patient Name</th>
-              <th>Doctor Name</th>
-              <th>Language</th>
-              <th>Status</th>
-              <th>Live Translation</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredInteractions.map((interaction) => (
-              <tr key={interaction.id}>
-                <td>{interaction.patientName}</td>
-                <td>{interaction.doctorName}</td>
-                <td>{interaction.language}</td>
-                <td>{interaction.status}</td>
-                <td>{interaction.translation}</td>
-                <td>
-                  <button>Edit</button>
-                  <button onClick={() => handleDelete(interaction.id)}>
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <GenericTable
+          columns={columns}
+          data={filteredInteractions}
+          handleDelete={handleDelete}
+          handleEdit={function (id: number): void {
+            throw new Error("Function not implemented.");
+          }}
+          add={"Appointments"}
+        />
       </div>
     </div>
   );
 };
 
-export default ManageAppointments;
+export default ManagePatients;

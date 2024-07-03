@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import Button from "./components/Button";
-import Map from "./components/MapLogin";
-import Footer from "./components/Footer";
-import LoginForm from "./components/forms/LoginForm";
-import RegistrationForm from "./components/forms/RegistrationForm";
+import Button from "../../components/Button";
+import Map from "../../components/app/MapLogin";
+import Footer from "../../components/app/Footer";
+import LoginForm from "../../components/app/forms/LoginForm";
+import RegistrationForm from "../../components/app/forms/RegistrationForm";
 
 const AuthSide: React.FC = () => {
   const [isRegistration, setIsRegistration] = useState<boolean>(false);

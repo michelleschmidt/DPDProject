@@ -1,14 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../../Axios";
+import axiosInstance from "../../../Axios";
 import GenericForm, { FormField } from "./GenericForm";
-import { useAuth } from "../auth/AuthContext";
-import { useCookies } from "react-cookie";
+import { useAuth } from "../../auth/AuthContext";
 
 const LoginForm: React.FC = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
-  const [, setCookie] = useCookies(["token"]);
+  const [error, setError] = useState<string | null>(null);
 
   const fields: FormField[] = [
     {
@@ -33,26 +32,34 @@ const LoginForm: React.FC = () => {
       });
 
       if (response.status === 201) {
-        // Login successful
         const userData = response.data;
-        console.log("Login successful. User data:", userData);
+        login(userData);
 
-        // Use the user data to update your application state
-        login(userData); // Pass the entire user data object to login
-
-        // Navigate to dashboard
-        navigate("/dashboard");
+        if (userData.role === "admin") {
+          navigate("/admindashboard");
+        } else {
+          navigate("/dashboard");
+        }
       } else {
-        throw new Error("Unexpected response status: " + response.status);
+        setError("Unexpected response from server");
       }
     } catch (error: any) {
       console.error("Login error:", error);
-      // Handle login error (show message to user, etc.)
+      setError(
+        error.response?.data?.message || "An error occurred during login"
+      );
     }
   };
 
   return (
-    <GenericForm fields={fields} onSubmit={handleSubmit} buttonText="Sign In" />
+    <>
+      {error && <div className="error-message">{error}</div>}
+      <GenericForm
+        fields={fields}
+        onSubmit={handleSubmit}
+        buttonText="Sign In"
+      />
+    </>
   );
 };
 

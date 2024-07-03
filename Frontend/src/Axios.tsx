@@ -1,44 +1,41 @@
 import axios, {
   AxiosInstance,
-  AxiosRequestConfig,
   InternalAxiosRequestConfig,
+  AxiosError,
 } from "axios";
 
-// Define the base URL for your API
-const baseURL =
-  /*"https://health-ct.azurewebsites.net"*/ "https://health-connect-kyp7.onrender.com";
+const baseURL = "https://health-connect-kyp7.onrender.com";
 
-// Create an instance of Axios with default configuration
 const axiosInstance: AxiosInstance = axios.create({
   baseURL,
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true,
 });
 
-// Add a request interceptor to include the token and user role in the headers
-axiosInstance.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    // Remove custom headers for the login request
-    if (config.url === "/api/auth/login") {
-      delete config.headers!.Authorization;
-      delete config.headers!.Role;
-    } else {
-      const token = localStorage.getItem("token");
-      const userRole = localStorage.getItem("userRole");
-
-      if (token) {
-        config.headers!.Authorization = `Bearer ${token}`;
-      }
-
-      if (userRole) {
-        config.headers!.Role = userRole;
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error: AxiosError) => {
+    const originalRequest = error.config as InternalAxiosRequestConfig & {
+      _retry?: boolean;
+    };
+    if (
+      error.response?.status === 401 &&
+      originalRequest &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true;
+      try {
+        await axiosInstance.get("/api/auth/check-auth");
+        return axiosInstance(originalRequest);
+      } catch (refreshError) {
+        // Handle authentication failure (e.g., redirect to login)
+        return Promise.reject(refreshError);
       }
     }
-
-    return config;
-  },
-  (error) => Promise.reject(error)
+    return Promise.reject(error);
+  }
 );
 
 export default axiosInstance;

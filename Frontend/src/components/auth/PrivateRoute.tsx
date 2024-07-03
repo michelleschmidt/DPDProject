@@ -1,8 +1,7 @@
-// PrivateRoute.tsx
-
 import React from "react";
-import { Navigate, Route } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
+import LoginForm from "../app/forms/LoginForm";
 
 interface PrivateRouteProps {
   element: React.ReactElement;
@@ -19,7 +18,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({
   const isAuthorized =
     isAuthenticated && userData && requiredRoles.includes(userData.role);
 
-  return isAuthorized ? element : <Navigate to="/" replace />;
+  return isAuthorized ? element : <LoginForm />; // Render protected component if authorized, otherwise render LoginForm
 };
 
 export default PrivateRoute;

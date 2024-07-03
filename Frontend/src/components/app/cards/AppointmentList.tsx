@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Card, Modal } from "react-bootstrap";
-import Button from "../Button";
+import Button from "../../Button";
 import GenericForm from "../forms/GenericForm";
 import "./Cards.css";
-import { DoctorData } from "../Types";
-import { standardappointmentInfo } from "../../assets/FakeData";
+import { DoctorData } from "../../Types";
+import { standardappointmentInfo } from "../../../assets/FakeData";
 
 interface Props {
   doctors: DoctorData[];

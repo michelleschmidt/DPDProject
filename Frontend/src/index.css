@@ -1,6 +1,7 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
 
 .separator {
     border-left: 1px solid black;
@@ -29,3 +30,4 @@
         @apply w-[300px] h-[40px] font-montserrat text-white bg-primary-900 justify-center items-center uppercase px-4;
     }
 }
+

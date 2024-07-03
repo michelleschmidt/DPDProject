@@ -1,8 +1,8 @@
 import React from "react";
-import DoctorList from "../../components/cards/DoctorList";
-import Footer from "../../components/Footer";
-import Header from "../../components/Header";
-import AppointmentList from "../../components/cards/AppointmentList";
+import DoctorList from "../../components/app/cards/DoctorList";
+import Footer from "../../components/app/Footer";
+import Header from "../../components/app/Header";
+import AppointmentList from "../../components/app/cards/AppointmentList";
 import { useAuth } from "../../components/auth/AuthContext";
 import { DoctorData, DoctorDatawithImage } from "../../components/Types";
 

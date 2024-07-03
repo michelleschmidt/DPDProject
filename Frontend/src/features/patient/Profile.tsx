@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Alert } from "react-bootstrap";
-import Footer from "../../components/Footer";
-import Header from "../../components/Header";
-import GenericForm, { FormField } from "../../components/forms/GenericForm";
+import Footer from "../../components/app/Footer";
+import Header from "../../components/app/Header";
+import GenericForm, { FormField } from "../../components/app/forms/GenericForm";
 import axiosInstance from "../../Axios";
 
 const ProfileScreen = () => {

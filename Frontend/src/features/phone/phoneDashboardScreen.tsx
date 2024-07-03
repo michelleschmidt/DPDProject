@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import PatientList from "../../components/cards/PatientList"; // Import PatientList component
-import Footer from "../../components/Footer";
-import Header from "../../components/Header";
+import PatientList from "../../components/app/cards/PatientList"; // Import PatientList component
+import Footer from "../../components/app/Footer";
+import Header from "../../components/app/Header";
 
 interface DoctorData {
   distance: number;

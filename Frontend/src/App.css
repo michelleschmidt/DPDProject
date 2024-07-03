@@ -6,7 +6,7 @@
   padding: 10px 0; /* Adjust padding as needed */
 }
 
-.regForm{
+.regForm {
   padding-bottom: 20%;
 }
 
@@ -80,7 +80,7 @@
   overflow-x: auto;
   white-space: nowrap;
 }
-.doctor-cards-container{
+.doctor-cards-container {
   width: 100%;
 }
 .appointment-card {
@@ -92,26 +92,22 @@
   height: 200px; /* Set a fixed height */
 }
 
-.doctor-card{
+.doctor-card {
   display: block;
   cursor: pointer;
   margin-bottom: 1rem;
   width: 450px; /* Set a fixed width */
   height: 200px; /* Set a fixed height */
-  
 }
 
-.appointment-cards{
+.appointment-cards {
   flex-direction: column; /* Ensure cards stack vertically */
-
 }
 
 .doctor-details {
   flex: 1; /* Expand to fill available space */
   margin-left: 1rem;
 }
-
-
 
 .doctor-info {
   display: flex;
@@ -184,7 +180,6 @@
   margin-bottom: 20px; /* Add some bottom margin for spacing */
 }
 
-
 .centered-button {
   display: flex;
   justify-content: center;
@@ -204,24 +199,24 @@
   background-color: #f4f4f4;
 }
 
-/* src/components/Sidebar.css */
-.sidebar {
+/* src/components/AdminHeader.css */
+.AdminHeader {
   width: 250px;
   background-color: #ffffff;
   border-right: 1px solid #ddd;
   padding: 20px;
 }
 
-.sidebar h2 {
+.AdminHeader h2 {
   margin-bottom: 20px;
 }
 
-.sidebar ul {
+.AdminHeader ul {
   list-style-type: none;
   padding: 0;
 }
 
-.sidebar ul li {
+.AdminHeader ul li {
   margin: 15px 0;
 }
 
@@ -273,7 +268,8 @@ table {
   border-collapse: collapse;
 }
 
-th, td {
+th,
+td {
   text-align: left;
   padding: 12px;
   border-bottom: 1px solid #ddd;
@@ -295,7 +291,7 @@ button:hover {
   display: flex;
 }
 
-.sidebar {
+.AdminHeader {
   flex: 1;
 }
 
@@ -316,7 +312,6 @@ button:hover {
   padding-top: 10px; /* Adjust the top padding as needed */
   padding-left: 40px;
 }
-
 
 .phone-field {
   background-color: #f8f9fa;

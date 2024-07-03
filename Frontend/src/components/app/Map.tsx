@@ -3,7 +3,7 @@ import { Circle, MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import L, { LatLngTuple } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "../App.css"; // Import your custom CSS file
-import { DoctorDatawithImage } from "./Types";
+import { DoctorDatawithImage } from "../Types";
 
 interface UserLocation {
   latitude: number;

@@ -1,6 +1,6 @@
-import Header from "../../components/Header";
-import Footer from "../../components/Footer";
-import AppointmentBookingForm from "../../components/forms/AppointmentBookingForm";
+import Header from "../../components/app/Header";
+import Footer from "../../components/app/Footer";
+import AppointmentBookingForm from "../../components/app/forms/AppointmentBookingForm";
 
 function DocSearch() {
   function handleFormSubmit(formData: any): void {

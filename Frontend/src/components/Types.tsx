@@ -30,5 +30,33 @@ export interface UserData {
     country: string;
     postcode: string;
   };
-  languages: any[]; // You might want to define a more specific type for languages
+  languages: any[];
+  token?: string;
+}
+
+export interface Interaction {
+  id: number;
+  patientId: number;
+  date: Date;
+  doctorId: number;
+  language: string;
+  status: string;
+  translation: string;
+  patientName?: string;
+  doctorName?: string;
+}
+export interface Patient {
+  id: number;
+  name: string;
+  address: string;
+  insurance: string;
+  phoneNumber: string;
+  language: string;
+}
+
+export interface Doctor {
+  id: number;
+  name: string;
+  specialisation: string;
+  language: string;
 }

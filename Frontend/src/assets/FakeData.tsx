@@ -1,4 +1,39 @@
-import { DoctorDatawithImage } from "../components/Types";
+import { DoctorDatawithImage, Patient } from "../components/Types";
+
+export const patients: Patient[] = [
+  {
+    id: 0,
+    name: "Jane",
+    address: "xyz",
+    insurance: "private",
+    phoneNumber: "012345",
+    language: "English",
+  },
+  {
+    id: 2,
+    name: "Jame",
+    address: "1xyz",
+    insurance: "private",
+    phoneNumber: "012345",
+    language: "English",
+  },
+  {
+    id: 1,
+    name: "Hns",
+    address: "xyz",
+    insurance: "private",
+    phoneNumber: "012345",
+    language: "English",
+  },
+  {
+    id: 3,
+    name: "Bob",
+    address: "xyz",
+    insurance: "private",
+    phoneNumber: "012345",
+    language: "English",
+  },
+];
 
 export const alldoctors: DoctorDatawithImage[] = [
   {

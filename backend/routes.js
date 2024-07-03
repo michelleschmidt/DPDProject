@@ -12,7 +12,7 @@ app.use("/api/v1/users", userRoutes);
 
 userRouter.get('/api/v1/users/all-users', isLoggedIn, roleCheck('admin'), userController.getUsers);
 
-userRouter.get('/api/v1/users', isLoggedIn, userController.getDoctors);
+userRouter.get('/api/users', isLoggedIn, userController.getDoctors);
 
 userRouter.post('/api/v1/users/admin-create', isLoggedIn, roleCheck('admin'), userController.createUser);
 

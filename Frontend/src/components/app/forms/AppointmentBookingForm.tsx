@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import GenericForm, { FormField } from "./GenericForm";
-import axiosInstance from "../../Axios";
-import { useAuth } from "../auth/AuthContext"; // Import useAuth hook
+import axiosInstance from "../../../Axios";
+import { useAuth } from "../../auth/AuthContext"; // Import useAuth hook
 
 interface Specialist {
   id: number;

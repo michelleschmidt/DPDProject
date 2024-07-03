@@ -5,14 +5,15 @@ import React, {
   ReactNode,
   useEffect,
 } from "react";
-
+import axiosInstance from "../../Axios"; // Adjust the path as needed
 import { UserData } from "../Types";
 
 interface AuthContextType {
   isAuthenticated: boolean;
   userData: UserData | null;
   login: (data: UserData) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
+  checkAuth: () => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -21,39 +22,42 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userData, setUserData] = useState<UserData | null>(null);
 
-  useEffect(() => {
-    const storedUserData = localStorage.getItem("userData");
-
-    if (storedUserData) {
-      try {
-        const parsedUserData = JSON.parse(storedUserData);
-        setUserData(parsedUserData);
-        setIsAuthenticated(true);
-      } catch (error) {
-        console.error("Error parsing stored user data:", error);
-        setIsAuthenticated(false);
-        setUserData(null);
-      }
-    } else {
+  const checkAuth = async () => {
+    try {
+      const response = await axiosInstance.get("/api/auth/check-auth");
+      setIsAuthenticated(true);
+      setUserData(response.data.user);
+      return true;
+    } catch (error) {
       setIsAuthenticated(false);
       setUserData(null);
+      return false;
     }
+  };
+
+  useEffect(() => {
+    checkAuth();
   }, []);
 
   const login = (data: UserData) => {
-    localStorage.setItem("userData", JSON.stringify(data));
     setUserData(data);
     setIsAuthenticated(true);
   };
 
-  const logout = () => {
-    localStorage.removeItem("userData");
+  const logout = async () => {
+    try {
+      await axiosInstance.post("/api/auth/logout");
+    } catch (error) {
+      console.error("Logout request failed:", error);
+    }
     setUserData(null);
     setIsAuthenticated(false);
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, userData, login, logout }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, userData, login, logout, checkAuth }}
+    >
       {children}
     </AuthContext.Provider>
   );

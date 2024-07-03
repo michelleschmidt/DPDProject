@@ -3,7 +3,7 @@ import { Form } from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "./Forms.css";
-import Button from "../Button"; // Import the custom Button component
+import Button from "../../Button"; // Import the custom Button component
 
 export interface FormField {
   name: string;
