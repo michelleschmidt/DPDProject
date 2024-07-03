@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Card, Modal } from "react-bootstrap";
 import "./Cards.css";
 import { DoctorDatawithImage } from "../../Types";
-import AppointmentReBookingForm from "../../forms/AppointmentReBookingFrom";
-import GenericForm from "../../forms/GenericForm";
+import AppointmentReBookingForm from "../forms/AppointmentReBookingFrom";
+import GenericForm from "../forms/GenericForm";
 import { Navigate, useNavigate } from "react-router";
 
 interface Props {

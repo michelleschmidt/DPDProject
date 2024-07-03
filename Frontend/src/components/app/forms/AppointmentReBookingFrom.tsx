@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import GenericForm, { FormField } from "./GenericForm";
 import axiosInstance from "../../../Axios";
 import { useAuth } from "../../auth/AuthContext"; // Import useAuth hook
-import "../../App.css";
+import "../../../App.css";
 
 const AppointmentReBookingForm: React.FC = () => {
   const [selectedReason, setSelectedReason] = useState<string | null>(null);

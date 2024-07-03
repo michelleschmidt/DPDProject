@@ -5,7 +5,7 @@ import PrivateRoute from "./components/auth/PrivateRoute";
 
 import DocSearch from "./features/patient/DocSearchScreen";
 import DocFind from "./features/patient/DocFindScreen";
-import AuthSide from "./AuthScreen";
+import AuthSide from "./features/patient/AuthScreen";
 import "vite/modulepreload-polyfill";
 import Dashboard from "./features/patient/DashboardScreen";
 import PhoneDashboard from "./features/phone/phoneDashboardScreen";

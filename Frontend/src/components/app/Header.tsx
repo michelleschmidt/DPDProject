@@ -1,8 +1,8 @@
 import React from "react";
 import { Navbar, Container, Nav } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import Image from "../assets/icon/LOGO.png";
-import { useAuth } from "../auth/AuthContext"; // Import the useAuth hook
+import Image from "../../assets/icon/LOGO.png";
+import { useAuth } from "../auth/AuthContext";
 
 const Header: React.FC = () => {
   const location = useLocation();

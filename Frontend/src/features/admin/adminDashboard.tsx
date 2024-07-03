@@ -13,6 +13,7 @@ import {
   LinearScale,
   BarElement,
 } from "chart.js";
+import PageLayout from "../../components/website/layout/PageLayout";
 
 ChartJS.register(
   ArcElement,
@@ -155,7 +156,7 @@ const AdminDashboard: React.FC = () => {
   return (
     <div className="container">
       <div className="AdminHeader">
-        <AdminHeader />
+        <PageLayout children={undefined} text={"Dashboard"} />
       </div>
       <div className="manage-interactions">
         <div className="charts-container">

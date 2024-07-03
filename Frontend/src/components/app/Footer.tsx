@@ -1,5 +1,5 @@
 import { Container } from "react-bootstrap";
-import "../App.css"; // Import your custom CSS file
+import "../../App.css"; // Import your custom CSS file
 
 interface FooterProps {
   isFixed: boolean; // Explicitly define the type of isFixed

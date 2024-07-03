@@ -4,6 +4,7 @@ import "../../App.css";
 import AdminHeader from "../../components/website/layout/adminHeader";
 import GenericTable from "../../components/Table";
 import { Interaction, Patient, Doctor } from "../../components/Types";
+import PageLayout from "../../components/website/layout/PageLayout";
 
 const ManagePatients: React.FC = () => {
   const [interactions, setInteractions] = useState<Interaction[]>([]);
@@ -79,7 +80,7 @@ const ManagePatients: React.FC = () => {
   return (
     <div className="container">
       <div className="AdminHeader">
-        <AdminHeader />
+        <PageLayout children={undefined} text={"Manage Appointments"} />
       </div>
       <div className="manage-interactions">
         <div className="filter-container">

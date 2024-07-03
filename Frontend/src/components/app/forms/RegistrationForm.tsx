@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../../Axios";
 import GenericForm, { FormField } from "./GenericForm";
-import "../../App.css";
+import "../../../App.css";
 
 interface Language {
   id: number;
