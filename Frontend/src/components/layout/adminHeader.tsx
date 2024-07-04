@@ -13,16 +13,16 @@ interface AdminHeaderProps {
 const AdminHeader: React.FC<AdminHeaderProps> = ({ text }) => {
   const navLinks: NavLink[] = [
     {
-      name: "Manage users",
-      link: "manage-users",
+      name: "Manage Patients",
+      link: "patients",
     },
     {
-      name: "Manage doctors",
-      link: "manage-doctors",
+      name: "Manage Doctors",
+      link: "doctors",
     },
     {
-      name: "Manage appointments",
-      link: "manage-appointments",
+      name: "Manage Appointments",
+      link: "appointments",
     },
   ];
 
@@ -31,7 +31,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ text }) => {
       <div className="flex px-10 items-center justify-between w-full">
         <h1 className="text-2xl font-medium uppercase">{text}</h1>
         <Link
-          to={"/sign-in"}
+          to={"/signin"}
           className="px-5 py-1 hover:bg-gray-200 hover:cursor-pointer transition duration-300 ease-in-out bg-gray-100 rounded-lg font-medium text-blue-500 text-xl"
         >
           Logout

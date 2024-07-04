@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../../Axios";
-import "../../App.css";
-import AdminHeader from "../../components/website/layout/adminHeader";
+import "../../Web.css";
 import { Interaction, Patient, Doctor } from "../../components/Types";
 import { Bar, Pie } from "react-chartjs-2";
 import {
-  Chart as ChartJS,
+  Chart,
   ArcElement,
   Tooltip,
   Legend,
@@ -13,9 +12,10 @@ import {
   LinearScale,
   BarElement,
 } from "chart.js";
-import PageLayout from "../../components/website/layout/PageLayout";
+import PageLayout from "../../components/layout/PageLayout";
 
-ChartJS.register(
+// Register chart.js components
+Chart.register(
   ArcElement,
   Tooltip,
   Legend,
@@ -25,11 +25,13 @@ ChartJS.register(
 );
 
 const AdminDashboard: React.FC = () => {
+  // State variables
   const [interactions, setInteractions] = useState<Interaction[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [selectedLanguage, setSelectedLanguage] = useState<string>("all");
 
+  // Fetch data on component mount
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -39,20 +41,26 @@ const AdminDashboard: React.FC = () => {
           axiosInstance.get<Doctor[]>("/api/doctors"),
         ]);
 
-        const interactions = interactionRes.data;
-        const patients = patientRes.data;
-        const doctors = doctorRes.data;
+        const interactionsData = interactionRes.data;
+        const patientsData = patientRes.data;
+        const doctorsData = doctorRes.data;
 
-        interactions.forEach((interaction) => {
-          const patient = patients.find((p) => p.id === interaction.patientId);
-          const doctor = doctors.find((d) => d.id === interaction.doctorId);
-          interaction.patientName = patient?.name || "Unknown";
-          interaction.doctorName = doctor?.name || "Unknown";
+        // Update interactions with patient and doctor names
+        const updatedInteractions = interactionsData.map((interaction) => {
+          const patient = patientsData.find(
+            (p) => p.id === interaction.patientId
+          );
+          const doctor = doctorsData.find((d) => d.id === interaction.doctorId);
+          return {
+            ...interaction,
+            patientName: patient?.name || "Unknown",
+            doctorName: doctor?.name || "Unknown",
+          };
         });
 
-        setInteractions(interactions);
-        setPatients(patients);
-        setDoctors(doctors);
+        setInteractions(updatedInteractions);
+        setPatients(patientsData);
+        setDoctors(doctorsData);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -61,6 +69,7 @@ const AdminDashboard: React.FC = () => {
     fetchData();
   }, []);
 
+  // Handle delete interaction
   const handleDelete = async (id: number) => {
     try {
       await axiosInstance.delete(`/interactions/${id}`);
@@ -72,20 +81,12 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
+  // Handle language change
   const handleLanguageChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
     setSelectedLanguage(event.target.value);
   };
-
-  const filteredInteractions =
-    selectedLanguage === "all"
-      ? interactions
-      : interactions.filter(
-          (interaction) =>
-            interaction.language.toLowerCase() ===
-            selectedLanguage.toLowerCase()
-        );
 
   // Helper function to get date 7 days ago
   const getDateSevenDaysAgo = () => {
@@ -154,23 +155,29 @@ const AdminDashboard: React.FC = () => {
   };
 
   return (
-    <div className="container">
-      <div className="AdminHeader">
-        <PageLayout children={undefined} text={"Dashboard"} />
-      </div>
-      <div className="manage-interactions">
-        <div className="charts-container">
-          <div className="chart">
-            <h3>Appointments Last 7 Days vs Next 7 Days</h3>
-            <Bar data={barChartData} />
+    <PageLayout text={"Dashboard"}>
+      <div className="h-[96vh] flex flex-row">
+        <div className="w-[70%] py-10 px-14 gap-6 flex flex-col">
+          <div className="flex flex-col gap-2">
+            <h1 className="text-3xl font-semibold text-blue-500">
+              Welcome Dr. Mary!
+            </h1>
           </div>
-          <div className="chart">
-            <h3>Language Distribution</h3>
-            <Pie data={pieChartData} />
+          <div className="manage-interactions">
+            <div className="charts-container">
+              <div className="chart">
+                <h3>Appointments Last 7 Days vs Next 7 Days</h3>
+                <Bar data={barChartData} />
+              </div>
+              <div className="chart">
+                <h3>Language Distribution</h3>
+                <Pie data={pieChartData} />
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </PageLayout>
   );
 };
 

@@ -23,22 +23,22 @@ const SideBar: React.FC = () => {
     },
     {
       name: "Dashboard",
-      link: "/admin/dashboard",
+      link: "/admindashboard",
       icon: <LuLayoutDashboard size={20} />,
     },
     {
-      name: "Manage users",
-      link: "/admin/manage-users",
+      name: "Manage Patients",
+      link: "/patients",
       icon: <MdManageAccounts size={28} />,
     },
     {
-      name: "Manage doctors",
-      link: "/admin/manage-doctors",
+      name: "Manage Doctors",
+      link: "/doctors",
       icon: <FaUserDoctor size={24} />,
     },
     {
-      name: "Manage appointments",
-      link: "/admin/manage-appointments",
+      name: "Manage Appointments",
+      link: "/appointments",
       icon: <MdOutlineManageHistory size={22} />,
     },
   ];
@@ -56,7 +56,6 @@ const SideBar: React.FC = () => {
                 ? "flex flex-row gap-[6px] items-center bg-white h-12 rounded-[50px] pl-4 text-black font-medium"
                 : "flex flex-row gap-[6px] items-center h-12 rounded-[50px] pl-4 transition text-white hover:text-black hover:bg-white duration-200 font-normal"
             }
-            end
           >
             {link.icon}
             <span>{link.name}</span>

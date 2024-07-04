@@ -1,7 +1,7 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
-import LoginForm from "../app/forms/LoginForm";
+import LoginForm from "./LoginForm";
 
 interface PrivateRouteProps {
   element: React.ReactElement;

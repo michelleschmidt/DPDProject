@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import "../App.css";
+import "../../App.css";
 
 interface Props {
   children: ReactNode;

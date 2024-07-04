@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import PageLayout from "../../components/website/layout/PageLayout";
+import PageLayout from "../../components/layout/PageLayout";
 import { IoMdAdd } from "react-icons/io";
 import { MdOutlineMail, MdOutlineRecentActors } from "react-icons/md";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { FaPhone } from "react-icons/fa";
+import "../../Web.css";
 
 interface Appointment {
   name: string;

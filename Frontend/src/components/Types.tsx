@@ -56,7 +56,10 @@ export interface Patient {
 
 export interface Doctor {
   id: number;
-  name: string;
-  specialisation: string;
-  language: string;
+  last_name: string;
+  title: string;
+  first_name: string;
+  specialization: string;
+  languages: string;
+  profileImage: string;
 }

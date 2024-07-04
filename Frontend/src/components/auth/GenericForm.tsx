@@ -2,8 +2,7 @@ import React, { FormEvent, useState } from "react";
 import { Form } from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import "./Forms.css";
-import Button from "../../Button"; // Import the custom Button component
+import Button from "./Button";
 
 export interface FormField {
   name: string;

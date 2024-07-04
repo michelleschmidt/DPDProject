@@ -1,114 +1,125 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import PageLayout from "../../components/layout/PageLayout";
 import axiosInstance from "../../Axios";
-import "../../App.css";
-import AdminHeader from "../../components/website/layout/adminHeader";
-import GenericTable from "../../components/Table";
-import { Interaction, Patient, Doctor } from "../../components/Types";
-import PageLayout from "../../components/website/layout/PageLayout";
+import { useAuth } from "../../components/auth/AuthContext";
+import "../../Web.css";
 
-const ManagePatients: React.FC = () => {
-  const [interactions, setInteractions] = useState<Interaction[]>([]);
-  const [patients, setPatients] = useState<Patient[]>([]);
-  const [doctors, setDoctors] = useState<Doctor[]>([]);
-  const [selectedLanguage, setSelectedLanguage] = useState<string>("all");
+interface Appointment {
+  id: string;
+  patientName: string;
+  doctorName: string;
+  type: string;
+  time: string;
+}
+
+const ManageAppointments: React.FC = () => {
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const { isAuthenticated, userData, checkAuth, logout } = useAuth();
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [interactionRes, patientRes, doctorRes] = await Promise.all([
-          axiosInstance.get<Interaction[]>("/api/interactions"),
-          axiosInstance.get<Patient[]>("/api/patients"),
-          axiosInstance.get<Doctor[]>("/api/doctors"),
-        ]);
+    if (isAuthenticated && userData) {
+      fetchAppointments();
+    }
+  }, [isAuthenticated, userData]);
 
-        const interactions = interactionRes.data;
-        const patients = patientRes.data;
-        const doctors = doctorRes.data;
-
-        interactions.forEach((interaction) => {
-          const patient = patients.find((p) => p.id === interaction.patientId);
-          const doctor = doctors.find((d) => d.id === interaction.doctorId);
-          interaction.patientName = patient?.name || "Unknown";
-          interaction.doctorName = doctor?.name || "Unknown";
-        });
-
-        setInteractions(interactions);
-        setPatients(patients);
-        setDoctors(doctors);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  const handleDelete = async (id: number) => {
+  const fetchAppointments = async () => {
     try {
-      await axiosInstance.delete(`/interactions/${id}`);
-      setInteractions(
-        interactions.filter((interaction) => interaction.id !== id)
-      );
-    } catch (error) {
-      console.error("Error deleting interaction:", error);
+      setLoading(true);
+      setError(null);
+      const response = await axiosInstance.get("/api/appointments");
+      setAppointments(response.data);
+    } catch (error: any) {
+      console.error("Error fetching appointments:", error);
+      setError("Failed to fetch appointments. Please try again later.");
+
+      if (error.response?.status === 401) {
+        const isAuth = await checkAuth();
+        if (!isAuth) {
+          logout();
+        }
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleLanguageChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    setSelectedLanguage(event.target.value);
+  const handleEdit = (appointment: Appointment) => {
+    // Implement edit functionality
+    console.log("Edit appointment:", appointment);
   };
 
-  const filteredInteractions =
-    selectedLanguage === "all"
-      ? interactions
-      : interactions.filter(
-          (interaction) =>
-            interaction.language.toLowerCase() ===
-            selectedLanguage.toLowerCase()
-        );
+  const handleDelete = (appointment: Appointment) => {
+    // Implement delete functionality
+    console.log("Delete appointment:", appointment);
+  };
 
-  const columns: string[] = [
-    "Patient Name",
-    "Doctor Name",
-    "Language",
-    "Status",
-    "Translation",
-  ];
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div className="error-message">{error}</div>;
 
   return (
-    <div className="container">
-      <div className="AdminHeader">
-        <PageLayout children={undefined} text={"Manage Appointments"} />
-      </div>
-      <div className="manage-interactions">
-        <div className="filter-container">
-          <label htmlFor="language-filter">Filter by Language:</label>
-          <select
-            id="language-filter"
-            value={selectedLanguage}
-            onChange={handleLanguageChange}
-          >
-            <option value="all">All</option>
-            <option value="english">English</option>
-            <option value="spanish">Spanish</option>
-            <option value="french">French</option>
-          </select>
-          <button className="add-appointment-button">Add Appointment</button>
+    <PageLayout text="Manage Appointments">
+      <div className="w-full gap-8 flex justify-center py-10">
+        <div className="w-[90%] flex flex-col gap-8">
+          <div className="p-6 bg-blue-50 gap-3 flex flex-col rounded-xl shadow-custom">
+            <h1 className="text-2xl text-blue-600 font-medium">Appointments</h1>
+            <div className="flex flex-col gap-5">
+              <div className="flex flex-row items-center justify-between">
+                <span className="w-[18%] font-medium">Patient Name</span>
+                <span className="w-[18%] font-medium">Doctor Name</span>
+                <span className="w-[18%] font-medium">Type</span>
+                <span className="w-[18%] font-medium">Time</span>
+                <span className="w-[28%] font-medium">Actions</span>
+              </div>
+
+              {appointments.map((appointment, index) => (
+                <div
+                  key={index}
+                  className="flex flex-row pb-2 items-center border-b border-blue-200 justify-between"
+                >
+                  <span className="w-[18%] text-gray-500">
+                    {appointment.patientName}
+                  </span>
+                  <span className="w-[18%] text-gray-500">
+                    {appointment.doctorName}
+                  </span>
+                  <span
+                    className={`w-[18%] text-gray-500 ${
+                      appointment.type === "EMERGENCY"
+                        ? "text-red-500"
+                        : appointment.type === "CONSULTANCY"
+                        ? "text-green-500"
+                        : "text-blue-500"
+                    }`}
+                  >
+                    {appointment.type}
+                  </span>
+                  <span className="w-[18%] text-gray-500">
+                    {appointment.time}
+                  </span>
+                  <div className="w-[28%] flex flex-row gap-4">
+                    <div
+                      className="hover:cursor-pointer w-20 h-10 rounded-lg flex items-center justify-center border border-blue-500 text-blue-500"
+                      onClick={() => handleEdit(appointment)}
+                    >
+                      Edit
+                    </div>
+                    <div
+                      className="hover:cursor-pointer w-20 h-10 rounded-lg flex items-center justify-center border border-red-500 text-red-500"
+                      onClick={() => handleDelete(appointment)}
+                    >
+                      Delete
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-        <GenericTable
-          columns={columns}
-          data={filteredInteractions}
-          handleDelete={handleDelete}
-          handleEdit={function (id: number): void {
-            throw new Error("Function not implemented.");
-          }}
-          add={"Appointments"}
-        />
       </div>
-    </div>
+    </PageLayout>
   );
 };
 
-export default ManagePatients;
+export default ManageAppointments;
