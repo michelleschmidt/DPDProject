@@ -3,59 +3,67 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./components/auth/AuthContext";
 import PrivateRoute from "./components/auth/PrivateRoute";
 
-import DocSearch from "./DocSearchScreen";
-import DocFind from "./DocFindScreen";
-import AuthSide from "./AuthScreen";
 import "vite/modulepreload-polyfill";
-import Dashboard from "./features/Dashboards/DashboardScreen";
-import PhoneDashboard from "./features/Dashboards/phoneDashboardScreen";
-import ProfileScreen from "./features/user/Profile";
+import ManageAppointments from "./features/admin/manageAppointments";
+import ManageDoctors from "./features/admin/manageDoctors";
+import ManagePatients from "./features/admin/managePatients";
+import AdminDashboard from "./features/admin/adminDashboard";
+import Home from "./features/home/Home";
+import SignUp from "./features/home/SignIn";
+import SignIn from "./features/home/LoginIn";
 
 const App = () => {
-  const [isRegistration, setIsRegistration] = useState(false);
-
   return (
     <AuthProvider>
       <Router>
         <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/signin" element={<SignIn />} />
           <Route
-            path="/"
+            path="/admindashboard"
             element={
-              <AuthSide
-                onSubmit={(email, password) => {
-                  console.log("Submitted", email, password);
-                }}
-                isRegistration={isRegistration}
+              <PrivateRoute
+                element={<AdminDashboard />}
+                requiredRoles={["admin"]}
               />
             }
           />
           <Route
-            path="/find"
-            element={<PrivateRoute element={<DocFind />} />}
+            path="/appointments"
+            element={
+              <PrivateRoute
+                element={<ManageAppointments />}
+                requiredRoles={["admin"]}
+              />
+            }
           />
           <Route
-            path="/booking"
-            element={<PrivateRoute element={<DocSearch />} />}
+            path="/settings"
+            element={
+              <PrivateRoute
+                element={<ManageAppointments />}
+                requiredRoles={["admin"]}
+              />
+            }
           />
           <Route
-            path="/docsearch"
-            element={<PrivateRoute element={<DocSearch />} />}
+            path="/doctors"
+            element={
+              <PrivateRoute
+                element={<ManageDoctors />}
+                requiredRoles={["admin"]}
+              />
+            }
           />
           <Route
-            path="/dashboard"
-            element={<PrivateRoute element={<Dashboard />} />}
-          />
-          <Route
-            path="/phonedashboard"
-            element={<PrivateRoute element={<PhoneDashboard />} />}
-          />
-          <Route
-            path="/profile"
-            element={<PrivateRoute element={<ProfileScreen />} />}
-          />
-          <Route
-            path="/find-doctors"
-            element={<PrivateRoute element={<DocFind />} />}
+            path="/patients"
+            element={
+              <PrivateRoute
+                element={<ManagePatients />}
+                requiredRoles={["admin"]}
+              />
+            }
           />
         </Routes>
       </Router>

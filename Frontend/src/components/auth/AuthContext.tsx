@@ -5,52 +5,66 @@ import React, {
   ReactNode,
   useEffect,
 } from "react";
+import axiosInstance from "../../Axios"; // Adjust the path as needed
+import { UserData } from "../Types";
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  token: string | null; // Add token field to AuthContextType
-  login: (token: string) => void;
-  logout: () => void;
+  userData: UserData | null;
+  login: (data: UserData) => void;
+  logout: () => Promise<void>;
+  checkAuth: () => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [token, setToken] = useState<string | null>(null); // State to store token
-  const [loading, setLoading] = useState(true);
+  const [userData, setUserData] = useState<UserData | null>(() => {
+    const storedUser = localStorage.getItem("userData");
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
+
+  const checkAuth = async () => {
+    try {
+      const response = await axiosInstance.get("/api/auth/check-auth");
+      setIsAuthenticated(true);
+      setUserData(response.data.user);
+      localStorage.setItem("userData", JSON.stringify(response.data.user));
+      return true;
+    } catch (error) {
+      setIsAuthenticated(false);
+      setUserData(null);
+      localStorage.removeItem("userData");
+      return false;
+    }
+  };
 
   useEffect(() => {
-    // Check if the user is already authenticated using the token from cookies
-    const tokenFromCookie = getCookie("token");
-    if (tokenFromCookie) {
-      setIsAuthenticated(true);
-      setToken(tokenFromCookie); // Store token in state
-    } else {
-      setIsAuthenticated(false);
-      setToken(null);
-    }
-    setLoading(false);
+    checkAuth();
   }, []);
 
-  const login = (token: string) => {
-    // Set isAuthenticated to true and store token
+  const login = (data: UserData) => {
+    setUserData(data);
     setIsAuthenticated(true);
-    setToken(token);
+    localStorage.setItem("userData", JSON.stringify(data));
   };
 
-  const logout = () => {
-    // Set isAuthenticated to false and clear token
+  const logout = async () => {
+    try {
+      await axiosInstance.post("/api/auth/logout");
+    } catch (error) {
+      console.error("Logout request failed:", error);
+    }
+    setUserData(null);
     setIsAuthenticated(false);
-    setToken(null);
+    localStorage.removeItem("userData");
   };
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, token, login, logout }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, userData, login, logout, checkAuth }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -63,15 +77,3 @@ export const useAuth = () => {
   }
   return context;
 };
-
-// Function to get cookie value by name
-function getCookie(name: string) {
-  const cookieString = document.cookie;
-  const cookies = cookieString.split(";").map((cookie) => cookie.trim());
-  for (let cookie of cookies) {
-    if (cookie.startsWith(name + "=")) {
-      return cookie.split("=")[1];
-    }
-  }
-  return null;
-}
