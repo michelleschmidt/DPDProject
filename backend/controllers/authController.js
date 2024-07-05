@@ -18,7 +18,7 @@ class AuthController {
       res
         .cookie("token", token, {
           httpOnly: true,
-          secure: false,
+          secure: true,
           sameSite: "none",
           expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
         })
@@ -33,6 +33,16 @@ class AuthController {
         });
     } catch (error) {
       next(error);
+    }
+  }
+
+  async checkAuth(req, res, next) {
+    try {
+      const token = req.cookies.token;
+      const user = await AuthService.checkAuth(token);
+      res.json({ user });
+    } catch (error) {
+      res.status(401).json({ message: "Unauthorized" });
     }
   }
 

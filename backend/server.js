@@ -18,8 +18,11 @@ const app = express();
 app.set("trust proxy", 1);
 
 // Configure CORS to allow requests from your React app's origin
-app.use(
-  cors());
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
+
 
 
 app.use(express.json());

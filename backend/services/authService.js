@@ -1,5 +1,5 @@
 const db = require("../models");
-const axios = require('axios');
+const axios = require("axios");
 bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -76,7 +76,7 @@ class AuthService {
         await user.setLanguages(data.languages, { transaction: t });
       }
 
-      return user
+      return user;
     });
   }
 
@@ -89,9 +89,9 @@ class AuthService {
       include: [
         {
           model: Language,
-          through: { attributes: [] } // This excludes the junction table attributes
-        }
-      ]
+          through: { attributes: [] }, // This excludes the junction table attributes
+        },
+      ],
     });
     if (!user) throw new Error("user does not exist");
 
@@ -115,8 +115,22 @@ class AuthService {
     };
   }
 
+  async checkAuth(token) {
+    if (!token) throw new Error("No token found");
 
-
+    const decoded = jwt.verify(token, process.env.SECRETE);
+    const user = await User.findByPk(decoded.userId, {
+      attributes: ["id", "first_name", "last_name", "role", "email", "address"],
+      include: [
+        {
+          model: Language,
+          through: { attributes: [] },
+        },
+      ],
+    });
+    if (!user) throw new Error("User not found");
+    return user;
+  }
 }
 
 module.exports = new AuthService();

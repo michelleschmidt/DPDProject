@@ -3,7 +3,6 @@ const AppointmentService = require("../services/appointmentService");
 class AppointmentController {
   async createAppointment(req, res, next) {
     try {
-      req.body.user_id = req.user.userId;
       const appointment = await AppointmentService.createAppointment(req.body);
       res.status(201).json(appointment);
     } catch (error) {
@@ -23,6 +22,28 @@ class AppointmentController {
     }
   }
 
+  async getUserAppointmentsByAdmin(req, res, next) {
+    try {
+
+      const userId = req.params.id;
+
+      const appointments = await AppointmentService.getUserAppointments(userId);
+      res.status(201).json(appointments);
+    } catch (error) {
+      next(error);
+    }
+  }
+  async getDoctorAppointmentsByAdmin(req, res, next) {
+    try {
+      const doctorId = req.params.id;
+      const appointments = await AppointmentService.getDoctorAppointments(
+        doctorId
+      );
+      res.status(201).json(appointments);
+    } catch (error) {
+      next(error);
+    }
+  }
   async getDoctorAppointments(req, res, next) {
     try {
       const doctorId = req.user.userId;

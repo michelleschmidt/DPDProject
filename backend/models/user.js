@@ -53,6 +53,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       accessibility_needs: {
         type: DataTypes.STRING(),
+        defaultValue: "none",
       },
       emergency_contact_details: {
         type: DataTypes.JSON,

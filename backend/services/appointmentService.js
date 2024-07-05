@@ -3,6 +3,7 @@ const db = require("../models");
 const Op = db.Op;
 const Appointment = db.Appointment;
 const Availability = db.Availability;
+const Specialization = db.Specialization
 const User = db.User;
 
 class AppointmentService {
@@ -18,6 +19,7 @@ class AppointmentService {
 
   async createAppointment(data) {
     const currentTime = new Date();
+
     const availability = await Availability.findOne({
       where: {
         id: data.availability_id,
@@ -28,13 +30,18 @@ class AppointmentService {
         },
       },
     });
-    const appointment = await db.sequelize.transaction(async (t) => {
+
+    if (!availability) {
+      throw new Error(
+        "No active availability found for the given doctor and time slot."
+      );
+    }
+
+    return db.sequelize.transaction(async (t) => {
       const appointment = await Appointment.create(data, { transaction: t });
       await availability.update({ active: false }, { transaction: t });
       return appointment;
     });
-
-    return appointment;
   }
 
   async getUserAppointments(userId) {
@@ -45,11 +52,13 @@ class AppointmentService {
           model: User,
           as: "doctor",
           attributes: ["first_name", "last_name", "address"],
-        },
-        {
-          model: Specialization,
-          as: "specialization",
-          attributes: ["area_of_specialization"],
+          include: [
+            {
+              model: Specialization,
+              as: "specialization",
+              attributes: ["area_of_specialization"],
+            }
+          ]
         },
         {
           model: Availability,
@@ -68,8 +77,7 @@ class AppointmentService {
         {
           model: User,
           as: "patient",
-          attributes: ["first_name", "last_name", "address"],
-        },
+          attributes: ["first_name", "last_name", "address"]},
         {
           model: Availability,
           as: "availability",
@@ -83,12 +91,40 @@ class AppointmentService {
   async getAllAppointments() {
     const appointments = await Appointment.findAll({
       include: [
-        { model: User, as: "patient" },
-        { model: User, as: "doctor" },
-        { model: Availability, as: "availability" },
+        {
+          model: User,
+          as: "patient",
+          attributes: ["id", "first_name", "last_name", "address"],
+        },
+        {
+          model: User,
+          as: "doctor",
+          attributes: ["first_name", "last_name", "address"],
+          include: [
+            {
+              model: Specialization,
+              as: "specialization",
+              attributes: ["area_of_specialization"],
+            }
+          ]
+        },
+        {
+          model: Availability,
+          as: "availability",
+          attributes: ["availability_date", "active"],
+        },
       ],
     });
-    return appointments;
+
+    return appointments.map((appointment) => ({
+      id: appointment.id,
+      patient: appointment.patient,
+      doctor: appointment.doctor,
+      appointmentDate: appointment.availability.availability_date,
+      appointmentReason: appointment.appointment_reason,
+      bookTranslation: appointment.book_translation,
+      // Add any other fields you need
+    }));
   }
 
   async updateAppointment(appointmentId, updates) {
@@ -101,55 +137,35 @@ class AppointmentService {
   }
 
   async deleteAppointment(appointmentId) {
-    const result = await Appointment.destroy({ where: { id: appointmentId } });
-    if (result === 0) {
-      throw new Error("Appointment not found or already deleted.");
-    }
-    return "Appointment deleted successfully.";
+    return db.sequelize.transaction(async (t) => {
+      const appointment = await Appointment.findByPk(appointmentId, {
+        include: [{ model: Availability, as: "availability" }],
+        transaction: t,
+      });
+      if (!appointment) {
+        throw new Error("Appointment not found or already deleted.");
+      }
+      if (!appointment.availability) {
+        throw new Error(
+          "Associated availability not found for this appointment."
+        );
+      }
+      const appointmentDate = new Date(
+        appointment.availability.availability_date
+      );
+      if (appointmentDate > new Date()) {
+        await Availability.update(
+          { active: true },
+          {
+            where: { id: appointment.availability_id },
+            transaction: t,
+          }
+        );
+      }
+      await appointment.destroy({ transaction: t });
+      return "Appointment deleted successfully.";
+    });
   }
-
-  // async deleteAppointment(appointmentId) {
-  //   return await db.sequelize.transaction(async (t) => {
-  //     // Fetch the appointment with associated availability
-  //     const appointment = await Appointment.findOne({
-  //       where: { id: appointmentId },
-  //       include: [{
-  //         model: Availability,
-  //         as: 'availability',
-  //         attributes: ['id', 'availability_date', 'active']
-  //       }],
-  //       transaction: t
-  //     });
-  
-  //     if (!appointment) {
-  //       throw new Error("Appointment not found.");
-  //     }
-  
-  //     const currentTime = new Date();
-  //     const appointmentDate = new Date(appointment.availability.availability_date);
-  
-  //     // Check if the appointment date is in the future
-  //     if (appointmentDate > currentTime) {
-  //       // Update the availability to active: true
-  //       await Availability.update(
-  //         { active: true },
-  //         { 
-  //           where: { id: appointment.availability.id },
-  //           transaction: t
-  //         }
-  //       );
-  //     }
-  
-  //     // Delete the appointment
-  //     await appointment.destroy({ transaction: t });
-  
-  //     return "Appointment deleted successfully.";
-  //   });
-  // }
-  
-  
-
-
 }
 
 module.exports = new AppointmentService();

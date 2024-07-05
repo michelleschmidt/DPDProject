@@ -6,15 +6,21 @@ const appointmentController = require("../controllers/appointmentController");
 const { isLoggedIn } = require("../middleware/isLoggedIn");
 const { roleCheck } = require("../middleware/roleCheck");
 
+
+
+appointmentRouter.get("/", isLoggedIn, roleCheck('admin'), appointmentController.getAllAppointments);
 appointmentRouter.post("/create-new", isLoggedIn, appointmentController.createAppointment);
 
 appointmentRouter.get("/user/appointments", isLoggedIn, appointmentController.getUserAppointments);
 
 appointmentRouter.get("/doctor/appointments", isLoggedIn, appointmentController.getDoctorAppointments);
 
-appointmentRouter.get("/", isLoggedIn, roleCheck('admin'), appointmentController.getAllAppointments);
+appointmentRouter.get("/user/:id", isLoggedIn, roleCheck('admin'), appointmentController.getUserAppointmentsByAdmin);
+
+appointmentRouter.get("/doctor/:id", isLoggedIn, roleCheck('admin'), appointmentController.getDoctorAppointmentsByAdmin);
 
 appointmentRouter.put("/:id", isLoggedIn, appointmentController.updateAppointment);
+
 appointmentRouter.delete("/:id", isLoggedIn, appointmentController.deleteAppointment);
 
 

@@ -48,7 +48,7 @@ class UserService {
       data.specialization_id
     );
     if (!specialization) {
-      throw new Error("Invalid specialization_id");
+      throw new Error("Select a valid specialization");
     }
 
     // Creating the user within a transaction to ensure data is saved correctly
@@ -77,6 +77,30 @@ class UserService {
 
     return user;
   }
+
+
+
+  async getPatients() {
+    const patients = await User.findAll({
+      where: {
+        role: "normal_user",
+      },
+      include: [
+        {
+          model: Language,
+          attributes: ["language_name"], // Only include language_name
+          through: { attributes: [] }, // Exclude attributes from the junction table
+        },
+      ],
+    });
+
+    if (!patients) {
+      throw new Error("No patients found");
+    }
+
+    return patients;
+  }
+
 
   async getDoctors() {
     const doctors = await User.findAll({
@@ -142,13 +166,22 @@ class UserService {
   async updateUser(userId, updates) {
     const user = await User.findByPk(userId);
     if (!user) {
-      throw new Error("User not found");
+        throw new Error("User not found");
     }
     updates.email = updates.email.toLowerCase();
-    await user.update(updates);
-    return user;
-  }
 
+    return await db.sequelize.transaction(async (t) => {
+        await User.update(updates, {
+            where: { id: userId },
+            transaction: t
+        });
+
+        if (updates.languages && updates.languages.length > 0) {
+            await user.setLanguages(updates.languages, { transaction: t });
+        }
+        return await User.findByPk(userId, { transaction: t }); // Fetch the updated user
+    });
+}
   async deleteUser(userId) {
     const user = await User.findByPk(userId);
     if (!user) {

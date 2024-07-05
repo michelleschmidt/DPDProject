@@ -48,6 +48,17 @@ class UserController {
     }
   }
 
+  async getPatients(req, res, next) {
+    try {
+      const users = await UserService.getPatients();
+      res.status(201).json(users);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  
+
   async updateUser(req, res, next) {
     try {
       const updatedUser = await UserService.updateUser(req.params.id, req.body);

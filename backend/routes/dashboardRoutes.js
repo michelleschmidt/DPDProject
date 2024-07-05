@@ -9,4 +9,8 @@ dashboardRouter.get('/', dashboardController.search);
 dashboardRouter.get('/languages', dashboardController.getLanguages);
 dashboardRouter.get('/specializations', dashboardController.getSpecializations);
 
+dashboardRouter.get('/doctors-count', dashboardController.getDoctorsByLanguage);
+
+dashboardRouter.get('/users-count', dashboardController.getUsersByLanguage);
+
 module.exports = dashboardRouter;
