@@ -34,24 +34,43 @@ export interface UserData {
   token?: string;
 }
 
-export interface Interaction {
+export interface Availability {
   id: number;
-  patientId: number;
-  date: Date;
-  doctorId: number;
-  language: string;
-  status: string;
-  translation: string;
-  patientName?: string;
-  doctorName?: string;
+  doctor_id: number;
+  availability_date: Date;
+  active: boolean;
 }
+
+export interface Appointment {
+  id: number;
+  user: {
+    first_name: string;
+    last_name: string;
+  };
+  doctor: {
+    first_name: string;
+    last_name: string;
+  };
+  availability: {
+    date: string;
+    start_time: string;
+  };
+  appointment_reason: string;
+  book_translation: boolean;
+}
+
 export interface Patient {
   id: number;
-  name: string;
+  first_name: string;
+  last_name: string;
+  title?: string;
+  email: string;
+  phone_number?: string;
   address: string;
-  insurance: string;
-  phoneNumber: string;
-  language: string;
+  insurance?: string;
+  languages: {
+    language_name: string;
+  }[];
 }
 
 export interface Doctor {
@@ -59,7 +78,21 @@ export interface Doctor {
   last_name: string;
   title: string;
   first_name: string;
-  specialization: string;
-  languages: string;
+  specialization: {
+    area_of_specialization: string;
+  };
+  languages: {
+    language_name: string;
+  }[];
   profileImage: string;
+}
+
+export interface Language {
+  id: number;
+  language_name: string;
+}
+
+export interface Specialization {
+  id: number;
+  area_of_specialization: string;
 }

@@ -17,7 +17,7 @@ const Header: React.FC = () => {
           to="/"
           className="z-10 flex flex-row items-center italia text-white font-medium text-2xl"
         >
-          <h1>Health hub</h1>
+          <h1>Health Connect</h1>
         </Link>
         {help && (
           <div

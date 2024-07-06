@@ -1,58 +1,72 @@
-import React, { useEffect, useState } from "react";
-import PageLayout from "../../components/layout/PageLayout";
+import React, { useState, useEffect } from "react";
 import axiosInstance from "../../Axios";
-import { useAuth } from "../../components/auth/AuthContext";
-import "../../Web.css";
-
-interface Appointment {
-  id: string;
-  patientName: string;
-  doctorName: string;
-  type: string;
-  time: string;
-}
+import AppointmentTable from "../../components/tables/AppointmentTable";
+import { Appointment } from "../../components/Types";
+import PageLayout from "../../components/layout/PageLayout";
+import DeleteConfirmationModal from "../../components/appointmentModal/DeleteConfirmationModal";
+import EditAppointmentModal from "../../components/appointmentModal/EditModal";
+import AddAppointmentModal from "../../components/appointmentModal/AddModal";
 
 const ManageAppointments: React.FC = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const { isAuthenticated, userData, checkAuth, logout } = useAuth();
+  const [selectedAppointment, setSelectedAppointment] =
+    useState<Appointment | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    if (isAuthenticated && userData) {
-      fetchAppointments();
-    }
-  }, [isAuthenticated, userData]);
+    fetchAppointments();
+  }, []);
 
   const fetchAppointments = async () => {
     try {
       setLoading(true);
-      setError(null);
-      const response = await axiosInstance.get("/api/appointments");
+      const response = await axiosInstance.get<Appointment[]>(
+        "/api/appointments/"
+      );
       setAppointments(response.data);
-    } catch (error: any) {
+      setLoading(false);
+    } catch (error) {
       console.error("Error fetching appointments:", error);
-      setError("Failed to fetch appointments. Please try again later.");
-
-      if (error.response?.status === 401) {
-        const isAuth = await checkAuth();
-        if (!isAuth) {
-          logout();
-        }
-      }
-    } finally {
+      setError("Failed to fetch appointments. Please try again.");
       setLoading(false);
     }
   };
 
-  const handleEdit = (appointment: Appointment) => {
-    // Implement edit functionality
-    console.log("Edit appointment:", appointment);
+  const handleDelete = (appointment: Appointment) => {
+    setSelectedAppointment(appointment);
+    setIsDeleteModalOpen(true);
   };
 
-  const handleDelete = (appointment: Appointment) => {
-    // Implement delete functionality
-    console.log("Delete appointment:", appointment);
+  const handleAddAppointment = () => {
+    console.log("Opening Add Appointment Modal"); // Add this line for debugging
+    setIsAddModalOpen(true);
+  };
+
+  const handleEdit = (appointment: Appointment) => {
+    setSelectedAppointment(appointment);
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditModalClose = () => {
+    setIsEditModalOpen(false);
+    fetchAppointments(); // Refresh the list when the modal is closed
+  };
+
+  const confirmDelete = async () => {
+    if (!selectedAppointment) return;
+    try {
+      await axiosInstance.delete(`/api/appointments/${selectedAppointment.id}`);
+      console.log("Deleted Appointment:", selectedAppointment);
+      setIsDeleteModalOpen(false);
+      fetchAppointments(); // Refresh the list after deletion
+    } catch (error) {
+      console.error("Error deleting appointment:", error);
+      setIsDeleteModalOpen(false);
+    }
   };
 
   if (loading) return <div>Loading...</div>;
@@ -60,64 +74,48 @@ const ManageAppointments: React.FC = () => {
 
   return (
     <PageLayout text="Manage Appointments">
-      <div className="w-full gap-8 flex justify-center py-10">
-        <div className="w-[90%] flex flex-col gap-8">
-          <div className="p-6 bg-blue-50 gap-3 flex flex-col rounded-xl shadow-custom">
-            <h1 className="text-2xl text-blue-600 font-medium">Appointments</h1>
-            <div className="flex flex-col gap-5">
-              <div className="flex flex-row items-center justify-between">
-                <span className="w-[18%] font-medium">Patient Name</span>
-                <span className="w-[18%] font-medium">Doctor Name</span>
-                <span className="w-[18%] font-medium">Type</span>
-                <span className="w-[18%] font-medium">Time</span>
-                <span className="w-[28%] font-medium">Actions</span>
-              </div>
-
-              {appointments.map((appointment, index) => (
-                <div
-                  key={index}
-                  className="flex flex-row pb-2 items-center border-b border-blue-200 justify-between"
-                >
-                  <span className="w-[18%] text-gray-500">
-                    {appointment.patientName}
-                  </span>
-                  <span className="w-[18%] text-gray-500">
-                    {appointment.doctorName}
-                  </span>
-                  <span
-                    className={`w-[18%] text-gray-500 ${
-                      appointment.type === "EMERGENCY"
-                        ? "text-red-500"
-                        : appointment.type === "CONSULTANCY"
-                        ? "text-green-500"
-                        : "text-blue-500"
-                    }`}
-                  >
-                    {appointment.type}
-                  </span>
-                  <span className="w-[18%] text-gray-500">
-                    {appointment.time}
-                  </span>
-                  <div className="w-[28%] flex flex-row gap-4">
-                    <div
-                      className="hover:cursor-pointer w-20 h-10 rounded-lg flex items-center justify-center border border-blue-500 text-blue-500"
-                      onClick={() => handleEdit(appointment)}
-                    >
-                      Edit
-                    </div>
-                    <div
-                      className="hover:cursor-pointer w-20 h-10 rounded-lg flex items-center justify-center border border-red-500 text-red-500"
-                      onClick={() => handleDelete(appointment)}
-                    >
-                      Delete
-                    </div>
-                  </div>
-                </div>
-              ))}
+      <div className="flex min-h-screen pb-20 justify-center w-full">
+        <div className="flex flex-col gap-10 w-[86%] py-10">
+          <div className="p-6 w-full flex-flex-col gap-8 h-full bg-white shadow-custom rounded-2xl">
+            <div className="flex justify-between items-center mb-4">
+              <h1 className="text-2xl text-blue-600 font-semibold">
+                Appointments
+              </h1>
+              <button
+                onClick={handleAddAppointment}
+                className="bg-blue-600 px-4 py-2 rounded-lg text-white hover:bg-blue-700 transition duration-300"
+              >
+                Add Appointment
+              </button>
             </div>
+            <AppointmentTable
+              appointments={appointments}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
           </div>
         </div>
       </div>
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={confirmDelete}
+      />
+      {isAddModalOpen && (
+        <AddAppointmentModal
+          isOpen={isAddModalOpen}
+          onClose={() => setIsAddModalOpen(false)}
+          onSubmit={() => {
+            fetchAppointments();
+            setIsAddModalOpen(false);
+          }}
+        />
+      )}
+      <AddAppointmentModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSubmit={fetchAppointments}
+      />
     </PageLayout>
   );
 };
