@@ -1,20 +1,11 @@
 import React, { useEffect, useState } from "react";
-import axiosInstance from "../Axios";
+import axiosInstance from "../../Axios";
 import Select from "react-select";
+import { Specialization, Language } from "../Types";
 
 interface AddDoctorModalProps {
   isOpen: boolean;
   onClose: () => void;
-}
-
-interface Language {
-  id: number;
-  language_name: string;
-}
-
-interface Specialization {
-  id: number;
-  area_of_specialization: string;
 }
 
 const AddDoctorModal: React.FC<AddDoctorModalProps> = ({ isOpen, onClose }) => {
