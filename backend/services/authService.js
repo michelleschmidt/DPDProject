@@ -8,30 +8,6 @@ const Specialization = db.Specialization;
 const Language = db.Language;
 
 class AuthService {
-  // async register(data) {
-  //   let user = await User.findOne({ where: { email: data.email } });
-  //   if (user) {
-  //     throw new Error("email already exists");
-  //   }
-  //   data.email = data.email.toLowerCase();
-  //   const hashedPassword = await bcrypt.hash(data.password, 10);
-  //   data.password = hashedPassword;
-  //   // Creating the user within a transaction to ensure data is saved correctly
-  //   // into all tables at once
-  //   return await db.sequelize.transaction(async (t) => {
-  //     user = await User.create(data, { transaction: t });
-
-  //     if (data.language && data.language.length > 0) {
-  //       const languages = await Language.findAll({
-  //         where: {
-  //           id: data.language,
-  //         },
-  //       });
-  //       await user.addLanguages(languages, { transaction: t });
-  //     }
-  //     return user;
-  //   });
-  // }
 
   async register(data) {
     let user = await User.findOne({ where: { email: data.email } });

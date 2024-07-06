@@ -10,7 +10,7 @@ blogRouter.get('/', BlogController.getAllBlogs);
 
 blogRouter.post('/new-blog', isLoggedIn, roleCheck('admin'), BlogController.createBlog);
 
-blogRouter.get('/user/blogs', isLoggedIn, BlogController.getAllBlogsByUser);
+blogRouter.get('/user-blogs', isLoggedIn, BlogController.getAllBlogsByUser);
 
 blogRouter.get('/:id', isLoggedIn, BlogController.getBlogById);
 

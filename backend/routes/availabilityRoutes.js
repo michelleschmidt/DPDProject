@@ -12,7 +12,7 @@ availabilityRouter.post('/', isLoggedIn, roleCheck('admin'), AvailabilityControl
 availabilityRouter.post('/availability-create', isLoggedIn, AvailabilityController.createAvailability);
 
 availabilityRouter.get('/all-availabilities', isLoggedIn, roleCheck('admin'), AvailabilityController.getAllAvailabilities);
-availabilityRouter.get('/doctor/availabilities', isLoggedIn, AvailabilityController.getDoctorAvailabilities);
+availabilityRouter.get('/doctor-availabilities', isLoggedIn, AvailabilityController.getDoctorAvailabilities);
 
 
 availabilityRouter.get('/doctor/:doctor_id', isLoggedIn, roleCheck('admin'), AvailabilityController.getDoctorAvailabilitiesByAdmin);

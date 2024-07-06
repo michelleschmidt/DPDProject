@@ -3,19 +3,48 @@ const AppointmentService = require("../services/appointmentService");
 class AppointmentController {
   async createAppointment(req, res, next) {
     try {
-      const appointment = await AppointmentService.createAppointment(req.body);
+      const userId = req.user.userId;
+      const appointment = await AppointmentService.createAppointment(userId, req.body);
       res.status(201).json(appointment);
     } catch (error) {
       next(error);
     }
   }
 
+  async createAppointmentByAdmin(req, res, next) {
+    try {
+      const appointment = await AppointmentService.createAppointment(req.body);
+      res.status(201).json(appointment);
+    } catch (error) {
+      next(error);
+    }
+  }
+  
+  async getAllAppointments(req, res, next) {
+    try {
+      const appointments = await AppointmentService.getAllAppointments();
+      res.status(201).json(appointments);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+
   async getUserAppointments(req, res, next) {
     try {
+      const userId = req.user.userId;
+      const appointments = await AppointmentService.getUserAppointments(userId);
+      res.status(201).json(appointments);
+    } catch (error) {
+      next(error);
+    }
+  }
 
-      const appointments = await AppointmentService.getUserAppointments(
-        req.user.userId
-      );
+  async getUserDoctors(req, res, next) {
+    try {
+
+      const userId = req.params.id;
+      const appointments = await AppointmentService.getUserDoctors(userId);
       res.status(201).json(appointments);
     } catch (error) {
       next(error);
@@ -56,14 +85,20 @@ class AppointmentController {
     }
   }
 
-  async getAllAppointments(req, res, next) {
+  async getDoctorPatients(req, res, next) {
     try {
-      const appointments = await AppointmentService.getAllAppointments();
+      const doctorId = req.params.id;
+      const appointments = await AppointmentService.getDoctorPatients(
+        doctorId
+      );
       res.status(201).json(appointments);
     } catch (error) {
       next(error);
     }
   }
+
+  
+
 
   async updateAppointment(req, res, next) {
     try {

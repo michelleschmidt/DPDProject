@@ -146,36 +146,6 @@ class DashboardService {
   }
 
 
-  // async getLanguagesWithDoctorCounts() {
-  //   try {
-  //     const languages = await Language.findAll({
-  //       attributes: [
-  //         'id',
-  //         'language_name',
-  //         [
-  //           db.Sequelize.literal(`(
-  //             SELECT COUNT(DISTINCT user_language.user_id)
-  //             FROM user_language
-  //             INNER JOIN user ON user.id = user_language.user_id
-  //             WHERE user_language.language_id = Language.id
-  //             AND user.role = 'doctor'
-  //           )`),
-  //           'doctorCount'
-  //         ]
-  //       ],
-  //       order: [['language_name', 'ASC']]
-  //     });
-
-  //     return languages.map(lang => ({
-  //       language: lang.language_name,
-  //       doctorCount: parseInt(lang.getDataValue('doctorCount'), 10)
-  //     }));
-  //   } catch (error) {
-  //     console.error("Error fetching languages with doctor counts:", error);
-  //     throw error;
-  //   }
-  // }
-
   async getUsersByLanguage() {
     try {
       const result = await Language.findAll({
