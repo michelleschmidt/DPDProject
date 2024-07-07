@@ -11,10 +11,6 @@ const ManageAppointments: React.FC = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedAppointment, setSelectedAppointment] =
-    useState<Appointment | null>(null);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
@@ -28,6 +24,7 @@ const ManageAppointments: React.FC = () => {
         "/api/appointments/"
       );
       setAppointments(response.data);
+      console.log("Fetched appointments:", response.data);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching appointments:", error);
@@ -36,37 +33,9 @@ const ManageAppointments: React.FC = () => {
     }
   };
 
-  const handleDelete = (appointment: Appointment) => {
-    setSelectedAppointment(appointment);
-    setIsDeleteModalOpen(true);
-  };
-
   const handleAddAppointment = () => {
-    console.log("Opening Add Appointment Modal"); // Add this line for debugging
+    console.log("Opening Add Appointment Modal");
     setIsAddModalOpen(true);
-  };
-
-  const handleEdit = (appointment: Appointment) => {
-    setSelectedAppointment(appointment);
-    setIsEditModalOpen(true);
-  };
-
-  const handleEditModalClose = () => {
-    setIsEditModalOpen(false);
-    fetchAppointments(); // Refresh the list when the modal is closed
-  };
-
-  const confirmDelete = async () => {
-    if (!selectedAppointment) return;
-    try {
-      await axiosInstance.delete(`/api/appointments/${selectedAppointment.id}`);
-      console.log("Deleted Appointment:", selectedAppointment);
-      setIsDeleteModalOpen(false);
-      fetchAppointments(); // Refresh the list after deletion
-    } catch (error) {
-      console.error("Error deleting appointment:", error);
-      setIsDeleteModalOpen(false);
-    }
   };
 
   if (loading) return <div>Loading...</div>;
@@ -90,32 +59,11 @@ const ManageAppointments: React.FC = () => {
             </div>
             <AppointmentTable
               appointments={appointments}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
+              fetchAppointments={fetchAppointments}
             />
           </div>
         </div>
       </div>
-      <DeleteConfirmationModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        onConfirm={confirmDelete}
-      />
-      {isAddModalOpen && (
-        <AddAppointmentModal
-          isOpen={isAddModalOpen}
-          onClose={() => setIsAddModalOpen(false)}
-          onSubmit={() => {
-            fetchAppointments();
-            setIsAddModalOpen(false);
-          }}
-        />
-      )}
-      <AddAppointmentModal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onSubmit={fetchAppointments}
-      />
     </PageLayout>
   );
 };

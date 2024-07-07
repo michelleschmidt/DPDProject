@@ -38,17 +38,23 @@ const DoctorTable: React.FC<DoctorTableProps> = ({
                 src={doctor.profileImage || DEFAULT_AVATAR}
                 onError={handleImageError}
                 className="rounded-full w-9 h-9 object-cover"
-                alt={`${doctor.first_name} ${doctor.last_name}`}
+                alt={`${doctor.title} ${doctor.first_name} ${doctor.last_name}`}
               />
               <span>
-                {doctor.title} {doctor.first_name} {doctor.last_name}
+                {`${doctor.title} ${doctor.first_name || ""} ${
+                  doctor.last_name || ""
+                }`}
               </span>
             </td>
-            <td>{doctor.specialization.area_of_specialization}</td>
+            <td>
+              {doctor.specialization
+                ? doctor.specialization.area_of_specialization
+                : ""}
+            </td>
             <td>
               {doctor.languages
-                .map((lang: { language_name: string }) => lang.language_name)
-                .join(", ")}
+                ? doctor.languages.map((lang) => lang.language_name).join(", ")
+                : ""}
             </td>
             <td>
               <button

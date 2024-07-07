@@ -1,461 +1,370 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { Appointment, Patient, Doctor, Availability } from "../Types";
 import axiosInstance from "../../Axios";
-import Select, { SingleValue, MultiValue } from "react-select";
-import PatientTable from "../tables/PatientTable";
-import { Specialization, Language, Patient, Appointment } from "../Types";
 
 interface EditAppointmentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  Appointment: Appointment | null;
-  onUpdateSuccess: () => void; // Add this line
+  onSubmit: (appointment: Appointment) => void;
+  appointment: Appointment;
 }
+
+const appointmentReasons = {
+  "Regular consultation": [
+    "Routine Check-up",
+    "Diagnostic appointment",
+    "Follow Up appointment",
+    "Non-urgent medical issue",
+    "Other",
+  ],
+  "Acute Consultation": [
+    "Sudden worsening of chronic condition",
+    "Acute infection",
+    "Acute pain",
+  ],
+  "Preventive Health Check-Ups": [
+    "Annual Health Check-Up",
+    "Cancer Screening",
+    "Well-Child Visit",
+    "Vaccination appointment",
+    "Other",
+  ],
+};
 
 const EditAppointmentModal: React.FC<EditAppointmentModalProps> = ({
   isOpen,
   onClose,
-  Appointment,
-  onUpdateSuccess, // Add this line
+  onSubmit,
+  appointment,
 }) => {
-  const [isEditFormExpanded, setIsEditFormExpanded] = useState(true);
-  const [isPatientTableExpanded, setIsPatientTableExpanded] = useState(false);
-  const [languages, setLanguages] = useState<Language[]>([]);
-  const [specializations, setSpecializations] = useState<Specialization[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
-  const [formData, setFormData] = useState({
-    title: "",
-    first_name: "",
-    last_name: "",
-    street: "",
-    postcode: "",
-    city: "",
-    state: "",
-    country: "",
-    phone_number: "",
-    email: "",
-    date_of_birth: "",
-    specialization: null as SingleValue<{
-      value: number;
-      label: string;
-    }> | null,
-    languages: [] as { value: number; label: string }[],
-  });
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [availabilities, setAvailabilities] = useState<Availability[]>([]);
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedTime, setSelectedTime] = useState<string | null>(null); // State for selected time
+  const [appointmentReasonCategory, setAppointmentReasonCategory] =
+    useState<string>("");
+  const [appointmentReasonSubcategory, setAppointmentReasonSubcategory] =
+    useState<string>("");
+  const [bookTranslation, setBookTranslation] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isOpen && Appointment) {
-      fetchAppointmentDetails(Appointment.id.toString());
-    }
-    fetchLanguages();
-    fetchSpecializations();
-    fetchPatients();
-  }, [isOpen, Appointment]);
+    if (isOpen && appointment) {
+      setSelectedPatient(appointment.patient);
+      setSelectedDoctor(appointment.doctor);
+      const appointmentDate = new Date(appointment.appointmentDate);
+      const appointmentTime = appointmentDate
+        .toLocaleTimeString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        })
+        .substring(0, 5); // Extract time portion only
 
-  const fetchLanguages = async () => {
-    try {
-      const response = await axiosInstance.get("/api/search/languages");
-      setLanguages(response.data);
-    } catch (error) {
-      console.error("Error fetching languages:", error);
-    }
-  };
+      setSelectedDate(appointmentDate);
+      setSelectedTime(appointmentTime); // Initialize selectedTime from appointment
 
-  const fetchSpecializations = async () => {
-    try {
-      const response = await axiosInstance.get("/api/search/specializations");
-      setSpecializations(response.data);
-    } catch (error) {
-      console.error("Error fetching specializations:", error);
-    }
-  };
+      const reason = appointment.appointmentReason?.reason || "";
+      const subcategory = appointment.appointmentReason?.notes || "";
 
-  const fetchPatients = async () => {
+      setAppointmentReasonCategory(reason);
+      setAppointmentReasonSubcategory(subcategory);
+
+      setBookTranslation(appointment.bookTranslation);
+    }
+  }, [isOpen, appointment]);
+
+  const fetchPatients = useCallback(async () => {
     try {
+      setLoading(true);
       const response = await axiosInstance.get("/api/users/patients");
       setPatients(response.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching patients:", error);
+      setError("Failed to fetch patients. Please try again.");
+    } finally {
+      setLoading(false);
     }
-  };
+  }, []);
 
-  const fetchAppointmentDetails = async (AppointmentId: string) => {
+  const fetchDoctors = useCallback(async () => {
     try {
+      setLoading(true);
+      const response = await axiosInstance.get("/api/users");
+      setDoctors(response.data);
+    } catch (error: any) {
+      console.error("Error fetching doctors:", error);
+      setError("Failed to fetch doctors. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchPatients();
+      fetchDoctors();
+    }
+  }, [isOpen, fetchPatients, fetchDoctors]);
+
+  const fetchDoctorAvailability = useCallback(async (doctorId: number) => {
+    try {
+      setLoading(true);
       setError(null);
       const response = await axiosInstance.get(
-        `/api/users/Appointment/${AppointmentId}`
+        `/api/availabilities/doctor/${doctorId}`
       );
-      const data = response.data;
-      setFormData({
-        title: data.title || "",
-        first_name: data.first_name || "",
-        last_name: data.last_name || "",
-        street: data.address?.street || "",
-        postcode: data.address?.postcode || "",
-        city: data.address?.city || "",
-        state: data.address?.state || "",
-        country: data.address?.country || "",
-        phone_number: data.phone_number || "",
-        email: data.email || "",
-        date_of_birth: data.date_of_birth || "",
-        specialization: data.specialization
-          ? {
-              value: data.specialization.id,
-              label: data.specialization.area_of_specialization,
-            }
-          : null,
-        languages: data.languages
-          ? data.languages.map(
-              (lang: { id: number; language_name: string }) => ({
-                value: lang.id,
-                label: lang.language_name,
-              })
-            )
-          : [],
-      });
-    } catch (error) {
-      console.error("Error fetching Appointment details:", error);
-      setError("Failed to fetch Appointment details. Please try again.");
+      setAvailabilities(response.data);
+    } catch (error: any) {
+      console.error("Error fetching availabilities:", error);
+      setError(`Failed to fetch availabilities. ${error.message}`);
+    } finally {
+      setLoading(false);
     }
+  }, []);
+
+  useEffect(() => {
+    if (selectedDoctor) {
+      fetchDoctorAvailability(selectedDoctor.id);
+    }
+  }, [selectedDoctor, fetchDoctorAvailability]);
+
+  const getAvailableDates = () => {
+    const dates = [
+      ...new Set(availabilities.map((a) => a.availability_date.split("T")[0])),
+    ];
+    return dates.map((date) => new Date(date));
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [id]: value,
-    }));
+  const getAvailableTimeSlots = (date: Date) => {
+    const dateString = date.toISOString().split("T")[0];
+    return availabilities
+      .filter((a) => a.availability_date.startsWith(dateString))
+      .map((a) => a.availability_date.split("T")[1].substring(0, 5));
   };
 
-  const handleSpecializationChange = (
-    selectedOption: SingleValue<{ value: number; label: string }> | null
-  ) => {
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      specialization: selectedOption,
-    }));
-  };
-
-  const handleLanguageChange = (
-    selectedOptions: MultiValue<{ value: number; label: string }>
-  ) => {
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      languages: selectedOptions.map((option) => ({
-        value: option.value,
-        label: option.label,
-      })),
-    }));
-  };
-
-  const handleSaveChanges = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    try {
-      setError(null);
-      const updatedAppointment = {
-        ...Appointment!,
-        title: formData.title,
-        first_name: formData.first_name,
-        last_name: formData.last_name,
-        address: {
-          street: formData.street,
-          postcode: formData.postcode,
-          city: formData.city,
-          state: formData.state,
-          country: formData.country,
+    if (selectedPatient && selectedDoctor && selectedDate && selectedTime) {
+      const newAppointment = {
+        user_id: selectedPatient.id,
+        doctor_id: selectedDoctor.id,
+        availability_id: availabilities.find(
+          (a) =>
+            a.availability_date.startsWith(
+              selectedDate.toISOString().split("T")[0]
+            ) && a.availability_date.includes(selectedTime)
+        )?.id,
+        appointment_reason: {
+          reason: appointmentReasonCategory,
+          notes: appointmentReasonSubcategory,
         },
-        phone_number: formData.phone_number,
-        email: formData.email,
-        date_of_birth: formData.date_of_birth,
-        specialization_id: formData.specialization
-          ? formData.specialization.value // Send only the ID
-          : null,
-        languages: formData.languages.map((lang) => lang.value), // Send only the IDs
+        book_translation: bookTranslation,
       };
 
-      console.log("Updated Appointment Data:", updatedAppointment); // Log the data
-
-      const response = await axiosInstance.put(
-        `/api/users/${updatedAppointment.id}`,
-        updatedAppointment
-      );
-
-      if (response.status === 200 || response.status === 201) {
-        console.log("Appointment updated successfully");
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await axiosInstance.put(
+          `/api/appointments/${appointment.id}`,
+          newAppointment
+        );
+        console.log("Appointment updated successfully:", response.data);
+        onSubmit(response.data);
         onClose();
-        onUpdateSuccess(); // Add this line to call a callback function
-      } else {
-        throw new Error(`Unexpected response status: ${response.status}`);
-      }
-    } catch (error: any) {
-      console.error("Error updating Appointment:", error);
-      if (error.response) {
-        console.error("Response data:", error.response.data);
-        console.error("Response status:", error.response.status);
-        console.error("Response headers:", error.response.headers);
+      } catch (error: any) {
+        console.error("Error updating appointment:", error);
         setError(
-          `Failed to update Appointment. Server responded with: ${
-            error.response.data.error || error.response.statusText
+          `Failed to update appointment. ${
+            error.response?.data?.error || error.message
           }`
         );
-      } else if (error.request) {
-        console.error("No response received:", error.request);
-        setError(
-          "Failed to update Appointment. No response received from server."
-        );
-      } else {
-        console.error("Error message:", error.message);
-        setError(`Failed to update Appointment: ${error.message}`);
+      } finally {
+        setLoading(false);
       }
     }
   };
 
-  if (!isOpen || !Appointment) return null;
-
-  const languageOptions = languages.map((lang) => ({
-    value: lang.id,
-    label: lang.language_name,
-  }));
-
-  const specializationOptions = specializations.map((spec) => ({
-    value: spec.id,
-    label: spec.area_of_specialization,
-  }));
+  if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
-      <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-        <h2 className="text-2xl font-bold mb-4"></h2>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center overflow-y-auto">
+      <div className="bg-white p-6 rounded-lg max-w-md w-full m-4">
+        <h2 className="text-2xl font-bold mb-4">Edit Appointment</h2>
+        {error && <div className="text-red-500 mb-4">{error}</div>}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Patient selection */}
+          <div>
+            <label className="block mb-1">Patient:</label>
+            <select
+              value={selectedPatient?.id || ""}
+              onChange={(e) =>
+                setSelectedPatient(
+                  patients.find((p) => p.id === Number(e.target.value)) || null
+                )
+              }
+              className="w-full p-2 border rounded"
+            >
+              {patients.map((patient) => (
+                <option key={patient.id} value={patient.id}>
+                  {patient.first_name} {patient.last_name}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        {/* Edit Form Section */}
-        <div className="mb-4">
-          <button
-            className="w-full text-left font-semibold bg-gray-200 p-2 rounded"
-            onClick={() => setIsEditFormExpanded(!isEditFormExpanded)}
-          >
-            {isEditFormExpanded ? "▼" : "►"} Edit Appointment Information
-          </button>
-          {isEditFormExpanded && (
-            <form className="mt-2" onSubmit={handleSaveChanges}>
-              <div>
-                <label
-                  htmlFor="title"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Title
-                </label>
-                <input
-                  type="text"
-                  id="title"
-                  value={formData.title}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="first_name"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  First Name
-                </label>
-                <input
-                  type="text"
-                  id="first_name"
-                  value={formData.first_name}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="last_name"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Last Name
-                </label>
-                <input
-                  type="text"
-                  id="last_name"
-                  value={formData.last_name}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="street"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Street
-                </label>
-                <input
-                  type="text"
-                  id="street"
-                  value={formData.street}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="postcode"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Postal Code
-                </label>
-                <input
-                  type="text"
-                  id="postcode"
-                  value={formData.postcode}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="city"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  City
-                </label>
-                <input
-                  type="text"
-                  id="city"
-                  value={formData.city}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="state"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  State
-                </label>
-                <input
-                  type="text"
-                  id="state"
-                  value={formData.state}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="country"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Country
-                </label>
-                <input
-                  type="text"
-                  id="country"
-                  value={formData.country}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="phone_number"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Phone Number
-                </label>
-                <input
-                  type="text"
-                  id="phone_number"
-                  value={formData.phone_number}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="specialization"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Specialization
-                </label>
-                <Select
-                  id="specialization"
-                  isMulti={false}
-                  value={formData.specialization}
-                  onChange={handleSpecializationChange}
-                  options={specializationOptions}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="languages"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Languages
-                </label>
-                <Select
-                  isMulti={true}
-                  id="languages"
-                  value={formData.languages}
-                  onChange={handleLanguageChange}
-                  options={languageOptions}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full bg-blue-500 text-white p-2 rounded"
-              >
-                Save Changes
-              </button>
-            </form>
-          )}
-        </div>
+          {/* Doctor selection */}
+          <div>
+            <label className="block mb-1">Doctor:</label>
+            <select
+              value={selectedDoctor?.id || ""}
+              onChange={(e) =>
+                setSelectedDoctor(
+                  doctors.find((d) => d.id === Number(e.target.value)) || null
+                )
+              }
+              className="w-full p-2 border rounded"
+            >
+              {doctors.map((doctor) => (
+                <option key={doctor.id} value={doctor.id}>
+                  {doctor.first_name} {doctor.last_name}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        {/* Patient Table Section */}
-        <div>
-          <button
-            className="w-full text-left font-semibold bg-gray-200 p-2 rounded"
-            onClick={() => setIsPatientTableExpanded(!isPatientTableExpanded)}
-          >
-            {isPatientTableExpanded ? "▼" : "►"} Appointment's Patients
-          </button>
-          {isPatientTableExpanded && (
-            <div className="mt-2">
-              <PatientTable
-                patients={patients}
-                onEdit={(patient) => console.log("Edit patient", patient)}
-                onDelete={(patient) => console.log("Delete patient", patient)}
-              />
+          {/* Current Appointment Date and Time */}
+          <div>
+            <label className="block mb-1">Current Appointment:</label>
+            <p className="font-semibold">
+              {appointment &&
+                new Date(appointment.appointmentDate).toLocaleString()}
+            </p>
+          </div>
+
+          {/* Date selection */}
+          <div>
+            <label className="block mb-1">Select New Date:</label>
+            <DatePicker
+              selected={selectedDate}
+              onChange={(date: Date) => {
+                setSelectedDate(date);
+                setSelectedTime(null); // Reset selectedTime when selecting a new date
+              }}
+              includeDates={getAvailableDates()}
+              dateFormat="MMMM d, yyyy"
+              placeholderText="Select an available date"
+              className="w-full p-2 border rounded"
+            />
+          </div>
+
+          {/* Time selection */}
+          {selectedDate && (
+            <div>
+              <label className="block mb-1">Select New Time:</label>
+              <div className="grid grid-cols-3 gap-2">
+                {getAvailableTimeSlots(selectedDate).map((time) => {
+                  const isCurrentTime = time === selectedTime; // Compare directly with selectedTime
+
+                  return (
+                    <button
+                      key={time}
+                      type="button"
+                      onClick={() => setSelectedTime(time)}
+                      className={`p-2 rounded ${
+                        isCurrentTime
+                          ? "bg-blue-500 text-white"
+                          : "bg-gray-200 hover:bg-gray-300"
+                      }`}
+                    >
+                      {time}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           )}
-        </div>
 
-        <button
-          onClick={onClose}
-          className="mt-4 w-full bg-red-500 text-white p-2 rounded"
-        >
-          Close
-        </button>
+          {/* Appointment Reason Category */}
+          <div>
+            <label className="block mb-1">Appointment Reason:</label>
+            <select
+              value={appointmentReasonCategory}
+              onChange={(e) => {
+                setAppointmentReasonCategory(e.target.value);
+                setAppointmentReasonSubcategory("");
+              }}
+              className="w-full p-2 border rounded"
+            >
+              <option value="">Select a reason category</option>
+              {Object.keys(appointmentReasons).map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Appointment Reason Subcategory */}
+          {appointmentReasonCategory && (
+            <div>
+              <label className="block mb-1">Specific Reason:</label>
+              <select
+                value={appointmentReasonSubcategory}
+                onChange={(e) =>
+                  setAppointmentReasonSubcategory(e.target.value)
+                }
+                className="w-full p-2 border rounded"
+              >
+                <option value="">Select a specific reason</option>
+                {appointmentReasons[
+                  appointmentReasonCategory as keyof typeof appointmentReasons
+                ]?.map((subcategory) => (
+                  <option key={subcategory} value={subcategory}>
+                    {subcategory}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* Book translation checkbox */}
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              checked={bookTranslation}
+              onChange={(e) => setBookTranslation(e.target.checked)}
+              className="mr-2"
+            />
+            <label>Book Translation</label>
+          </div>
+
+          {/* Submit and Cancel buttons */}
+          <div className="flex justify-end space-x-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 bg-gray-300 text-black rounded-lg hover:bg-gray-400"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            >
+              Update Appointment
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
 };
+
 export default EditAppointmentModal;

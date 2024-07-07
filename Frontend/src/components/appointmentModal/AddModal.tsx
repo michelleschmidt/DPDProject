@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { Appointment, Patient, Doctor, Availability } from "../Types";
 import axiosInstance from "../../Axios";
 
@@ -8,76 +10,323 @@ interface AddAppointmentModalProps {
   onClose: () => void;
 }
 
+const appointmentReasons = {
+  "Regular consultation": [
+    "Routine Check-up",
+    "Diagnostic appointment",
+    "Follow Up appointment",
+    "Non-urgent medical issue",
+    "Other",
+  ],
+  "Acute Consultation": [
+    "Sudden worsening of chronic condition",
+    "Acute infection",
+    "Acute pain",
+  ],
+  "Preventive Health Check-Ups": [
+    "Annual Health Check-Up",
+    "Cancer Screening",
+    "Well-Child Visit",
+    "Vaccination appointment",
+    "Other",
+  ],
+};
+
 const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
   isOpen,
   onClose,
   onSubmit,
 }) => {
-  if (!isOpen) return null;
-
   const [patients, setPatients] = useState<Patient[]>([]);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [availabilities, setAvailabilities] = useState<Availability[]>([]);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
-  const [selectedAvailability, setSelectedAvailability] =
-    useState<Availability | null>(null);
-  const [appointmentReason, setAppointmentReason] = useState("");
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [appointmentReasonCategory, setAppointmentReasonCategory] =
+    useState("");
+  const [appointmentReasonSubcategory, setAppointmentReasonSubcategory] =
+    useState("");
   const [bookTranslation, setBookTranslation] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // ... (rest of your fetching functions remain the same)
+  const fetchPatients = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await axiosInstance.get("/api/users/patients");
+      setPatients(response.data);
+    } catch (error) {
+      console.error("Error fetching patients:", error);
+      setError("Failed to fetch patients. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const fetchDoctors = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await axiosInstance.get("/api/users");
+      setDoctors(response.data);
+    } catch (error) {
+      console.error("Error fetching doctors:", error);
+      setError("Failed to fetch doctors. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchPatients();
+      fetchDoctors();
+    }
+  }, [isOpen, fetchPatients, fetchDoctors]);
+
+  const fetchDoctorAvailability = useCallback(async (doctorId: number) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await axiosInstance.get(
+        `/api/availabilities/doctor/${doctorId}`
+      );
+      setAvailabilities(response.data);
+    } catch (error: any) {
+      console.error("Error fetching availabilities:", error);
+      setError(`Failed to fetch availabilities. ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (selectedDoctor) {
+      fetchDoctorAvailability(selectedDoctor.id);
+    }
+  }, [selectedDoctor, fetchDoctorAvailability]);
+
+  const getAvailableDates = () => {
+    const dates = [
+      ...new Set(availabilities.map((a) => a.availability_date.split("T")[0])),
+    ];
+    return dates.map((date) => new Date(date));
+  };
+
+  const getAvailableTimeSlots = (date: Date) => {
+    const dateString = date.toISOString().split("T")[0];
+    return availabilities
+      .filter((a) => a.availability_date.startsWith(dateString) && a.active)
+      .map((a) => a.availability_date.split("T")[1].substring(0, 5)); // Extract HH:MM
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (selectedPatient && selectedDoctor && selectedAvailability) {
-      const newAppointment: Omit<Appointment, "id"> = {
-        user: {
-          first_name: selectedPatient.first_name,
-          last_name: selectedPatient.last_name,
+    if (selectedPatient && selectedDoctor && selectedDate && selectedTime) {
+      const newAppointment = {
+        user_id: selectedPatient.id,
+        doctor_id: selectedDoctor.id,
+        availability_id: availabilities.find(
+          (a) =>
+            a.availability_date.startsWith(
+              selectedDate.toISOString().split("T")[0]
+            ) && a.availability_date.includes(selectedTime)
+        )?.id,
+        appointment_reason: {
+          reason: appointmentReasonCategory,
+          notes: appointmentReasonSubcategory,
         },
-        doctor: {
-          first_name: selectedDoctor.first_name,
-          last_name: selectedDoctor.last_name,
-        },
-        availability: {
-          date: selectedAvailability.availability_date
-            .toISOString()
-            .split("T")[0],
-          start_time: selectedAvailability.availability_date
-            .toTimeString()
-            .split(" ")[0],
-        },
-        appointment_reason: appointmentReason,
         book_translation: bookTranslation,
       };
-      onSubmit(newAppointment);
-      onClose(); // Close the modal after submission
+
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await axiosInstance.post(
+          "/api/appointments/create-new",
+          newAppointment
+        );
+        console.log("Appointment added successfully:", response.data);
+        onSubmit(response.data);
+        onClose();
+      } catch (error: any) {
+        console.error("Error adding appointment:", error);
+        setError(
+          `Failed to add appointment. ${
+            error.response?.data?.error || error.message
+          }`
+        );
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (!isOpen) return null;
+
+  if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white p-6 rounded-lg max-w-md w-full">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center overflow-y-auto">
+      <div className="bg-white p-6 rounded-lg max-w-md w-full m-4">
         <h2 className="text-2xl font-bold mb-4">Add New Appointment</h2>
+        {error && <div className="text-red-500 mb-4">{error}</div>}
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* ... (your form fields remain the same) */}
+          <div>
+            <label className="block mb-1">Select Patient:</label>
+            <select
+              value={selectedPatient?.id || ""}
+              onChange={(e) =>
+                setSelectedPatient(
+                  patients.find((p) => p.id === Number(e.target.value)) || null
+                )
+              }
+              className="w-full p-2 border rounded"
+            >
+              <option value="">Select a patient</option>
+              {patients.map((patient) => (
+                <option key={patient.id} value={patient.id}>
+                  {patient.first_name} {patient.last_name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block mb-1">Select Doctor:</label>
+            <select
+              value={selectedDoctor?.id || ""}
+              onChange={(e) =>
+                setSelectedDoctor(
+                  doctors.find((d) => d.id === Number(e.target.value)) || null
+                )
+              }
+              className="w-full p-2 border rounded"
+            >
+              <option value="">Select a doctor</option>
+              {doctors.map((doctor) => (
+                <option key={doctor.id} value={doctor.id}>
+                  {doctor.first_name} {doctor.last_name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {selectedDoctor && (
+            <div>
+              <label className="block mb-1">Select Date:</label>
+              <DatePicker
+                selected={selectedDate}
+                onChange={(date: Date) => {
+                  setSelectedDate(date);
+                  setSelectedTime(null);
+                }}
+                includeDates={getAvailableDates()}
+                dateFormat="MMMM d, yyyy"
+                placeholderText="Select an available date"
+                className="w-full p-2 border rounded"
+              />
+            </div>
+          )}
+
+          {selectedDate && (
+            <div>
+              <label className="block mb-1">Select Time:</label>
+              <div className="grid grid-cols-3 gap-2">
+                {getAvailableTimeSlots(selectedDate).map((time) => (
+                  <button
+                    key={time}
+                    type="button"
+                    onClick={() => setSelectedTime(time)}
+                    className={`p-2 rounded ${
+                      selectedTime === time
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-200 hover:bg-gray-300"
+                    }`}
+                  >
+                    {time}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div>
+            <label className="block mb-1">Appointment Reason:</label>
+            <select
+              value={appointmentReasonCategory}
+              onChange={(e) => {
+                setAppointmentReasonCategory(e.target.value);
+                setAppointmentReasonSubcategory("");
+              }}
+              className="w-full p-2 border rounded"
+            >
+              <option value="">Select a reason category</option>
+              {Object.keys(appointmentReasons).map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {appointmentReasonCategory && (
+            <div>
+              <label className="block mb-1">Specific Reason:</label>
+              <select
+                value={appointmentReasonSubcategory}
+                onChange={(e) =>
+                  setAppointmentReasonSubcategory(e.target.value)
+                }
+                className="w-full p-2 border rounded"
+              >
+                <option value="">Select a specific reason</option>
+                {appointmentReasons[
+                  appointmentReasonCategory as keyof typeof appointmentReasons
+                ].map((subcategory) => (
+                  <option key={subcategory} value={subcategory}>
+                    {subcategory}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          <div className="bg-blue-100 p-4 rounded-lg">
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={bookTranslation}
+                onChange={(e) => setBookTranslation(e.target.checked)}
+                className="form-checkbox h-5 w-5 text-blue-600"
+              />
+              <span className="text-lg font-medium">Book Translation</span>
+            </label>
+            <p className="text-sm text-gray-600 mt-1">
+              Check this if you need translation services for your appointment.
+            </p>
+          </div>
 
           <div className="flex justify-end space-x-2">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 bg-gray-300 text-black rounded-lg"
+              className="px-4 py-2 bg-gray-300 text-black rounded-lg hover:bg-gray-400"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+              disabled={
+                !selectedPatient ||
+                !selectedDoctor ||
+                !selectedDate ||
+                !selectedTime ||
+                !appointmentReasonCategory ||
+                !appointmentReasonSubcategory
+              }
             >
               Add Appointment
             </button>

@@ -2,7 +2,14 @@ import React, { useState, useEffect } from "react";
 import axiosInstance from "../../Axios";
 import Select, { SingleValue, MultiValue } from "react-select";
 import PatientTable from "../tables/PatientTable";
-import { Specialization, Language, Patient, Doctor } from "../Types";
+import {
+  Specialization,
+  Language,
+  Patient,
+  Doctor,
+  Appointment,
+} from "../Types";
+import AppointmentTable from "../tables/AppointmentTable";
 
 interface EditDoctorModalProps {
   isOpen: boolean;
@@ -19,9 +26,12 @@ const EditDoctorModal: React.FC<EditDoctorModalProps> = ({
 }) => {
   const [isEditFormExpanded, setIsEditFormExpanded] = useState(true);
   const [isPatientTableExpanded, setIsPatientTableExpanded] = useState(false);
+  const [isAppointmentTableExpanded, setIsAppointmentTableExpanded] =
+    useState(false);
   const [languages, setLanguages] = useState<Language[]>([]);
   const [specializations, setSpecializations] = useState<Specialization[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [formData, setFormData] = useState({
     title: "",
     first_name: "",
@@ -45,10 +55,11 @@ const EditDoctorModal: React.FC<EditDoctorModalProps> = ({
   useEffect(() => {
     if (isOpen && doctor) {
       fetchDoctorDetails(doctor.id.toString());
+      fetchLanguages();
+      fetchSpecializations();
+      fetchPatients();
+      fetchAppointmentsForDoctor(doctor.id); // Add this line
     }
-    fetchLanguages();
-    fetchSpecializations();
-    fetchPatients();
   }, [isOpen, doctor]);
 
   const fetchLanguages = async () => {
@@ -75,6 +86,35 @@ const EditDoctorModal: React.FC<EditDoctorModalProps> = ({
       setPatients(response.data);
     } catch (error) {
       console.error("Error fetching patients:", error);
+    }
+  };
+
+  const fetchAppointmentsForDoctor = async (doctorId: number) => {
+    if (!doctorId) return;
+    try {
+      const response = await axiosInstance.get(
+        `/api/appointments/doctor/${doctorId}`
+      );
+      const formattedAppointments = response.data.map((appointment: any) => ({
+        ...appointment,
+        doctor: {
+          first_name: doctor?.first_name || "Unknown",
+          last_name: doctor?.last_name || "Doctor",
+        },
+        appointmentDate:
+          appointment.availability?.availability_date || "No date provided",
+
+        appointmentReason: {
+          reason:
+            appointment.appointment_reason?.reason || "No Reason Provided",
+          notes: appointment.appointment_reason?.notes || "",
+        },
+      }));
+      setAppointments(formattedAppointments);
+      console.log("Fetched and formatted appointments:", formattedAppointments);
+    } catch (error) {
+      console.error("Error fetching appointments for doctor:", error);
+      setError("Failed to fetch appointments. Please try again.");
     }
   };
 
@@ -422,6 +462,25 @@ const EditDoctorModal: React.FC<EditDoctorModalProps> = ({
                 Save Changes
               </button>
             </form>
+          )}
+        </div>
+
+        {/* Appointment Table Section */}
+        <div className="mt-8">
+          <button
+            className="w-full text-left font-semibold bg-gray-200 p-2 rounded"
+            onClick={() =>
+              setIsAppointmentTableExpanded(!isAppointmentTableExpanded)
+            }
+          >
+            {isAppointmentTableExpanded ? "▼" : "►"} Doctor's Appointment
+          </button>
+          {isAppointmentTableExpanded && (
+            <AppointmentTable
+              appointments={appointments}
+              fetchAppointments={() => fetchAppointmentsForDoctor(doctor?.id)}
+              doctorId={doctor?.id}
+            />
           )}
         </div>
 
