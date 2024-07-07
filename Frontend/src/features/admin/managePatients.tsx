@@ -122,7 +122,7 @@ const ManagePatients: React.FC = () => {
         <EditPatientModal
           isOpen={isEditModalOpen}
           onClose={handleEditModalClose}
-          patient={selectedPatient}
+          patientId={selectedPatient.id.toString()}
           onUpdateSuccess={refreshPatientList}
         />
       )}

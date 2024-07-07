@@ -8,8 +8,9 @@ import axiosInstance from "../../Axios";
 
 interface AppointmentTableProps {
   appointments: Appointment[];
-  fetchAppointments: (doctorId?: number) => Promise<void>; // Updated to accept doctorId as optional
-  doctorId?: number; // Optional doctorId
+  fetchAppointments: (doctorId?: number) => Promise<void>;
+  doctorId?: number;
+  patientId?: number;
 }
 
 const AppointmentTable: React.FC<AppointmentTableProps> = ({
@@ -23,6 +24,9 @@ const AppointmentTable: React.FC<AppointmentTableProps> = ({
     useState<Appointment | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [translationFilter, setTranslationFilter] = useState(false);
+  const [statusFilter, setStatusFilter] = useState("all");
 
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
@@ -94,8 +98,53 @@ const AppointmentTable: React.FC<AppointmentTableProps> = ({
   const linkStyle =
     "text-blue-600 hover:text-blue-800 cursor-pointer transition duration-300 border-b border-transparent hover:border-blue-800";
 
+  const filteredAppointments = appointments.filter((appointment) => {
+    const doctorName =
+      `${appointment.doctor?.first_name} ${appointment.doctor?.last_name}`.toLowerCase();
+    const patientName =
+      `${appointment.patient?.first_name} ${appointment.patient?.last_name}`.toLowerCase();
+    const matchesSearch =
+      doctorName.includes(searchTerm.toLowerCase()) ||
+      patientName.includes(searchTerm.toLowerCase());
+    const matchesTranslation =
+      !translationFilter || appointment.bookTranslation;
+    const matchesStatus =
+      statusFilter === "all" ||
+      (statusFilter === "completed" && appointment.completed) ||
+      (statusFilter === "pending" && !appointment.completed);
+
+    return matchesSearch && matchesTranslation && matchesStatus;
+  });
+
   return (
     <div className="overflow-x-auto">
+      <div className="mb-4 flex flex-wrap items-center gap-4">
+        <input
+          type="text"
+          placeholder="Search doctor or patient"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="p-2 border rounded"
+        />
+        <label className="flex items-center">
+          <input
+            type="checkbox"
+            checked={translationFilter}
+            onChange={(e) => setTranslationFilter(e.target.checked)}
+            className="mr-2"
+          />
+          Translation Service
+        </label>
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="p-2 border rounded"
+        >
+          <option value="all">All Status</option>
+          <option value="completed">Completed</option>
+          <option value="pending">Pending</option>
+        </select>
+      </div>{" "}
       <table className="min-w-full bg-white">
         <thead className="bg-gray-100">
           <tr>
@@ -120,7 +169,7 @@ const AppointmentTable: React.FC<AppointmentTableProps> = ({
           </tr>
         </thead>
         <tbody>
-          {appointments.map((appointment) => (
+          {filteredAppointments.map((appointment) => (
             <tr
               key={appointment.id}
               className="border-b border-gray-200 hover:bg-gray-50"
@@ -187,17 +236,15 @@ const AppointmentTable: React.FC<AppointmentTableProps> = ({
           ))}
         </tbody>
       </table>
-
       {/* Modals */}
       {isEditModalOpen && selectedPatient && (
         <EditPatientModal
           isOpen={isEditModalOpen}
           onClose={handleCloseModal}
-          patient={selectedPatient}
+          patientId={selectedPatient.id.toString()}
           onUpdateSuccess={handleUpdateSuccess}
         />
       )}
-
       {isEditModalOpen && selectedDoctor && (
         <EditDoctorModal
           isOpen={isEditModalOpen}
@@ -206,7 +253,6 @@ const AppointmentTable: React.FC<AppointmentTableProps> = ({
           onUpdateSuccess={handleUpdateSuccess}
         />
       )}
-
       {isEditModalOpen && selectedAppointment && (
         <EditAppointmentModal
           isOpen={isEditModalOpen}
@@ -215,7 +261,6 @@ const AppointmentTable: React.FC<AppointmentTableProps> = ({
           onSubmit={handleUpdateSuccess}
         />
       )}
-
       <DeleteConfirmationModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}

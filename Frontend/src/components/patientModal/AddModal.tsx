@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../Axios";
 import Select from "react-select";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
-interface AddDoctorModalProps {
+interface AddPatientModalProps {
   isOpen: boolean;
   onClose: () => void;
   onUpdateSuccess: () => void;
@@ -13,35 +15,31 @@ interface Language {
   language_name: string;
 }
 
-interface Specialization {
-  id: number;
-  area_of_specialization: string;
-}
-
-const AddPatientModal: React.FC<AddDoctorModalProps> = ({
+const AddPatientModal: React.FC<AddPatientModalProps> = ({
   isOpen,
   onClose,
   onUpdateSuccess,
 }) => {
   const [languages, setLanguages] = useState<Language[]>([]);
-  const [selectedLanguages, setSelectedLanguages] = useState<number[]>([]);
-  const [specializations, setSpecializations] = useState<Specialization[]>([]);
-  const [selectedSpecialization, setSelectedSpecialization] = useState<
-    number | null
-  >(null);
   const [formData, setFormData] = useState({
+    preferredLanguage: "",
+    emailDoctor: "",
+    password: "",
     title: "",
     first_name: "",
-    last_name: "",
-    street: "",
-    postalcode: "",
+    name: "",
+    dob: new Date(),
+    postcode: "",
     city: "",
     state: "",
     country: "",
+    contactInformation: "",
+    emergency_contact: "",
+    relationship: "",
     phone_number: "",
-    email: "",
-    password: "",
-    date_of_birth: "1980-01-01", // Hardcoded date of birth
+    street: "",
+    accessibilityNeeds: "",
+    insuranceType: "",
   });
 
   useEffect(() => {
@@ -49,62 +47,31 @@ const AddPatientModal: React.FC<AddDoctorModalProps> = ({
       .get("/api/search/languages")
       .then((response) => setLanguages(response.data))
       .catch((error) => console.error("Error fetching languages:", error));
-
-    axiosInstance
-      .get("/api/search/specializations")
-      .then((response) => setSpecializations(response.data))
-      .catch((error) =>
-        console.error("Error fetching specializations:", error)
-      );
   }, []);
 
-  const handleLanguageChange = (selectedOptions: any) => {
-    setSelectedLanguages(
-      selectedOptions ? selectedOptions.map((option: any) => option.value) : []
-    );
-  };
-
-  const handleSpecializationChange = (selectedOption: any) => {
-    setSelectedSpecialization(selectedOption ? selectedOption.value : null);
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
     setFormData((prevFormData) => ({
       ...prevFormData,
-      [id]: value,
+      [name]: value,
     }));
   };
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleDateChange = (date: Date | null) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      dob: date || new Date(),
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    const address = {
-      street: formData.street,
-      postalcode: formData.postalcode,
-      city: formData.city,
-      state: formData.state,
-      country: formData.country,
-    };
-
-    const postData = {
-      ...formData,
-      address,
-      specialization_id: selectedSpecialization,
-      languages: selectedLanguages,
-      role: "doctor",
-    };
-
-    axiosInstance
-      .post("/api/users/admin-create", postData)
-      .then((response) => {
-        console.log("Registration successful:", response.data);
-        onUpdateSuccess();
-        onClose();
-      })
-      .catch((error) => {
-        console.error("Registration error:", error);
-      });
+    // Handle form submission here
+    console.log(formData);
+    onUpdateSuccess();
+    onClose();
   };
 
   if (!isOpen) return null;
@@ -112,182 +79,148 @@ const AddPatientModal: React.FC<AddDoctorModalProps> = ({
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center">
       <div className="bg-white p-5 rounded-lg shadow-xl w-2/3 max-h-[90vh] overflow-y-auto">
-        <h2 className="text-xl font-bold mb-4">Add New Doctor</h2>
-        <form onSubmit={handleRegister}>
-          <div className="mb-4">
+        <h2 className="text-xl font-bold mb-4">Add New Patient</h2>
+        <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
+          <div>
             <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="title"
+              className="block text-sm font-medium text-gray-700"
+              htmlFor="preferredLanguage"
             >
-              Title
-            </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="title"
-              type="text"
-            />
-
-            <div className="flex space-x-4">
-              <div className="flex-1">
-                <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="firstName"
-                >
-                  First Name
-                </label>
-                <input
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  id="firstName"
-                  type="text"
-                />
-              </div>
-              <div className="flex-1">
-                <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="lastName"
-                >
-                  Last Name
-                </label>
-                <input
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  id="lastName"
-                  type="text"
-                />
-              </div>
-            </div>
-
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="street"
-            >
-              Street and House Number
-            </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="street"
-              type="text"
-            />
-
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="postalcode"
-            >
-              Postal Code
-            </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="postalcode"
-              type="text"
-            />
-
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="city"
-            >
-              City
-            </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="city"
-              type="text"
-            />
-
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="state"
-            >
-              State
-            </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="state"
-              type="text"
-            />
-
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="country"
-            >
-              Country
-            </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="country"
-              type="text"
-            />
-
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="contact"
-            >
-              Contact Information
-            </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="contact"
-              type="text"
-            />
-
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="specialization"
-            >
-              Specialization
+              Preferred Language
             </label>
             <Select
-              id="specialization"
-              options={specializations.map((specialization) => ({
-                value: specialization.id,
-                label: specialization.area_of_specialization,
-              }))}
-              className="basic-single-select"
-              classNamePrefix="select"
-              onChange={handleSpecializationChange}
-            />
-
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="languages"
-            >
-              Languages
-            </label>
-            <Select
-              id="languages"
-              isMulti
+              name="preferredLanguage"
               options={languages.map((language) => ({
-                value: language.id,
+                value: language.id.toString(),
                 label: language.language_name,
               }))}
-              className="basic-multi-select"
-              classNamePrefix="select"
-              onChange={handleLanguageChange}
+              placeholder="Select preferred language"
+              onChange={(selectedOption) =>
+                handleInputChange({
+                  target: {
+                    name: "preferredLanguage",
+                    value: selectedOption?.value || "",
+                  },
+                } as React.ChangeEvent<HTMLSelectElement>)
+              }
             />
-
+          </div>
+          <div>
             <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+              htmlFor="emailDoctor"
             >
-              Email
+              Email address
             </label>
             <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="email"
               type="email"
+              name="emailDoctor"
+              id="emailDoctor"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              placeholder="Enter email"
+              onChange={handleInputChange}
             />
-
+          </div>
+          <div>
             <label
-              className="block text-gray-700 text-sm font-bold mb-2"
+              className="block text-sm font-medium text-gray-700"
               htmlFor="password"
             >
               Password
             </label>
             <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="password"
               type="password"
+              name="password"
+              id="password"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              placeholder="Enter password"
+              onChange={handleInputChange}
             />
           </div>
-          <div className="mt-4 flex justify-end">
+          <div>
+            <label
+              className="block text-sm font-medium text-gray-700"
+              htmlFor="title"
+            >
+              Title
+            </label>
+            <select
+              name="title"
+              id="title"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              onChange={handleInputChange}
+            >
+              <option value="">Select title</option>
+              {["Mr.", "Mrs.", "Ms.", "Dr.", "Prof."].map((title) => (
+                <option key={title} value={title}>
+                  {title}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label
+              className="block text-sm font-medium text-gray-700"
+              htmlFor="first_name"
+            >
+              First Name
+            </label>
+            <input
+              type="text"
+              name="first_name"
+              id="first_name"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              placeholder="Enter First name"
+              onChange={handleInputChange}
+            />
+          </div>
+          <div>
+            <label
+              className="block text-sm font-medium text-gray-700"
+              htmlFor="name"
+            >
+              Last Name
+            </label>
+            <input
+              type="text"
+              name="name"
+              id="name"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              placeholder="Enter Last name"
+              onChange={handleInputChange}
+            />
+          </div>
+          <div>
+            <label
+              className="block text-sm font-medium text-gray-700"
+              htmlFor="dob"
+            >
+              Date of Birth
+            </label>
+            <DatePicker
+              selected={formData.dob}
+              onChange={handleDateChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            />
+          </div>
+          {/* Add other fields (postcode, city, state, country, contactInformation, etc.) following the same pattern */}
+          <div>
+            <label
+              className="block text-sm font-medium text-gray-700"
+              htmlFor="insuranceType"
+            >
+              Insurance Type
+            </label>
+            <input
+              type="text"
+              name="insuranceType"
+              id="insuranceType"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              placeholder="Enter insurance type"
+              onChange={handleInputChange}
+            />
+          </div>
+          <div className="col-span-2 mt-4 flex justify-end">
             <button
               onClick={onClose}
               className="mr-2 px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
@@ -298,7 +231,7 @@ const AddPatientModal: React.FC<AddDoctorModalProps> = ({
               type="submit"
               className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
             >
-              Add Doctor
+              Add Patient
             </button>
           </div>
         </form>

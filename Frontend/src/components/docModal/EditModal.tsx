@@ -10,6 +10,8 @@ import {
   Appointment,
 } from "../Types";
 import AppointmentTable from "../tables/AppointmentTable";
+import DoctorAvailabilityModal from "../availabilityModal/AvailabilityManagerModal";
+import AvailabilityManagerModal from "../availabilityModal/AvailabilityManagerModal";
 
 interface EditDoctorModalProps {
   isOpen: boolean;
@@ -51,6 +53,15 @@ const EditDoctorModal: React.FC<EditDoctorModalProps> = ({
     languages: [] as { value: number; label: string }[],
   });
   const [error, setError] = useState<string | null>(null);
+
+  const [isAvailabilityModalOpen, setIsAvailabilityModalOpen] = useState(false);
+  const [selectedDoctorForAvailability, setSelectedDoctorForAvailability] =
+    useState<number | null>(null);
+
+  const openAvailabilityModal = (doctorId: number) => {
+    setSelectedDoctorForAvailability(doctorId);
+    setIsAvailabilityModalOpen(true);
+  };
 
   useEffect(() => {
     if (isOpen && doctor) {
@@ -261,7 +272,34 @@ const EditDoctorModal: React.FC<EditDoctorModalProps> = ({
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
       <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-        <h2 className="text-2xl font-bold mb-4"></h2>
+        <h2 className="text-2xl font-bold mb-4">
+          Edit {doctor.title} {doctor.first_name} {doctor.last_name}
+        </h2>
+
+        <div className="flex space-x-4">
+          <button
+            type="button"
+            className="flex-1 bg-blue-500 text-white p-2 rounded"
+            onClick={() => {
+              openAvailabilityModal(doctor.id);
+            }}
+          >
+            Manage availabilities
+          </button>
+          <button
+            onClick={onClose}
+            className="flex-1 bg-red-500 text-white p-2 rounded"
+          >
+            Close
+          </button>
+        </div>
+        {isAvailabilityModalOpen && selectedDoctorForAvailability !== null && (
+          <AvailabilityManagerModal
+            isOpen={isAvailabilityModalOpen}
+            onClose={onClose}
+            doctorId={selectedDoctorForAvailability}
+          />
+        )}
 
         {/* Edit Form Section */}
         <div className="mb-4">
@@ -272,7 +310,10 @@ const EditDoctorModal: React.FC<EditDoctorModalProps> = ({
             {isEditFormExpanded ? "▼" : "►"} Edit Doctor Information
           </button>
           {isEditFormExpanded && (
-            <form className="mt-2" onSubmit={handleSaveChanges}>
+            <form
+              className="mt-2 grid grid-cols-2 gap-4"
+              onSubmit={handleSaveChanges}
+            >
               <div>
                 <label
                   htmlFor="title"
@@ -502,13 +543,6 @@ const EditDoctorModal: React.FC<EditDoctorModalProps> = ({
             </div>
           )}
         </div>
-
-        <button
-          onClick={onClose}
-          className="mt-4 w-full bg-red-500 text-white p-2 rounded"
-        >
-          Close
-        </button>
       </div>
     </div>
   );
