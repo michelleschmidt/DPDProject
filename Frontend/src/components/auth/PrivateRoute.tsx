@@ -16,9 +16,20 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({
 
   // Check if the user is authenticated and has the required role
   const isAuthorized =
-    isAuthenticated && userData && requiredRoles.includes(userData.role);
+    isAuthenticated && userData && requiredRoles.includes(userData.role || "");
 
-  return isAuthorized ? element : <LoginForm />; // Render protected component if authorized, otherwise render LoginForm
+  if (!isAuthenticated) {
+    // If not authenticated, redirect to login page
+    return <Navigate to="/signin" replace />;
+  }
+
+  if (!isAuthorized) {
+    // If authenticated but not authorized, redirect to an unauthorized page or show an error
+    return <Navigate to="/" replace />;
+  }
+
+  // If authenticated and authorized, render the protected component
+  return element;
 };
 
 export default PrivateRoute;

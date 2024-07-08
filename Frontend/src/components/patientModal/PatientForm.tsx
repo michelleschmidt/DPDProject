@@ -7,12 +7,12 @@ import Select from "react-select";
 
 interface PatientFormProps {
   data?: Patient;
-  handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  handleSubmit: (formData: FormData) => void;
   patientId?: string;
   onClose: () => void;
 }
 
-interface FormData {
+export interface FormData {
   title: string;
   first_name: string;
   last_name: string;
@@ -29,6 +29,8 @@ interface FormData {
   street: string;
   accessibilityNeeds: string;
   insuranceType: string;
+  gender: string;
+  password: string;
   preferredLanguage: { value: number; label: string } | null;
 }
 
@@ -41,6 +43,8 @@ const PatientForm: React.FC<PatientFormProps> = ({
   const [languages, setLanguages] = useState<Language[]>([]);
   const [formData, setFormData] = useState<FormData>({
     title: "",
+    gender: "",
+    password: "",
     first_name: "",
     last_name: "",
     email: "",
@@ -87,6 +91,8 @@ const PatientForm: React.FC<PatientFormProps> = ({
       const data = response.data;
       setFormData({
         title: data.title || "",
+        gender: data.gender || "",
+        password: data.password || "",
         first_name: data.first_name || "",
         last_name: data.last_name || "",
         email: data.email || "",
@@ -128,19 +134,11 @@ const PatientForm: React.FC<PatientFormProps> = ({
   };
 
   const handleDateChange = (date: Date | null) => {
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      dob: date,
-    }));
+    setFormData((prev) => ({ ...prev, dob: date }));
   };
 
-  const handleLanguageChange = (
-    selectedOption: SingleValue<{ value: number; label: string }>
-  ) => {
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      preferredLanguage: selectedOption || null,
-    }));
+  const handleLanguageChange = (selectedOption: any) => {
+    setFormData((prev) => ({ ...prev, preferredLanguage: selectedOption }));
   };
 
   const languageOptions = languages.map((lang) => ({
@@ -148,9 +146,36 @@ const PatientForm: React.FC<PatientFormProps> = ({
     label: lang.language_name,
   }));
 
+  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    handleSubmit(formData);
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
+    <form onSubmit={onSubmit} className="grid grid-cols-2 gap-4">
       {/* Form Fields */}
+      <div>
+        <label
+          className="block text-sm font-medium text-gray-700"
+          htmlFor="gender"
+        >
+          Gender
+        </label>
+        <select
+          name="gender"
+          id="gender"
+          value={formData.gender}
+          onChange={handleInputChange}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+        >
+          <option value="">Select gender</option>
+          {["female", "male", "diverse", "not disclosed"].map((gender) => (
+            <option key={gender} value={gender}>
+              {gender}
+            </option>
+          ))}
+        </select>
+      </div>
       <div>
         <label
           className="block text-sm font-medium text-gray-700"
@@ -418,23 +443,46 @@ const PatientForm: React.FC<PatientFormProps> = ({
           placeholder="Enter accessibility needs"
         />
       </div>
-      <div className="col-span-2">
+      <div>
         <label
           className="block text-sm font-medium text-gray-700"
           htmlFor="insuranceType"
         >
           Insurance Type
         </label>
-        <input
-          type="text"
+        <select
           name="insuranceType"
           id="insuranceType"
           value={formData.insuranceType}
           onChange={handleInputChange}
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+        >
+          <option value="">Select insurance type</option>
+          {["public", "private"].map((insuranceType) => (
+            <option key={insuranceType} value={insuranceType}>
+              {insuranceType}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="col-span-2">
+        <label
+          className="block text-sm font-medium text-gray-700"
+          htmlFor="password"
+        >
+          Password
+        </label>
+        <input
+          type="text"
+          name="password"
+          id="password"
+          value={formData.password}
+          onChange={handleInputChange}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
           placeholder="Enter insurance type"
         />
       </div>
+
       {error && (
         <div className="col-span-2 text-red-600 text-center">{error}</div>
       )}

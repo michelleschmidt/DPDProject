@@ -10,10 +10,10 @@ const Footer: React.FC = () => {
     <div className="mx-20 py-8 border-t-2 border-blue-50 flex flex-col gap-10">
       <div className="flex flex-row items-center gap-14">
         <h1 className="text-blue-400 text-3xl italia font-semibold">
-          Health hub
+          Health Connect
         </h1>
         <span className="text-gray-500">
-          Copyright © 2024 Health hub, All rights reserved.
+          Copyright © 2024 Health Connect, All rights reserved.
         </span>
       </div>
       <div className="flex flex-row gap-10">
@@ -21,8 +21,6 @@ const Footer: React.FC = () => {
           <h1 className="font-medium text-blue-900">Our company</h1>
           <div className="flex flex-col gap-1">
             <span>About us</span>
-            <span>Privacy Policy</span>
-            <span>Help</span>
             <span>Health</span>
           </div>
         </div>
@@ -42,8 +40,7 @@ const Footer: React.FC = () => {
             For health professionals
           </h1>
           <div className="flex flex-col gap-1">
-            <span>Health hub Pro management software</span>
-            <span>Doctolib Community</span>
+            <span>Health Connect Community</span>
           </div>
         </div>
       </div>

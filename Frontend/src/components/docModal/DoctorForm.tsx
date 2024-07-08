@@ -20,7 +20,7 @@ export interface FormData {
   city: string;
   state: string;
   country: string;
-  contact: string;
+  phone_number: string;
   email: string;
   date_of_birth: Date | null;
   specialization: SingleValue<{ value: number; label: string }> | null;
@@ -41,7 +41,7 @@ const DoctorForm: React.FC<DoctorFormProps> = ({
     city: "",
     state: "",
     country: "",
-    contact: "",
+    phone_number: "",
     email: "",
     date_of_birth: null,
     specialization: null,
@@ -93,7 +93,7 @@ const DoctorForm: React.FC<DoctorFormProps> = ({
         city: data.address?.city || "",
         state: data.address?.state || "",
         country: data.address?.country || "",
-        contact: data.phone_number || "",
+        phone_number: data.phone_number || "",
         email: data.email || "",
         date_of_birth: data.date_of_birth ? new Date(data.date_of_birth) : null,
         specialization: data.specialization
@@ -112,7 +112,9 @@ const DoctorForm: React.FC<DoctorFormProps> = ({
     }
   }, [data]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { id, value } = e.target;
     setFormData((prevFormData) => ({
       ...prevFormData,
@@ -158,20 +160,27 @@ const DoctorForm: React.FC<DoctorFormProps> = ({
       <div className="mb-4">
         {/* Personal Information */}
         <div className="grid grid-cols-5 gap-4 mb-4">
-          <div className="col-span-1">
+          <div>
             <label
-              className="block text-gray-700 text-sm font-bold mb-2"
+              className="block text-sm font-medium text-gray-700"
               htmlFor="title"
             >
               Title
             </label>
-            <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            <select
+              name="title"
               id="title"
-              type="text"
               value={formData.title}
               onChange={handleInputChange}
-            />
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            >
+              <option value="">Select title</option>
+              {["Mr.", "Mrs.", "Ms.", "Dr.", "Prof."].map((title) => (
+                <option key={title} value={title}>
+                  {title}
+                </option>
+              ))}
+            </select>
           </div>
           <div className="grid grid-cols-2 gap-4 mb-4 col-span-4">
             <div className="col-span-1">
@@ -299,15 +308,15 @@ const DoctorForm: React.FC<DoctorFormProps> = ({
         <div className="mb-4">
           <label
             className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="contactInformation"
+            htmlFor="phone_number"
           >
             Contact Information
           </label>
           <input
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="contactInformation"
+            id="phone_number"
             type="text"
-            value={formData.contact}
+            value={formData.phone_number}
             onChange={handleInputChange}
           />
         </div>
@@ -343,7 +352,7 @@ const DoctorForm: React.FC<DoctorFormProps> = ({
           <Select
             id="languages"
             isMulti
-            options={specializations}
+            options={languages}
             className="basic-multi-select"
             classNamePrefix="select"
             value={formData.languages}

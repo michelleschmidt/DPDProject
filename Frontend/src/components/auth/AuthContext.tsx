@@ -6,12 +6,12 @@ import React, {
   useEffect,
 } from "react";
 import axiosInstance from "../../Axios"; // Adjust the path as needed
-import { UserData } from "../Types";
+import { User } from "../Types";
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  userData: UserData | null;
-  login: (data: UserData) => void;
+  userData: User | null;
+  login: (data: User) => void;
   logout: () => Promise<void>;
   checkAuth: () => Promise<boolean>;
 }
@@ -20,7 +20,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userData, setUserData] = useState<UserData | null>(() => {
+  const [userData, setUserData] = useState<User | null>(() => {
     const storedUser = localStorage.getItem("userData");
     return storedUser ? JSON.parse(storedUser) : null;
   });
@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     checkAuth();
   }, []);
 
-  const login = (data: UserData) => {
+  const login = (data: User) => {
     setUserData(data);
     setIsAuthenticated(true);
     localStorage.setItem("userData", JSON.stringify(data));

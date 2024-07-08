@@ -56,6 +56,7 @@ html,
   /* 7 */
 }
 
+
 /*
 1. Remove the margin in all browsers.
 2. Inherit line-height from `html` so users can set them as a class directly on the `html` element.
@@ -1326,7 +1327,7 @@ video {
 
 .bg-blue-600 {
   --tw-bg-opacity: 1;
-  background-color: rgb(37 99 235 / var(--tw-bg-opacity));
+  background-color: rgb(165 208 214 / var(--tw-bg-opacity));
 }
 
 .bg-gray-100 {
