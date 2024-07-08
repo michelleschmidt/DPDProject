@@ -26,6 +26,7 @@ export interface User {
   languages: Language[];
   title?: string;
   phone_number?: string;
+  date_of_birth?: Date;
 }
 
 export interface Doctor extends User {

@@ -17,11 +17,6 @@ interface NavLinkItem {
 const SideBar: React.FC = () => {
   const navLinks: NavLinkItem[] = [
     {
-      name: "Home",
-      link: "/",
-      icon: <MdOutlineHome size={24} />,
-    },
-    {
       name: "Dashboard",
       link: "/admindashboard",
       icon: <LuLayoutDashboard size={20} />,

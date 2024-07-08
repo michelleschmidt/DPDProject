@@ -27,15 +27,17 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ text }) => {
   ];
 
   return (
-    <div className="h-16 bg-white w-full flex items-center border-b-2 border-blue-200">
-      <div className="flex px-10 items-center justify-between w-full">
-        <h1 className="text-2xl font-medium uppercase">{text}</h1>
-        <Link
-          to={"/signin"}
-          className="px-5 py-1 hover:bg-gray-200 hover:cursor-pointer transition duration-300 ease-in-out bg-gray-100 rounded-lg font-medium text-blue-500 text-xl"
-        >
-          Logout
-        </Link>
+    <div className="relative">
+      <div className="absolute inset-0 bg-gray-100 h-16 border-b-2 border-blue-200 flex items-center">
+        <div className="flex px-10 items-center justify-between w-full">
+          <h1 className="text-2xl font-medium uppercase">{text}</h1>
+          <Link
+            to={"/"}
+            className="px-5 py-1 hover:bg-gray-200 hover:cursor-pointer transition duration-300 ease-in-out bg-gray-100 rounded-lg font-medium text-blue-500 text-xl"
+          >
+            Logout
+          </Link>
+        </div>
       </div>
     </div>
   );

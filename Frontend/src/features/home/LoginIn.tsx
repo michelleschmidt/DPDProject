@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import AdminHeader from "../../components/layout/adminHeader";
 import Button from "../../utils/Button";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../components/auth/AuthContext";
 import axiosInstance from "../../Axios";
+import debounce from "lodash.debounce";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -13,7 +14,10 @@ const SignIn = () => {
   const { login } = useAuth();
   const [error, setError] = useState<string | null>(null);
 
-  const handleLogin = async () => {
+  const debouncedSetEmail = useCallback(debounce(setEmail, 300), []);
+  const debouncedSetPassword = useCallback(debounce(setPassword, 300), []);
+
+  const handleLogin = useCallback(async () => {
     if (isLoading) return; // Prevent multiple clicks while loading
 
     setIsLoading(true);
@@ -27,7 +31,7 @@ const SignIn = () => {
 
       if (response.status === 201) {
         const userData = response.data;
-        console.log("Respone: ", userData);
+        console.log("Response: ", userData);
         login(userData);
 
         if (userData.role === "admin") {
@@ -58,7 +62,7 @@ const SignIn = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [email, password, isLoading, login, navigate]);
 
   return (
     <div className="h-screen w-full">
@@ -75,7 +79,7 @@ const SignIn = () => {
                 type="email"
                 placeholder="Email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => debouncedSetEmail(e.target.value)}
                 className="input_ outline-none rounded-lg px-2 p-1"
               />
             </div>
@@ -85,7 +89,7 @@ const SignIn = () => {
                 type="password"
                 placeholder="********"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => debouncedSetPassword(e.target.value)}
                 className="input_ outline-none rounded-lg px-2 p-1"
               />
             </div>

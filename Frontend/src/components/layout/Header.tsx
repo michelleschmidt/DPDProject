@@ -36,12 +36,6 @@ const Header: React.FC = () => {
           {help && <Help />}
           <div className="flex flex-row items-center gap-4">
             <Link
-              to="/signup"
-              className="z-10 text-white transition duration-300 ease-in pb-2 hover:cursor-pointer hover:bg-[#f1f1f1aa] p-2 py-1 rounded-lg text-sm italia"
-            >
-              Sign up
-            </Link>
-            <Link
               to="/signin"
               className="z-10 text-white transition duration-300 ease-in pb-2 hover:cursor-pointer hover:bg-[#f1f1f1aa] p-2 py-1 rounded-lg text-sm italia"
             >

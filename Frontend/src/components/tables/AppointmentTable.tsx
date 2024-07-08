@@ -65,6 +65,7 @@ const AppointmentTable: React.FC<AppointmentTableProps> = ({
     setSelectedPatient(null);
     setSelectedAppointment(null);
     setIsEditModalOpen(false);
+    setIsDeleteModalOpen(false); // Ensure delete modal is closed too
   };
 
   const handleEdit = (appointment: Appointment) => {
@@ -237,6 +238,14 @@ const AppointmentTable: React.FC<AppointmentTableProps> = ({
         </tbody>
       </table>
       {/* Modals */}
+      {isEditModalOpen && selectedDoctor && (
+        <EditDoctorModal
+          isOpen={isEditModalOpen}
+          onClose={handleCloseModal}
+          onUpdateSuccess={handleUpdateSuccess}
+          doctor={selectedDoctor}
+        />
+      )}
       {isEditModalOpen && selectedPatient && (
         <EditPatientModal
           isOpen={isEditModalOpen}
@@ -245,20 +254,12 @@ const AppointmentTable: React.FC<AppointmentTableProps> = ({
           onUpdateSuccess={handleUpdateSuccess}
         />
       )}
-      {isEditModalOpen && selectedDoctor && (
-        <EditDoctorModal
-          isOpen={isEditModalOpen}
-          onClose={handleCloseModal}
-          doctor={selectedDoctor}
-          onUpdateSuccess={handleUpdateSuccess}
-        />
-      )}
       {isEditModalOpen && selectedAppointment && (
         <EditAppointmentModal
           isOpen={isEditModalOpen}
           onClose={handleCloseModal}
-          appointment={selectedAppointment}
           onSubmit={handleUpdateSuccess}
+          appointment={selectedAppointment}
         />
       )}
       <DeleteConfirmationModal
