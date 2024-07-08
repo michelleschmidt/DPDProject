@@ -44,7 +44,7 @@ class AvailabilityController {
       next(error);
     }
   }
-  async getDoctorAvailabilitiesByAdmin(req, res, next) {
+  async getDoctorAvailabilitiesByUser(req, res, next) {
     try {
       const doctorId = req.params.doctor_id;
       const availabilities = await AvailabilityService.getDoctorAvailabilities(doctorId);

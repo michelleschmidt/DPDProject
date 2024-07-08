@@ -43,7 +43,7 @@ class AppointmentController {
   async getUserDoctors(req, res, next) {
     try {
 
-      const userId = req.params.id;
+      const userId = req.user.userId;
       const appointments = await AppointmentService.getUserDoctors(userId);
       res.status(201).json(appointments);
     } catch (error) {
@@ -87,7 +87,7 @@ class AppointmentController {
 
   async getDoctorPatients(req, res, next) {
     try {
-      const doctorId = req.params.id;
+      const doctorId = req.user.userId;
       const appointments = await AppointmentService.getDoctorPatients(
         doctorId
       );
@@ -96,8 +96,6 @@ class AppointmentController {
       next(error);
     }
   }
-
-  
 
 
   async updateAppointment(req, res, next) {

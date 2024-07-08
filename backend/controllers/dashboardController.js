@@ -45,7 +45,7 @@ class DashboardController {
 
   async getUsersByLanguage(req, res, next) {
     try {
-      const result = await DashbordService.countUsersByLanguage();
+      const result = await DashbordService.getUsersByLanguage();
       res.json(result);
     } catch (error) {
       next(error);

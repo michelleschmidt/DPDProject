@@ -81,6 +81,7 @@ class AuthService {
         userId: user.dataValues.id,
         role: user.dataValues.role,
         address: user.address,
+        email:user.email,
       },
       process.env.SECRETE,
       { expiresIn: "24h" }
