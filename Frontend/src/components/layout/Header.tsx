@@ -82,7 +82,7 @@ const Help: React.FC = () => {
                 to="/sign-up"
                 className="hover:underline transition duration-200 ease-in-out"
               >
-                Create a Health hub account
+                Create a Health Connect account
               </Link>
               <span>How can I make an appointment?</span>
               <span>Share a document with my doctor</span>

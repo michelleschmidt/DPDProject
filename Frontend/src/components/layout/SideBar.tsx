@@ -40,7 +40,7 @@ const SideBar: React.FC = () => {
 
   return (
     <div className="w-[262px] h-screen py-4 px-4 flex flex-col bg-blue-600">
-      <div className="text-white italia text-2xl font-semibold">Health Hub</div>
+      <div className="text-white italia text-2xl font-semibold">Health Connect</div>
       <div className="flex flex-col gap-6 mt-14">
         {navLinks.map((link, index) => (
           <NavLink
