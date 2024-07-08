@@ -110,7 +110,6 @@ const EditDoctorModal: React.FC<EditDoctorModalProps> = ({
     try {
       setError(null);
       const updatedDoctor = {
-        ...doctor!,
         title: formData.title,
         first_name: formData.first_name,
         last_name: formData.last_name,
@@ -123,29 +122,48 @@ const EditDoctorModal: React.FC<EditDoctorModalProps> = ({
         },
         email: formData.email,
         date_of_birth: formData.date_of_birth,
-        specialization_id: formData.specialization
-          ? formData.specialization.value // Send only the ID
-          : null,
-        languages: formData.languages.map((lang) => lang.value), // Send only the IDs
+        specialization_id: formData.specialization?.value,
+        languages: formData.languages.map((lang) => lang.value).filter(Boolean),
+        phone_number: formData.phone_number,
       };
 
       console.log("Updated Doctor Data:", updatedDoctor);
 
       const response = await axiosInstance.put(
         `/api/users/${doctor!.id}`,
-        updatedDoctor
+        updatedDoctor,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
 
-      if (response.status === 200 || response.status === 201) {
-        console.log("Doctor updated successfully");
-        onClose();
-        onUpdateSuccess(); // Call the onUpdateSuccess callback
-      } else {
-        throw new Error(`Unexpected response status: ${response.status}`);
-      }
+      console.log("Server response:", response.data);
+      onClose();
+      onUpdateSuccess();
     } catch (error: any) {
       console.error("Error updating doctor:", error);
-      setError(`Failed to update doctor: ${error.message}`);
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.error("Response data:", error.response.data);
+        console.error("Response status:", error.response.status);
+        console.error("Response headers:", error.response.headers);
+        setError(
+          `Failed to update doctor: ${
+            error.response.data.message || error.message
+          }`
+        );
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.error("No response received:", error.request);
+        setError("Failed to update doctor: No response received from server");
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.error("Error message:", error.message);
+        setError(`Failed to update doctor: ${error.message}`);
+      }
     }
   };
 

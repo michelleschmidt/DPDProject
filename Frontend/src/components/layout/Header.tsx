@@ -15,7 +15,7 @@ const Header: React.FC = () => {
       <div className="flex flex-row justify-between w-full">
         <Link
           to="/"
-          className="z-10 flex flex-row items-center italia text-white font-medium text-2xl"
+          className="z-10 flex flex-row items-center inter text-white font-medium text-2xl"
         >
           <h1>Health Connect</h1>
         </Link>
@@ -31,19 +31,25 @@ const Header: React.FC = () => {
             className="flex transition duration-300 ease-in pb-2 hover:cursor-pointer hover:bg-[#f1f1f1aa] p-2 py-1 rounded-lg z-10 items-center gap-1"
           >
             <GoQuestion color="white" />
-            <div className="text-white text-sm italia">Help center</div>
+            <div className="text-white text-sm inter">Help center</div>
           </div>
           {help && <Help />}
           <div className="flex flex-row items-center gap-4">
             <Link
               to="/signin"
-              className="z-10 text-white transition duration-300 ease-in pb-2 hover:cursor-pointer hover:bg-[#f1f1f1aa] p-2 py-1 rounded-lg text-sm italia"
+              className="z-10 text-white transition duration-300 ease-in pb-2 hover:cursor-pointer hover:bg-[#f1f1f1aa] p-2 py-1 rounded-lg text-sm inter"
+            >
+              Register
+            </Link>
+            <Link
+              to="/signup"
+              className="z-10 text-white transition duration-300 ease-in pb-2 hover:cursor-pointer hover:bg-[#f1f1f1aa] p-2 py-1 rounded-lg text-sm inter"
             >
               Sign in
             </Link>
             <Link
               to="/admindashboard"
-              className="z-10 text-white transition duration-300 ease-in pb-2 hover:cursor-pointer hover:bg-[#f1f1f1aa] p-2 py-1 rounded-lg text-sm italia"
+              className="z-10 text-white transition duration-300 ease-in pb-2 hover:cursor-pointer hover:bg-[#f1f1f1aa] p-2 py-1 rounded-lg text-sm inter"
             >
               Admin
             </Link>

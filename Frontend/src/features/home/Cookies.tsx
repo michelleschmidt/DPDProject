@@ -35,7 +35,7 @@ const CookiesModal: React.FC = () => {
               lit. f DSGVO legitimate interests in conjunction with § 25 Abs. 2
               TTDSG. Necessary cookies cannot be rejected. Additionally, we use
               cookies or similar technologies to measure user behavior analytics
-              and adapt the content displayed on Doctolib, provided you have
+              and adapt the content displayed on Health Connect, provided you have
               given your consent Art. 6 Abs. S.1 lit. a DSGVO in conjunction
               with § 25 Abs. 1 TTDSG. You give your consent by clicking the
               "Allow" button. If you click the "Reject" button, only necessary
