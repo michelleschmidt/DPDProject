@@ -62,19 +62,14 @@ const DoctorTable: React.FC<DoctorTableProps> = ({
         </thead>
         <tbody>
           {filteredDoctors.map((doctor, index) => (
-            <tr key={doctor.id || index} className="border-b border-blue-200">
-              <td className="py-2 flex items-center gap-4">
-                <img
-                  src={doctor.profileImage || DEFAULT_AVATAR}
-                  onError={handleImageError}
-                  className="rounded-full w-9 h-9 object-cover"
-                  alt={`${doctor.title} ${doctor.first_name} ${doctor.last_name}`}
-                />
-                <span>
-                  {`${doctor.title} ${doctor.first_name || ""} ${
-                    doctor.last_name || ""
-                  }`}
-                </span>
+            <tr
+              key={doctor.userId || index}
+              className="border-b border-blue-200"
+            >
+              <td>
+                {`${doctor.title} ${doctor.first_name || ""} ${
+                  doctor.last_name || ""
+                }`}
               </td>
               <td>
                 {doctor.specialization

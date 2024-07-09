@@ -44,7 +44,7 @@ const EditDoctorModal: React.FC<EditDoctorModalProps> = ({
       fetchLanguages();
       fetchSpecializations();
       fetchPatientsForDoctor();
-      fetchAppointmentsForDoctor(doctor.id);
+      fetchAppointmentsForDoctor(doctor.userId);
     }
   }, [isOpen, doctor]);
 
@@ -130,7 +130,7 @@ const EditDoctorModal: React.FC<EditDoctorModalProps> = ({
       console.log("Updated Doctor Data:", updatedDoctor);
 
       const response = await axiosInstance.put(
-        `/api/users/${doctor!.id}`,
+        `/api/users/${doctor!.userId}`,
         updatedDoctor,
         {
           headers: {
@@ -186,7 +186,7 @@ const EditDoctorModal: React.FC<EditDoctorModalProps> = ({
             type="button"
             className="flex-1 bg-blue-500 text-white p-2 rounded"
             onClick={() => {
-              openAvailabilityModal(doctor.id);
+              openAvailabilityModal(doctor.userId);
             }}
           >
             Manage availabilities
@@ -236,8 +236,10 @@ const EditDoctorModal: React.FC<EditDoctorModalProps> = ({
           {isAppointmentTableExpanded && (
             <AppointmentTable
               appointments={appointments}
-              fetchAppointments={() => fetchAppointmentsForDoctor(doctor?.id)}
-              doctorId={doctor?.id}
+              fetchAppointments={() =>
+                fetchAppointmentsForDoctor(doctor?.userId)
+              }
+              doctorId={doctor?.userId}
             />
           )}
         </div>

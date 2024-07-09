@@ -17,7 +17,7 @@ export interface Specialization {
 }
 
 export interface User {
-  id: number;
+  userId: number;
   token?: string;
   first_name: string;
   last_name: string;
@@ -28,6 +28,8 @@ export interface User {
   title?: string;
   phone_number?: string;
   date_of_birth?: Date;
+  password?: string;
+  gender?: string;
 }
 
 export interface Doctor extends User {
@@ -63,4 +65,5 @@ export interface Appointment {
   completed: boolean;
   doctor: Doctor;
   patient: Patient;
+  availability: Availability;
 }

@@ -11,6 +11,8 @@ import AdminDashboard from "./features/admin/adminDashboard";
 import Home from "./features/home/Home";
 import SignUp from "./features/home/SignIn";
 import SignIn from "./features/home/LoginIn";
+import DoctorDashboard from "./features/doctor/doctorDashboard";
+import PatientDashboard from "./features/patient/patientDashboard";
 
 const App = () => {
   return (
@@ -26,6 +28,24 @@ const App = () => {
               <PrivateRoute
                 element={<AdminDashboard />}
                 requiredRoles={["admin"]}
+              />
+            }
+          />
+          <Route
+            path="/patientdashboard"
+            element={
+              <PrivateRoute
+                element={<PatientDashboard />}
+                requiredRoles={["normal_user"]}
+              />
+            }
+          />
+          <Route
+            path="/doctordashboard"
+            element={
+              <PrivateRoute
+                element={<DoctorDashboard />}
+                requiredRoles={["doctor"]}
               />
             }
           />

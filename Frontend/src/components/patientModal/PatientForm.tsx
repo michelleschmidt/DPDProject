@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Patient, Language } from "../Types";
 import axiosInstance from "../../Axios";
-import { SingleValue } from "react-select";
 import DatePicker from "react-datepicker";
 import Select from "react-select";
 
@@ -17,21 +16,25 @@ export interface FormData {
   first_name: string;
   last_name: string;
   email: string;
-  dob: Date | null;
-  postcode: string;
-  city: string;
-  state: string;
-  country: string;
-  contactInformation: string;
-  emergency_contact: string;
-  relationship: string;
+  date_of_birth: Date | null;
   phone_number: string;
-  street: string;
-  accessibilityNeeds: string;
-  insuranceType: string;
+  address: {
+    street: string;
+    postal_code: string;
+    city: string;
+    state: string;
+    country: string;
+  };
+  emergency_contact_details: {
+    name: string;
+    phone_number: string;
+    relationship: string;
+  };
+  accessibility_needs: string;
+  insurance_type: string;
   gender: string;
+  languages: { value: number; label: string }[];
   password: string;
-  preferredLanguage: { value: number; label: string } | null;
 }
 
 const PatientForm: React.FC<PatientFormProps> = ({
@@ -43,24 +46,28 @@ const PatientForm: React.FC<PatientFormProps> = ({
   const [languages, setLanguages] = useState<Language[]>([]);
   const [formData, setFormData] = useState<FormData>({
     title: "",
-    gender: "",
-    password: "",
     first_name: "",
     last_name: "",
     email: "",
-    dob: null,
-    postcode: "",
-    city: "",
-    state: "",
-    country: "",
-    contactInformation: "",
-    emergency_contact: "",
-    relationship: "",
+    date_of_birth: null,
     phone_number: "",
-    street: "",
-    accessibilityNeeds: "",
-    insuranceType: "",
-    preferredLanguage: null,
+    address: {
+      street: "",
+      postal_code: "",
+      city: "",
+      state: "",
+      country: "",
+    },
+    emergency_contact_details: {
+      name: "",
+      phone_number: "",
+      relationship: "",
+    },
+    accessibility_needs: "",
+    insurance_type: "",
+    gender: "",
+    languages: [],
+    password: "",
   });
   const [error, setError] = useState<string | null>(null);
 
@@ -90,30 +97,33 @@ const PatientForm: React.FC<PatientFormProps> = ({
       const response = await axiosInstance.get(`/api/users/${patientId}`);
       const data = response.data;
       setFormData({
-        title: data.title || "",
-        gender: data.gender || "",
         password: data.password || "",
+        title: data.title || "",
         first_name: data.first_name || "",
         last_name: data.last_name || "",
         email: data.email || "",
-        dob: data.dob ? new Date(data.dob) : null,
-        postcode: data.address?.postcode || "",
-        city: data.address?.city || "",
-        state: data.address?.state || "",
-        country: data.address?.country || "",
-        contactInformation: data.contactInformation || "",
-        emergency_contact: data.emergency_contact || "",
-        relationship: data.relationship || "",
+        date_of_birth: data.date_of_birth ? new Date(data.date_of_birth) : null,
         phone_number: data.phone_number || "",
-        street: data.address?.street || "",
-        accessibilityNeeds: data.accessibilityNeeds || "",
-        insuranceType: data.insuranceType || "",
-        preferredLanguage: data.preferredLanguage
-          ? {
-              value: data.preferredLanguage.id,
-              label: data.preferredLanguage.language_name,
-            }
-          : null,
+        address: {
+          street: data.address?.street || "",
+          postal_code: data.address?.postal_code || "",
+          city: data.address?.city || "",
+          state: data.address?.state || "",
+          country: data.address?.country || "",
+        },
+        emergency_contact_details: {
+          name: data.emergency_contact_details?.name || "",
+          phone_number: data.emergency_contact_details?.phone_number || "",
+          relationship: data.emergency_contact_details?.relationship || "",
+        },
+        accessibility_needs: data.accessibility_needs || "",
+        insurance_type: data.insurance_type || "",
+        gender: data.gender || "",
+        languages:
+          data.languages?.map((lang: Language) => ({
+            value: lang.id,
+            label: lang.language_name,
+          })) || [],
       });
     } catch (error) {
       console.error("Error fetching patient details:", error);
@@ -127,24 +137,39 @@ const PatientForm: React.FC<PatientFormProps> = ({
     >
   ) => {
     const { name, value } = e.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: value,
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleAddressChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      address: { ...prev.address, [name]: value },
+    }));
+  };
+
+  const handleEmergencyContactChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      emergency_contact_details: {
+        ...prev.emergency_contact_details,
+        [name]: value,
+      },
     }));
   };
 
   const handleDateChange = (date: Date | null) => {
-    setFormData((prev) => ({ ...prev, dob: date }));
+    setFormData((prev) => ({ ...prev, date_of_birth: date }));
   };
 
-  const handleLanguageChange = (selectedOption: any) => {
-    setFormData((prev) => ({ ...prev, preferredLanguage: selectedOption }));
+  const handleLanguageChange = (selectedOptions: any) => {
+    setFormData((prev) => ({ ...prev, languages: selectedOptions }));
   };
-
-  const languageOptions = languages.map((lang) => ({
-    value: lang.id,
-    label: lang.language_name,
-  }));
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -152,350 +177,298 @@ const PatientForm: React.FC<PatientFormProps> = ({
   };
 
   return (
-    <form onSubmit={onSubmit} className="grid grid-cols-2 gap-4">
-      {/* Form Fields */}
-      <div>
-        <label
-          className="block text-sm font-medium text-gray-700"
-          htmlFor="gender"
-        >
-          Gender
-        </label>
-        <select
-          name="gender"
-          id="gender"
-          value={formData.gender}
-          onChange={handleInputChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-        >
-          <option value="">Select gender</option>
-          {["female", "male", "diverse", "not disclosed"].map((gender) => (
-            <option key={gender} value={gender}>
-              {gender}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div>
-        <label
-          className="block text-sm font-medium text-gray-700"
-          htmlFor="title"
-        >
-          Title
-        </label>
-        <select
-          name="title"
-          id="title"
-          value={formData.title}
-          onChange={handleInputChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-        >
-          <option value="">Select title</option>
-          {["Mr.", "Mrs.", "Ms.", "Dr.", "Prof."].map((title) => (
-            <option key={title} value={title}>
-              {title}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div>
-        <label
-          className="block text-sm font-medium text-gray-700"
-          htmlFor="first_name"
-        >
-          First Name
-        </label>
-        <input
-          type="text"
-          name="first_name"
-          id="first_name"
-          value={formData.first_name}
-          onChange={handleInputChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-        />
-      </div>
-      <div>
-        <label
-          className="block text-sm font-medium text-gray-700"
-          htmlFor="last_name"
-        >
-          Last Name
-        </label>
-        <input
-          type="text"
-          name="last_name"
-          id="last_name"
-          value={formData.last_name}
-          onChange={handleInputChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-        />
-      </div>
-      <div>
-        <label
-          className="block text-sm font-medium text-gray-700"
-          htmlFor="email"
-        >
-          Email
-        </label>
-        <input
-          type="email"
-          name="email"
-          id="email"
-          value={formData.email}
-          onChange={handleInputChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-        />
-      </div>
-      <div>
-        <label
-          className="block text-sm font-medium text-gray-700"
-          htmlFor="dob"
-        >
-          Date of Birth
-        </label>
-        <DatePicker
-          selected={formData.dob}
-          onChange={handleDateChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-        />
-      </div>
-      <div>
-        <label
-          className="block text-sm font-medium text-gray-700"
-          htmlFor="preferredLanguage"
-        >
-          Preferred Language
-        </label>
-        <Select
-          name="preferredLanguage"
-          options={languageOptions}
-          value={formData.preferredLanguage}
-          onChange={handleLanguageChange}
-          className="mt-1 block w-full"
-          isMulti={false}
-        />
-      </div>
-      <div className="col-span-1">
-        <label
-          className="block text-sm font-medium text-gray-700"
-          htmlFor="street"
-        >
-          Street
-        </label>
-        <input
-          type="text"
-          name="street"
-          id="street"
-          value={formData.street}
-          onChange={handleInputChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          placeholder="Enter street"
-        />
-      </div>
-      <div className="col-span-1">
-        <label
-          className="block text-sm font-medium text-gray-700"
-          htmlFor="postcode"
-        >
-          Postcode
-        </label>
-        <input
-          type="text"
-          name="postcode"
-          id="postcode"
-          value={formData.postcode}
-          onChange={handleInputChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          placeholder="Enter postcode"
-        />
-      </div>
-      <div className="col-span-1">
-        <label
-          className="block text-sm font-medium text-gray-700"
-          htmlFor="city"
-        >
-          City
-        </label>
-        <input
-          type="text"
-          name="city"
-          id="city"
-          value={formData.city}
-          onChange={handleInputChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          placeholder="Enter city"
-        />
-      </div>
-      <div className="col-span-1">
-        <label
-          className="block text-sm font-medium text-gray-700"
-          htmlFor="state"
-        >
-          State
-        </label>
-        <input
-          type="text"
-          name="state"
-          id="state"
-          value={formData.state}
-          onChange={handleInputChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          placeholder="Enter state"
-        />
-      </div>
-      <div className="col-span-1">
-        <label
-          className="block text-sm font-medium text-gray-700"
-          htmlFor="country"
-        >
-          Country
-        </label>
-        <input
-          type="text"
-          name="country"
-          id="country"
-          value={formData.country}
-          onChange={handleInputChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          placeholder="Enter country"
-        />
-      </div>
-      <div className="col-span-2">
-        <label
-          className="block text-sm font-medium text-gray-700"
-          htmlFor="contactInformation"
-        >
-          Contact Information
-        </label>
-        <textarea
-          name="contactInformation"
-          id="contactInformation"
-          value={formData.contactInformation}
-          onChange={handleInputChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          placeholder="Enter contact information"
-        />
-      </div>
-      <div className="col-span-1">
-        <label
-          className="block text-sm font-medium text-gray-700"
-          htmlFor="emergency_contact"
-        >
-          Emergency Contact
-        </label>
-        <input
-          type="text"
-          name="emergency_contact"
-          id="emergency_contact"
-          value={formData.emergency_contact}
-          onChange={handleInputChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          placeholder="Enter emergency contact"
-        />
-      </div>
-      <div className="col-span-1">
-        <label
-          className="block text-sm font-medium text-gray-700"
-          htmlFor="relationship"
-        >
-          Relationship
-        </label>
-        <input
-          type="text"
-          name="relationship"
-          id="relationship"
-          value={formData.relationship}
-          onChange={handleInputChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          placeholder="Enter relationship"
-        />
-      </div>
-      <div className="col-span-2">
-        <label
-          className="block text-sm font-medium text-gray-700"
-          htmlFor="phone_number"
-        >
-          Phone Number
-        </label>
-        <input
-          type="text"
-          name="phone_number"
-          id="phone_number"
-          value={formData.phone_number}
-          onChange={handleInputChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          placeholder="Enter phone number"
-        />
-      </div>
-      <div className="col-span-2">
-        <label
-          className="block text-sm font-medium text-gray-700"
-          htmlFor="accessibilityNeeds"
-        >
-          Accessibility Needs
-        </label>
-        <textarea
-          name="accessibilityNeeds"
-          id="accessibilityNeeds"
-          value={formData.accessibilityNeeds}
-          onChange={handleInputChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          placeholder="Enter accessibility needs"
-        />
-      </div>
-      <div>
-        <label
-          className="block text-sm font-medium text-gray-700"
-          htmlFor="insuranceType"
-        >
-          Insurance Type
-        </label>
-        <select
-          name="insuranceType"
-          id="insuranceType"
-          value={formData.insuranceType}
-          onChange={handleInputChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-        >
-          <option value="">Select insurance type</option>
-          {["public", "private"].map((insuranceType) => (
-            <option key={insuranceType} value={insuranceType}>
-              {insuranceType}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div className="col-span-2">
-        <label
-          className="block text-sm font-medium text-gray-700"
-          htmlFor="password"
-        >
-          Password
-        </label>
-        <input
-          type="text"
-          name="password"
-          id="password"
-          value={formData.password}
-          onChange={handleInputChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-          placeholder="Enter insurance type"
-        />
+    <form onSubmit={onSubmit} className="space-y-8">
+      {error && <div className="text-red-500 mb-4">{error}</div>}
+
+      <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
+        <h2 className="text-xl font-semibold mb-4">Personal Information</h2>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label
+              htmlFor="title"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Title
+            </label>
+            <input
+              type="text"
+              id="title"
+              name="title"
+              value={formData.title}
+              onChange={handleInputChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="gender"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Gender
+            </label>
+            <select
+              id="gender"
+              name="gender"
+              value={formData.gender}
+              onChange={handleInputChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            >
+              <option value="">Select gender</option>
+              {["female", "male", "diverse", "not disclosed"].map((gender) => (
+                <option key={gender} value={gender}>
+                  {gender}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label
+              htmlFor="first_name"
+              className="block text-sm font-medium text-gray-700"
+            >
+              First Name
+            </label>
+            <input
+              type="text"
+              id="first_name"
+              name="first_name"
+              value={formData.first_name}
+              onChange={handleInputChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="last_name"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Last Name
+            </label>
+            <input
+              type="text"
+              id="last_name"
+              name="last_name"
+              value={formData.last_name}
+              onChange={handleInputChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="date_of_birth"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Date of Birth
+            </label>
+            <DatePicker
+              selected={formData.date_of_birth}
+              onChange={handleDateChange}
+              dateFormat="yyyy-MM-dd"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="languages"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Languages
+            </label>
+            <Select
+              isMulti
+              options={languages.map((lang) => ({
+                value: lang.id,
+                label: lang.language_name,
+              }))}
+              value={formData.languages}
+              onChange={handleLanguageChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            />
+          </div>
+        </div>
       </div>
 
-      {error && (
-        <div className="col-span-2 text-red-600 text-center">{error}</div>
-      )}
-      <div className="col-span-2 flex justify-between">
-        <button type="submit" className="bg-blue-500 text-white p-2 rounded">
-          Save
-        </button>
+      <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
+        <h2 className="text-xl font-semibold mb-4">Contact Information</h2>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="phone_number"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Phone Number
+            </label>
+            <input
+              type="tel"
+              id="phone_number"
+              name="phone_number"
+              value={formData.phone_number}
+              onChange={handleInputChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            />
+          </div>
+          <div>
+            <label htmlFor="street">Street</label>
+            <input
+              type="text"
+              id="street"
+              name="street"
+              value={formData.address.street}
+              onChange={handleAddressChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            />
+          </div>
+          <div>
+            <label htmlFor="postal_code">Postal Code</label>
+            <input
+              type="text"
+              id="postal_code"
+              name="postal_code"
+              value={formData.address.postal_code}
+              onChange={handleAddressChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            />
+          </div>
+          <div>
+            <label htmlFor="city">City</label>
+            <input
+              type="text"
+              id="city"
+              name="city"
+              value={formData.address.city}
+              onChange={handleAddressChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            />
+          </div>
+          <div>
+            <label htmlFor="state">State</label>
+            <input
+              type="text"
+              id="state"
+              name="state"
+              value={formData.address.state}
+              onChange={handleAddressChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            />
+          </div>
+          <div>
+            <label htmlFor="country">Country</label>
+            <input
+              type="text"
+              id="country"
+              name="country"
+              value={formData.address.country}
+              onChange={handleAddressChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
+        <h2 className="text-xl font-semibold mb-4">Emergency Contact</h2>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="emergency_contact_name">Name</label>
+            <input
+              type="text"
+              id="emergency_contact_name"
+              name="name"
+              value={formData.emergency_contact_details.name}
+              onChange={handleEmergencyContactChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            />
+          </div>
+          <div>
+            <label htmlFor="emergency_contact_phone">Phone</label>
+            <input
+              type="tel"
+              id="emergency_contact_phone"
+              name="phone_number"
+              value={formData.emergency_contact_details.phone_number}
+              onChange={handleEmergencyContactChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            />
+          </div>
+          <div>
+            <label htmlFor="emergency_contact_relationship">Relationship</label>
+            <input
+              type="text"
+              id="emergency_contact_relationship"
+              name="relationship"
+              value={formData.emergency_contact_details.relationship}
+              onChange={handleEmergencyContactChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
+        <h2 className="text-xl font-semibold mb-4">Medical Information</h2>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="insurance_type">Insurance Type</label>
+            <input
+              type="text"
+              id="insurance_type"
+              name="insurance_type"
+              value={formData.insurance_type}
+              onChange={handleInputChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            />
+          </div>
+          <div>
+            <label htmlFor="accessibility_needs">Accessibility Needs</label>
+            <input
+              type="text"
+              id="accessibility_needs"
+              name="accessibility_needs"
+              value={formData.accessibility_needs}
+              onChange={handleInputChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
+        <h2 className="text-xl font-semibold mb-4">One-Time Password</h2>
+        <div className="grid gap-4">
+          <label htmlFor="password"></label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            value={formData.password}
+            onChange={handleInputChange}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          />
+        </div>
+      </div>
+
+      <div className="flex justify-end space-x-2">
         <button
-          type="button"
-          onClick={onClose}
-          className="bg-gray-500 text-white p-2 rounded"
+          type="submit"
+          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 w-full"
         >
-          Cancel
+          Save
         </button>
       </div>
     </form>

@@ -84,7 +84,15 @@ const Dashboard: React.FC = () => {
     if (elements.length > 0) {
       const clickedIndex = elements[0].index;
       const clickedLanguage = doctorLanguageData.labels[clickedIndex];
-      navigate(`/manage-doctors?language=${clickedLanguage}`);
+      navigate(`/doctors?language=${clickedLanguage}`);
+    }
+  };
+
+  const handlePatientChartClick = (event: any, elements: any) => {
+    if (elements.length > 0) {
+      const clickedIndex = elements[0].index;
+      const clickedLanguage = doctorLanguageData.labels[clickedIndex];
+      navigate(`/patients?language=${clickedLanguage}`);
     }
   };
 
@@ -125,6 +133,7 @@ const Dashboard: React.FC = () => {
                 data={patientLanguageData}
                 options={{
                   maintainAspectRatio: false,
+                  onClick: handlePatientChartClick,
                   plugins: {
                     legend: {
                       position: "right" as const,

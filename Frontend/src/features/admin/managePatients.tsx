@@ -26,7 +26,30 @@ const ManagePatients: React.FC = () => {
       setLoading(true);
       setError(null);
       const response = await axiosInstance.get("/api/users/patients");
-      setPatients(response.data);
+      const mappedPatients: Patient[] = response.data.map((patient: any) => ({
+        userId: patient.id,
+        first_name: patient.first_name,
+        last_name: patient.last_name,
+        email: patient.email,
+        role: patient.role,
+        address: {
+          street: patient.address.street,
+          city: patient.address.city,
+          state: patient.address.state,
+          country: "Germany", // Assuming Germany as the country
+          postcode: patient.address.postal_code,
+        },
+        languages: patient.languages.map((lang: any) => ({
+          id: lang.id,
+          language_name: lang.language_name,
+        })),
+        title: patient.title,
+        phone_number: patient.phone_number,
+        date_of_birth: new Date(patient.date_of_birth),
+        insurance: patient.insurance_type,
+      }));
+      setPatients(mappedPatients);
+      console.log(mappedPatients);
     } catch (error: any) {
       console.error("Error fetching Patients:", error);
       setError("Failed to fetch Patients. Please try again.");
@@ -71,7 +94,7 @@ const ManagePatients: React.FC = () => {
     // Implement delete logic here
     if (selectedPatient) {
       try {
-        await axiosInstance.delete(`/api/users/patients/${selectedPatient.id}`);
+        await axiosInstance.delete(`/api/users/${selectedPatient.userId}`);
         refreshPatientList();
       } catch (error) {
         console.error("Error deleting patient:", error);
@@ -122,7 +145,7 @@ const ManagePatients: React.FC = () => {
         <EditPatientModal
           isOpen={isEditModalOpen}
           onClose={handleEditModalClose}
-          patientId={selectedPatient.id.toString()}
+          patientId={selectedPatient.userId}
           onUpdateSuccess={refreshPatientList}
         />
       )}

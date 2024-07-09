@@ -67,8 +67,17 @@ const ManageDoctors: React.FC = () => {
     refreshDoctorList(); // Refresh the list when the modal is closed
   };
 
-  const confirmDelete = () => {
-    // Implement delete logic here
+  const confirmDelete = async () => {
+    if (selectedDoctor) {
+      try {
+        await axiosInstance.delete(`/api/users/${selectedDoctor.userId}`);
+        refreshDoctorList();
+      } catch (error) {
+        console.error("Error deleting patient:", error);
+      } finally {
+        setIsDeleteModalOpen(false);
+      }
+    }
     console.log("Deleting doctor:", selectedDoctor);
     setIsDeleteModalOpen(false);
   };

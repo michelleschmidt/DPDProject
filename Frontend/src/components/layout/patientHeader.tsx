@@ -11,7 +11,7 @@ interface AdminHeaderProps {
   text: string;
 }
 
-const AdminHeader: React.FC<AdminHeaderProps> = ({ text }) => {
+const PatientHeader: React.FC<AdminHeaderProps> = ({ text }) => {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
@@ -19,6 +19,21 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ text }) => {
     await logout();
     navigate("/");
   };
+
+  const navLinks: NavLink[] = [
+    {
+      name: "Dashboard",
+      link: "patients",
+    },
+    {
+      name: "Profile",
+      link: "doctors",
+    },
+    {
+      name: "Manage Appointments",
+      link: "appointments",
+    },
+  ];
 
   return (
     <div className="relative">
@@ -37,4 +52,4 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ text }) => {
   );
 };
 
-export default AdminHeader;
+export default PatientHeader;

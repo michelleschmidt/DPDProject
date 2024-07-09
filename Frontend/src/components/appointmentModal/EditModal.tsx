@@ -131,7 +131,7 @@ const EditAppointmentModal: React.FC<EditAppointmentModalProps> = ({
 
   useEffect(() => {
     if (selectedDoctor) {
-      fetchDoctorAvailability(selectedDoctor.id);
+      fetchDoctorAvailability(selectedDoctor.userId);
     }
   }, [selectedDoctor, fetchDoctorAvailability]);
 
@@ -153,8 +153,8 @@ const EditAppointmentModal: React.FC<EditAppointmentModalProps> = ({
     e.preventDefault();
     if (selectedPatient && selectedDoctor && selectedDate && selectedTime) {
       const newAppointment = {
-        user_id: selectedPatient.id,
-        doctor_id: selectedDoctor.id,
+        user_id: selectedPatient.userId,
+        doctor_id: selectedDoctor.userId,
         availability_id: availabilities.find(
           (a) =>
             a.availability_date.startsWith(
@@ -203,16 +203,17 @@ const EditAppointmentModal: React.FC<EditAppointmentModalProps> = ({
           <div>
             <label className="block mb-1">Patient:</label>
             <select
-              value={selectedPatient?.id || ""}
+              value={selectedPatient?.userId || ""}
               onChange={(e) =>
                 setSelectedPatient(
-                  patients.find((p) => p.id === Number(e.target.value)) || null
+                  patients.find((p) => p.userId === Number(e.target.value)) ||
+                    null
                 )
               }
               className="w-full p-2 border rounded"
             >
               {patients.map((patient) => (
-                <option key={patient.id} value={patient.id}>
+                <option key={patient.userId} value={patient.userId}>
                   {patient.first_name} {patient.last_name}
                 </option>
               ))}
@@ -223,16 +224,17 @@ const EditAppointmentModal: React.FC<EditAppointmentModalProps> = ({
           <div>
             <label className="block mb-1">Doctor:</label>
             <select
-              value={selectedDoctor?.id || ""}
+              value={selectedDoctor?.userId || ""}
               onChange={(e) =>
                 setSelectedDoctor(
-                  doctors.find((d) => d.id === Number(e.target.value)) || null
+                  doctors.find((d) => d.userId === Number(e.target.value)) ||
+                    null
                 )
               }
               className="w-full p-2 border rounded"
             >
               {doctors.map((doctor) => (
-                <option key={doctor.id} value={doctor.id}>
+                <option key={doctor.userId} value={doctor.userId}>
                   {doctor.first_name} {doctor.last_name}
                 </option>
               ))}

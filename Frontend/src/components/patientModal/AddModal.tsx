@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import axiosInstance from "../../Axios";
 import "react-datepicker/dist/react-datepicker.css";
 import PatientForm, { FormData } from "./PatientForm";
@@ -21,28 +21,26 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({
         first_name: formData.first_name,
         last_name: formData.last_name,
         email: formData.email,
-        password: formData.password, // Make sure this is included in your FormData
-        date_of_birth: formData.dob
-          ? formData.dob.toISOString().split("T")[0]
+        password: formData.password,
+        date_of_birth: formData.date_of_birth
+          ? formData.date_of_birth.toISOString().split("T")[0]
           : null,
         phone_number: formData.phone_number,
-        gender: formData.gender, // Make sure this is included in your FormData
-        insurance_type: formData.insuranceType || "public",
+        gender: formData.gender,
+        insurance_type: formData.insurance_type || "public",
         address: {
-          street: formData.street,
-          postcode: formData.postcode,
-          city: formData.city,
-          state: formData.state,
-          country: formData.country,
+          street: formData.address.street,
+          postcode: formData.address.postal_code,
+          city: formData.address.city,
+          state: formData.address.state,
+          country: formData.address.country,
         },
-        accessibility_needs: formData.accessibilityNeeds || "none",
-        emergency_contact_details: formData.emergency_contact || null,
-        language: formData.preferredLanguage?.value,
+        accessibility_needs: formData.accessibility_needs || "none",
+        emergency_contact_details: formData.emergency_contact_details || null,
+        language: formData.languages.values,
       };
-      console.log("Submitting data:", postData);
 
       const token = localStorage.getItem("token");
-
       const response = await axiosInstance.post(
         "/api/auth/register",
         postData,
@@ -60,39 +58,45 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({
       onUpdateSuccess();
     } catch (error: any) {
       console.error("Registration error:", error);
+      let errorMessage = "An unexpected error occurred";
       if (error.response) {
-        console.error("Response data:", error.response.data);
-        console.error("Response status:", error.response.status);
-        console.error("Response headers:", error.response.headers);
-        alert(
-          `Registration failed: ${
-            error.response.data.error ||
-            error.response.data.message ||
-            error.message
-          }`
-        );
+        errorMessage =
+          error.response.data.error ||
+          error.response.data.message ||
+          error.message;
       } else if (error.request) {
-        console.error("No response received:", error.request);
-        alert("Registration failed: No response received from server");
+        errorMessage = "No response received from server";
       } else {
-        console.error("Error message:", error.message);
-        alert(`Registration failed: ${error.message}`);
+        errorMessage = error.message;
       }
+      alert(`Registration failed: ${errorMessage}`);
     }
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center">
-      <div className="bg-white p-5 rounded-lg shadow-xl w-2/3 max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">Add New Patient</h2>
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center z-50">
+      <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-gray-800">Add New Patient</h2>
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors"
+            className="text-gray-600 hover:text-gray-800 transition-colors"
           >
-            Cancel
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
           </button>
         </div>
         <PatientForm handleSubmit={handleSubmit} onClose={onClose} />

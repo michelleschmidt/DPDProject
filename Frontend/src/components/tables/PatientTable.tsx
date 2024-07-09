@@ -53,7 +53,7 @@ const PatientTable: React.FC<PatientTableProps> = ({
         </thead>
         <tbody>
           {filteredPatients.map((patient) => (
-            <tr key={patient.id} className="border-b border-blue-200">
+            <tr key={patient.userId} className="border-b border-blue-200">
               <td className="py-2">
                 {patient.first_name} {patient.last_name}
               </td>

@@ -8,7 +8,7 @@ interface EditPatientModalProps {
   isOpen: boolean;
   onClose: () => void;
   onUpdateSuccess: () => void;
-  patientId: string;
+  patientId?: number;
 }
 
 const EditPatientModal: React.FC<EditPatientModalProps> = ({
@@ -27,8 +27,8 @@ const EditPatientModal: React.FC<EditPatientModalProps> = ({
 
   useEffect(() => {
     if (isOpen && patientId) {
-      fetchAppointmentsForPatient(patientId);
-      fetchDoctorsForPatient(patientId);
+      fetchAppointmentsForPatient(patientId.toString());
+      fetchDoctorsForPatient(patientId.toString());
     }
   }, [isOpen, patientId]);
 
@@ -105,17 +105,28 @@ const EditPatientModal: React.FC<EditPatientModalProps> = ({
     try {
       setError(null);
       const updatedPatient = {
-        ...formData,
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+        email: formData.email,
+        phone_number: formData.phone_number,
+        title: formData.title,
+        date_of_birth: formData.date_of_birth,
+        insurance_type: formData.insurance,
+        accessibility_needs: formData.accessibility_needs,
         address: {
           street: formData.street,
-          postcode: formData.postcode,
+          postal_code: formData.postcode,
           city: formData.city,
           state: formData.state,
-          country: formData.country,
         },
-        preferredLanguage: formData.preferredLanguage
-          ? formData.preferredLanguage.value
-          : null,
+        emergency_contact_details: {
+          name: formData.emergency_contact_name,
+          phone_number: formData.emergency_contact_phone,
+          relationship: formData.emergency_contact_relationship,
+        },
+        languages: formData.languages.map((lang: any) => ({
+          language_name: lang.value,
+        })),
       };
 
       const response = await axiosInstance.put(
@@ -156,24 +167,14 @@ const EditPatientModal: React.FC<EditPatientModalProps> = ({
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center">
       <div className="bg-white p-5 rounded-lg shadow-xl w-2/3 max-h-[90vh] overflow-y-auto relative">
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 bg-white rounded-full p-1"
-        >
-          <svg
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+        <div className="flex space-x-4">
+          <button
+            onClick={onClose}
+            className="flex-1 bg-red-500 text-white p-2 rounded"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
+            Close
+          </button>
+        </div>
         <h2 className="text-xl font-bold mb-4">Edit Patient</h2>
         <div className="mt-8">
           <button
@@ -182,9 +183,9 @@ const EditPatientModal: React.FC<EditPatientModalProps> = ({
           >
             {isPatientFormExpanded ? "▼" : "►"} Edit Patient
           </button>
-          {isPatientFormExpanded && (
+          {isPatientFormExpanded && patientId !== undefined && (
             <PatientForm
-              patientId={patientId}
+              patientId={patientId.toString()}
               handleSubmit={handleSubmit}
               onClose={onClose}
             />
@@ -200,10 +201,12 @@ const EditPatientModal: React.FC<EditPatientModalProps> = ({
             {isAppointmentTableExpanded ? "▼" : "►"} Patient's Appointments (
             {appointments.length})
           </button>
-          {isAppointmentTableExpanded && (
+          {isAppointmentTableExpanded && patientId !== undefined && (
             <AppointmentTable
               appointments={appointments}
-              fetchAppointments={() => fetchAppointmentsForPatient(patientId)}
+              fetchAppointments={() =>
+                fetchAppointmentsForPatient(patientId.toString())
+              }
               patientId={Number(patientId)}
             />
           )}

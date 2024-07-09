@@ -118,7 +118,7 @@ const AppointmentTable: React.FC<AppointmentTableProps> = ({
   });
 
   return (
-    <div className="overflow-x-auto">
+    <div>
       <div className="mb-4 flex flex-wrap items-center gap-4">
         <input
           type="text"
@@ -147,26 +147,14 @@ const AppointmentTable: React.FC<AppointmentTableProps> = ({
         </select>
       </div>{" "}
       <table className="min-w-full bg-white">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="py-3 px-4 text-left font-semibold text-gray-600">
-              Doctor
-            </th>
-            <th className="py-3 px-4 text-left font-semibold text-gray-600">
-              Patient
-            </th>
-            <th className="py-3 px-4 text-left font-semibold text-gray-600">
-              Date & Time
-            </th>
-            <th className="py-3 px-4 text-left font-semibold text-gray-600">
-              Reason
-            </th>
-            <th className="py-3 px-4 text-left font-semibold text-gray-600">
-              Status
-            </th>
-            <th className="py-3 px-4 text-left font-semibold text-gray-600">
-              Actions
-            </th>
+        <thead>
+          <tr className="font-medium">
+            <th className="text-left w-[26%]">Doctor</th>
+            <th className="text-left w-[21%]">Patient</th>
+            <th className="text-left w-[21%]">Date & Time</th>
+            <th className="text-left w-[21%]">Reason</th>
+            <th className="text-left w-[21%]">Status</th>
+            <th className="text-left w-[26%]">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -222,13 +210,13 @@ const AppointmentTable: React.FC<AppointmentTableProps> = ({
               <td className="py-4 px-4">
                 <button
                   onClick={() => handleEdit(appointment)}
-                  className="mr-2 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300 text-sm"
+                  className="mr-2 px-4 py-2 border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-100"
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => handleDelete(appointment)}
-                  className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition duration-300 text-sm"
+                  className="px-4 py-2 border border-red-500 text-red-500 rounded-lg hover:bg-red-100"
                 >
                   Delete
                 </button>
@@ -250,7 +238,7 @@ const AppointmentTable: React.FC<AppointmentTableProps> = ({
         <EditPatientModal
           isOpen={isEditModalOpen}
           onClose={handleCloseModal}
-          patientId={selectedPatient.id.toString()}
+          patientId={selectedPatient.userId}
           onUpdateSuccess={handleUpdateSuccess}
         />
       )}

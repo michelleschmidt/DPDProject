@@ -38,6 +38,25 @@ const ManageAppointments: React.FC = () => {
     setIsAddModalOpen(true);
   };
 
+  const handleSubmit = async (newAppointment: Omit<Appointment, "id">) => {
+    try {
+      const response = await axiosInstance.post(
+        "/api/appointments",
+        newAppointment
+      );
+      const appointmentWithId: Appointment = response.data;
+      setAppointments((prevAppointments) => [
+        ...prevAppointments,
+        appointmentWithId,
+      ]);
+      setIsAddModalOpen(false);
+      fetchAppointments(); // Refresh the appointments list
+    } catch (error) {
+      console.error("Error adding appointment:", error);
+      // Handle error (e.g., show an error message to the user)
+    }
+  };
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div className="error-message">{error}</div>;
 
@@ -48,7 +67,7 @@ const ManageAppointments: React.FC = () => {
           <div className="p-6 w-full flex-flex-col gap-8 h-full bg-white shadow-custom rounded-2xl">
             <div className="flex justify-between items-center mb-4">
               <h1 className="text-2xl text-blue-600 font-semibold">
-                Appointments
+                Appointment
               </h1>
               <button
                 onClick={handleAddAppointment}
@@ -64,6 +83,13 @@ const ManageAppointments: React.FC = () => {
           </div>
         </div>
       </div>
+      {isAddModalOpen && (
+        <AddAppointmentModal
+          isOpen={isAddModalOpen}
+          onClose={() => setIsAddModalOpen(false)}
+          onSubmit={handleSubmit}
+        />
+      )}
     </PageLayout>
   );
 };

@@ -36,8 +36,10 @@ const SignIn = () => {
 
         if (userData.role === "admin") {
           navigate("/admindashboard");
-        } else {
+        } else if (userData.role === "doctor") {
           navigate("/doctordashboard");
+        } else if (userData.role === "normal_user") {
+          navigate("/patientdashboard");
         }
       } else {
         setError("Unexpected response from server");
