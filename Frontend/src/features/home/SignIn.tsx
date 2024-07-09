@@ -25,7 +25,7 @@ const SignUp: React.FC = () => {
         insurance_type: formData.insurance_type || "public",
         address: {
           street: formData.address.street,
-          postcode: formData.address.postal_code,
+          postcode: formData.address.postcode,
           city: formData.address.city,
           state: formData.address.state,
           country: formData.address.country,

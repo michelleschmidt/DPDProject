@@ -36,7 +36,7 @@ const ManagePatients: React.FC = () => {
           street: patient.address.street,
           city: patient.address.city,
           state: patient.address.state,
-          country: "Germany", // Assuming Germany as the country
+          country: patient.address.country, // Assuming Germany as the country
           postcode: patient.address.postal_code,
         },
         languages: patient.languages.map((lang: any) => ({

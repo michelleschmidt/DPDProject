@@ -26,6 +26,7 @@ export interface FormData {
   specialization: SingleValue<{ value: number; label: string }> | null;
   languages: { value: number; label: string }[];
   gender: string;
+  password: string;
 }
 
 const DoctorForm: React.FC<DoctorFormProps> = ({
@@ -48,6 +49,7 @@ const DoctorForm: React.FC<DoctorFormProps> = ({
     specialization: null,
     languages: [],
     gender: "",
+    password: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -97,6 +99,7 @@ const DoctorForm: React.FC<DoctorFormProps> = ({
         state: data.address?.state || "",
         country: data.address?.country || "",
         phone_number: data.phone_number || "",
+        password: "",
         email: data.email || "",
         date_of_birth: data.date_of_birth ? new Date(data.date_of_birth) : null,
         specialization: data.specialization
@@ -165,28 +168,78 @@ const DoctorForm: React.FC<DoctorFormProps> = ({
       {/* Personal Information */}
       <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
         <h2 className="text-xl font-semibold mb-4">Personal Information</h2>
-        <div className="grid grid-cols-5 gap-4 mb-4">
-          <div>
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <div className="mb-4">
             <label
-              className="block text-sm font-medium text-gray-700"
+              className="block text-gray-700 text-sm font-bold mb-2"
               htmlFor="title"
             >
               Title
             </label>
-            <select
-              name="title"
+            <Select
               id="title"
-              value={formData.title}
-              onChange={handleInputChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              options={[
+                { value: "Mr.", label: "Mr." },
+                { value: "Mrs.", label: "Mrs." },
+                { value: "Ms.", label: "Ms." },
+                { value: "Dr.", label: "Dr." },
+                { value: "Prof.", label: "Prof." },
+              ]}
+              className="basic-single-select"
+              classNamePrefix="select"
+              value={{ value: formData.title, label: formData.title }}
+              onChange={(selectedOption) =>
+                setFormData((prevFormData) => ({
+                  ...prevFormData,
+                  title: selectedOption?.value || "",
+                }))
+              }
+            />
+          </div>
+          <div className="mb-4">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="gender"
             >
-              <option value="">Select title</option>
-              {["Mr.", "Mrs.", "Ms.", "Dr.", "Prof."].map((title) => (
-                <option key={title} value={title}>
-                  {title}
-                </option>
-              ))}
-            </select>
+              Gender
+            </label>
+            <Select
+              id="gender"
+              options={[
+                { value: "female", label: "Female" },
+                { value: "male", label: "Male" },
+                { value: "diverse", label: "Diverse" },
+                { value: "not disclosed", label: "Not Disclosed" },
+              ]}
+              className="basic-single-select"
+              classNamePrefix="select"
+              value={{ value: formData.gender, label: formData.gender }}
+              onChange={(selectedOption) =>
+                setFormData((prevFormData) => ({
+                  ...prevFormData,
+                  gender: selectedOption?.value || "",
+                }))
+              }
+            />
+          </div>
+          <div className="mb-4">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="date_of_birth"
+            >
+              Date of Birth
+            </label>
+            <DatePicker
+              id="date_of_birth"
+              selected={formData.date_of_birth}
+              onChange={(date) =>
+                setFormData((prevFormData) => ({
+                  ...prevFormData,
+                  date_of_birth: date,
+                }))
+              }
+              className="w-full p-2 border rounded"
+            />
           </div>
           <div className="col-span-2">
             <label
@@ -219,44 +272,6 @@ const DoctorForm: React.FC<DoctorFormProps> = ({
               value={formData.last_name}
               onChange={handleInputChange}
             />
-          </div>
-        </div>
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div>
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="date_of_birth"
-            >
-              Date of Birth
-            </label>
-            <DatePicker
-              id="date_of_birth"
-              selected={formData.date_of_birth}
-              onChange={handleDateChange}
-              className="w-full p-2 border rounded"
-            />
-          </div>
-          <div>
-            <label
-              className="block text-sm font-medium text-gray-700"
-              htmlFor="gender"
-            >
-              Gender
-            </label>
-            <select
-              name="gender"
-              id="gender"
-              value={formData.gender}
-              onChange={handleInputChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            >
-              <option value="">Select gender</option>
-              {["female", "male", "diverse", "not disclosed"].map((gender) => (
-                <option key={gender} value={gender}>
-                  {gender}
-                </option>
-              ))}
-            </select>
           </div>
         </div>
       </div>
@@ -426,14 +441,22 @@ const DoctorForm: React.FC<DoctorFormProps> = ({
         </div>
       </div>
 
+      <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
+        <h2 className="text-xl font-semibold mb-4">One-Time Password</h2>
+        <div className="grid gap-4">
+          <label htmlFor="password"></label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            value={formData.password}
+            onChange={handleInputChange}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+          />
+        </div>
+      </div>
+
       <div className="mt-4 flex justify-end">
-        <button
-          type="button"
-          onClick={onClose}
-          className="mr-2 px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
-        >
-          Cancel
-        </button>
         <button
           type="submit"
           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"

@@ -59,33 +59,48 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (preselectedDoctor) {
+      setSelectedDoctor(preselectedDoctor);
+      console.log("Preselected doctor set:", preselectedDoctor);
+    } else {
+      console.log("No preselected doctor provided");
+    }
+  }, [preselectedDoctor]);
+
   const fetchPatients = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await axiosInstance.get(
-        `/api/users/${preselectedPatientId}`
-      );
-      console.log("Fetched patient:", response.data);
-      setPatients([response.data]); // Wrap the single patient in an array
-      setSelectedPatient(response.data);
+      if (preselectedPatientId) {
+        const response = await axiosInstance.get(
+          `/api/users/${preselectedPatientId}`
+        );
+        console.log("Fetched preselected patient:", response.data);
+        setPatients([response.data]);
+        setSelectedPatient(response.data);
+      } else {
+        const response = await axiosInstance.get("/api/users/patients");
+        console.log("Fetched all patients:", response.data);
+        setPatients(response.data);
+      }
     } catch (error) {
-      console.error("Error fetching patient:", error);
-      setError("Failed to fetch patient. Please try again.");
+      console.error("Error fetching patients:", error);
+      setError("Failed to fetch patients. Please try again.");
     } finally {
       setLoading(false);
     }
   }, [preselectedPatientId]);
 
   const fetchDoctors = useCallback(async () => {
-    if (preselectedDoctor) {
-      setDoctors([preselectedDoctor]);
-      return;
-    }
     try {
       setLoading(true);
-      const response = await axiosInstance.get("/api/users");
-      console.log("Fetched doctors:", response.data);
-      setDoctors(response.data);
+      if (preselectedDoctor) {
+        setDoctors([preselectedDoctor]);
+      } else {
+        const response = await axiosInstance.get("/api/users/doctors");
+        console.log("Fetched all doctors:", response.data);
+        setDoctors(response.data);
+      }
     } catch (error) {
       console.error("Error fetching doctors:", error);
       setError("Failed to fetch doctors. Please try again.");
@@ -108,20 +123,31 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
       const response = await axiosInstance.get(
         `/api/availabilities/doctor/${doctorId}`
       );
-      setAvailabilities(response.data);
-      setAvailabilitiesFetched(true);
-      console.log("Fetched availabilities:", response.data);
+
+      if (response.data && Array.isArray(response.data)) {
+        setAvailabilities(response.data);
+        setAvailabilitiesFetched(true);
+        console.log("Fetched availabilities:", response.data);
+      } else {
+        throw new Error("Unexpected response format for availabilities");
+      }
     } catch (error: any) {
       console.error("Error fetching availabilities:", error);
       setError(`Failed to fetch availabilities. ${error.message}`);
+      setAvailabilities([]);
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    if (selectedDoctor) {
+    if (selectedDoctor && selectedDoctor.userId) {
+      console.log("Fetching availabilities for doctor:", selectedDoctor.userId);
       fetchDoctorAvailability(selectedDoctor.userId);
+    } else {
+      console.log("No doctor selected or invalid doctor data");
+      setAvailabilities([]);
+      setAvailabilitiesFetched(false);
     }
   }, [selectedDoctor, fetchDoctorAvailability]);
 
@@ -194,174 +220,218 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="modal">
-      <h2>Add New Appointment</h2>
-      {error && <p className="error">{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label className="block mb-1">Patient:</label>
-          {preselectedPatientId ? (
-            <p>
-              {selectedPatient?.first_name} {selectedPatient?.last_name}
-            </p>
-          ) : (
-            <select
-              value={selectedPatient?.userId || ""}
-              onChange={handlePatientChange}
-              className="w-full p-2 border rounded"
-            >
-              <option value="">Select a patient</option>
-              {patients.map((patient) => (
-                <option key={patient.userId} value={patient.userId}>
-                  {patient.first_name} {patient.last_name}
-                </option>
-              ))}
-            </select>
-          )}
-        </div>
-
-        <div>
-          <label className="block mb-1">Doctor:</label>
-          {preselectedDoctor ? (
-            <p>
-              {preselectedDoctor.title} {preselectedDoctor.first_name}{" "}
-              {preselectedDoctor.last_name}
-            </p>
-          ) : (
-            <select
-              value={selectedDoctor?.userId || ""}
-              onChange={handleDoctorChange}
-              className="w-full p-2 border rounded"
-            >
-              <option value="">Select a doctor</option>
-              {doctors.map((doctor) => (
-                <option key={doctor.userId} value={doctor.userId}>
-                  {doctor.title} {doctor.first_name} {doctor.last_name}
-                </option>
-              ))}
-            </select>
-          )}
-        </div>
-
-        {availabilitiesFetched && (
-          <>
-            <div>
-              <label className="block mb-1">Select Date:</label>
-              <DatePicker
-                selected={selectedDate}
-                onChange={(date: Date) => {
-                  setSelectedDate(date);
-                  setSelectedTime(null);
-                }}
-                includeDates={getAvailableDates()}
-                dateFormat="MMMM d, yyyy"
-                placeholderText="Select an available date"
-                className="w-full p-2 border rounded"
-              />
-            </div>
-
-            {selectedDate && (
-              <div>
-                <label className="block mb-1">Select Time:</label>
-                <div className="grid grid-cols-3 gap-2">
-                  {getAvailableTimeSlots(selectedDate).map((time) => (
-                    <button
-                      key={time}
-                      type="button"
-                      onClick={() => setSelectedTime(time)}
-                      className={`p-2 rounded ${
-                        selectedTime === time
-                          ? "bg-blue-500 text-white"
-                          : "bg-gray-200 hover:bg-gray-300"
-                      }`}
-                    >
-                      {time}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </>
-        )}
-
-        <div>
-          <label className="block mb-1">Appointment Reason:</label>
-          <select
-            value={appointmentReasonCategory}
-            onChange={(e) => {
-              setAppointmentReasonCategory(e.target.value);
-              setAppointmentReasonSubcategory("");
-            }}
-            className="w-full p-2 border rounded"
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center z-50">
+      <div className="bg-white p-5 rounded-lg shadow-xl w-2/3 max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold">Add New Appointment</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-600 hover:text-gray-800 transition-colors"
           >
-            <option value="">Select a reason category</option>
-            {Object.keys(appointmentReasons).map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
         </div>
-
-        {appointmentReasonCategory && (
+        {error && <p className="error">{error}</p>}
+        <form onSubmit={handleSubmit}>
           <div>
-            <label className="block mb-1">Specific Reason:</label>
+            <label className="block mb-1">Patient:</label>
+            {preselectedPatientId ? (
+              <p>
+                {selectedPatient?.first_name} {selectedPatient?.last_name}
+              </p>
+            ) : (
+              <select
+                value={selectedPatient?.userId || ""}
+                onChange={(e) =>
+                  setSelectedPatient(
+                    patients.find((p) => p.userId === Number(e.target.value)) ||
+                      null
+                  )
+                }
+                className="w-full p-2 border rounded"
+              >
+                <option value="">Select a patient</option>
+                {patients.map((patient) => (
+                  <option key={patient.userId} value={patient.userId}>
+                    {patient.first_name} {patient.last_name}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+
+          <div>
+            <label className="block mb-1">Doctor:</label>
+            {preselectedDoctor ? (
+              <p>
+                {preselectedDoctor.title} {preselectedDoctor.first_name}{" "}
+                {preselectedDoctor.last_name}
+              </p>
+            ) : (
+              <select
+                value={selectedDoctor?.userId || ""}
+                onChange={(e) =>
+                  setSelectedDoctor(
+                    doctors.find((d) => d.userId === Number(e.target.value)) ||
+                      null
+                  )
+                }
+                className="w-full p-2 border rounded"
+              >
+                <option value="">Select a doctor</option>
+                {doctors.map((doctor) => (
+                  <option key={doctor.userId} value={doctor.userId}>
+                    {doctor.title} {doctor.first_name} {doctor.last_name} -{" "}
+                    {doctor.specialization?.area_of_specialization}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+
+          {selectedDoctor && availabilitiesFetched && (
+            <>
+              <div>
+                <label className="block mb-1">Select Date:</label>
+                <DatePicker
+                  selected={selectedDate}
+                  onChange={(date) => {
+                    setSelectedDate(date);
+                    setSelectedTime(null);
+                  }}
+                  includeDates={availabilities.map(
+                    (a) => new Date(a.availability_date)
+                  )}
+                  dateFormat="MMMM d, yyyy"
+                  placeholderText="Select an available date"
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+
+              {selectedDate && (
+                <div>
+                  <label className="block mb-1">Select Time:</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {availabilities
+                      .filter(
+                        (a) =>
+                          new Date(a.availability_date).toDateString() ===
+                          selectedDate.toDateString()
+                      )
+                      .map((a) => (
+                        <button
+                          key={a.id}
+                          type="button"
+                          onClick={() => setSelectedTime(a.availability_date)}
+                          className={`p-2 rounded ${
+                            selectedTime === a.availability_date
+                              ? "bg-blue-500 text-white"
+                              : "bg-gray-200 hover:bg-gray-300"
+                          }`}
+                        >
+                          {new Date(a.availability_date).toLocaleTimeString()}
+                        </button>
+                      ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+
+          <div>
+            <label className="block mb-1">Appointment Reason:</label>
             <select
-              value={appointmentReasonSubcategory}
-              onChange={(e) => setAppointmentReasonSubcategory(e.target.value)}
+              value={appointmentReasonCategory}
+              onChange={(e) => {
+                setAppointmentReasonCategory(e.target.value);
+                setAppointmentReasonSubcategory("");
+              }}
               className="w-full p-2 border rounded"
             >
-              <option value="">Select a specific reason</option>
-              {appointmentReasons[
-                appointmentReasonCategory as keyof typeof appointmentReasons
-              ].map((subcategory) => (
-                <option key={subcategory} value={subcategory}>
-                  {subcategory}
+              <option value="">Select a reason category</option>
+              {Object.keys(appointmentReasons).map((category) => (
+                <option key={category} value={category}>
+                  {category}
                 </option>
               ))}
             </select>
           </div>
-        )}
 
-        <div className="bg-blue-100 p-4 rounded-lg">
-          <label className="flex items-center space-x-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={bookTranslation}
-              onChange={(e) => setBookTranslation(e.target.checked)}
-              className="form-checkbox h-5 w-5 text-blue-600"
-            />
-            <span className="text-lg font-medium">Book Translation</span>
-          </label>
-          <p className="text-sm text-gray-600 mt-1">
-            Check this if you need translation services for your appointment.
-          </p>
-        </div>
+          {appointmentReasonCategory && (
+            <div>
+              <label className="block mb-1">Specific Reason:</label>
+              <select
+                value={appointmentReasonSubcategory}
+                onChange={(e) =>
+                  setAppointmentReasonSubcategory(e.target.value)
+                }
+                className="w-full p-2 border rounded"
+              >
+                <option value="">Select a specific reason</option>
+                {appointmentReasons[appointmentReasonCategory].map(
+                  (subcategory) => (
+                    <option key={subcategory} value={subcategory}>
+                      {subcategory}
+                    </option>
+                  )
+                )}
+              </select>
+            </div>
+          )}
 
-        <div className="flex justify-end space-x-2">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-2 bg-gray-300 text-black rounded-lg hover:bg-gray-400"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-            disabled={
-              !selectedPatient ||
-              (!selectedDoctor && !preselectedDoctor) ||
-              !selectedDate ||
-              !selectedTime ||
-              !appointmentReasonCategory ||
-              !appointmentReasonSubcategory
-            }
-          >
-            Add Appointment
-          </button>
-        </div>
-      </form>
+          <div className="bg-blue-100 p-4 rounded-lg">
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={bookTranslation}
+                onChange={(e) => setBookTranslation(e.target.checked)}
+                className="form-checkbox h-5 w-5 text-blue-600"
+              />
+              <span className="text-lg font-medium">Book Translation</span>
+            </label>
+            <p className="text-sm text-gray-600 mt-1">
+              Check this if you need translation services for your appointment.
+            </p>
+          </div>
+
+          <div className="flex justify-end space-x-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 bg-gray-300 text-black rounded-lg hover:bg-gray-400"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+              disabled={
+                !selectedPatient ||
+                !selectedDoctor ||
+                !selectedDate ||
+                !selectedTime ||
+                !appointmentReasonCategory ||
+                !appointmentReasonSubcategory
+              }
+            >
+              Add Appointment
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

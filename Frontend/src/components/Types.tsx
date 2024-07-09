@@ -34,7 +34,6 @@ export interface User {
 
 export interface Doctor extends User {
   specialization: Specialization;
-  profileImage: string;
 }
 
 export interface Patient extends User {

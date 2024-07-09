@@ -16,7 +16,29 @@ import EditAppointmentUserModal from "../../components/appointmentModal/EditAppo
 import DeleteConfirmationModal from "../../components/appointmentModal/DeleteConfirmationModal";
 import AddAppointmentModal from "../../components/appointmentModal/AddModal";
 
-const PatientDashboard: React.FC = () => {
+const appointmentReasons = {
+  "Regular consultation": [
+    "Routine Check-up",
+    "Diagnostic appointment",
+    "Follow Up appointment",
+    "Non-urgent medical issue",
+    "Other",
+  ],
+  "Acute Consultation": [
+    "Sudden worsening of chronic condition",
+    "Acute infection",
+    "Acute pain",
+  ],
+  "Preventive Health Check-Ups": [
+    "Annual Health Check-Up",
+    "Cancer Screening",
+    "Well-Child Visit",
+    "Vaccination appointment",
+    "Other",
+  ],
+};
+
+const DocSearch: React.FC = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const { userData } = useAuth();
@@ -308,4 +330,4 @@ const PatientDashboard: React.FC = () => {
   );
 };
 
-export default PatientDashboard;
+export default DocSearch;

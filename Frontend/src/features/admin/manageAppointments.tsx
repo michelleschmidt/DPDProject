@@ -3,8 +3,6 @@ import axiosInstance from "../../Axios";
 import AppointmentTable from "../../components/tables/AppointmentTable";
 import { Appointment } from "../../components/Types";
 import PageLayout from "../../components/layout/PageLayout";
-import DeleteConfirmationModal from "../../components/appointmentModal/DeleteConfirmationModal";
-import EditAppointmentModal from "../../components/appointmentModal/EditModal";
 import AddAppointmentModal from "../../components/appointmentModal/AddModal";
 
 const ManageAppointments: React.FC = () => {

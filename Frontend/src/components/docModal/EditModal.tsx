@@ -83,6 +83,7 @@ const EditDoctorModal: React.FC<EditDoctorModalProps> = ({
       const response = await axiosInstance.get(
         `/api/appointments/doctor/${doctorId}`
       );
+      console.log(response.data);
       const formattedAppointments = response.data.map((appointment: any) => ({
         ...appointment,
         doctor: {

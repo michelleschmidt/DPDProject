@@ -30,14 +30,14 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({
         insurance_type: formData.insurance_type || "public",
         address: {
           street: formData.address.street,
-          postcode: formData.address.postal_code,
+          postcode: formData.address.postcode,
           city: formData.address.city,
           state: formData.address.state,
           country: formData.address.country,
         },
         accessibility_needs: formData.accessibility_needs || "none",
         emergency_contact_details: formData.emergency_contact_details || null,
-        language: formData.languages.values,
+        languages: formData.languages.map((lang) => lang.value),
       };
 
       const token = localStorage.getItem("token");
