@@ -1,18 +1,12 @@
 import React, { useEffect, useState } from "react";
 import PageLayout from "../../components/layout/PageLayout";
-import {
-  MdOutlineMail,
-  MdOutlineLocationOn,
-  MdEdit,
-  MdDelete,
-} from "react-icons/md";
-import { FaPhone, FaCalendarAlt, FaSearch, FaLanguage } from "react-icons/fa";
+import { MdOutlineMail, MdOutlineLocationOn, MdDelete } from "react-icons/md";
+import { FaPhone, FaCalendarAlt, FaSearch } from "react-icons/fa";
 import "../../Web.css";
-import { Appointment, Doctor, Patient } from "../../components/Types";
+import { Appointment, Doctor } from "../../components/Types";
 import axiosInstance from "../../axios/Axios";
 import { useAuth } from "../../components/auth/AuthContext";
 import Button from "../../utils/Button";
-import EditAppointmentUserModal from "../../components/appointmentModal/ViewAppointment";
 import DeleteConfirmationModal from "../../components/appointmentModal/DeleteConfirmationModal";
 import {
   BsFillTelephoneForwardFill,
@@ -24,7 +18,6 @@ const PatientDashboard: React.FC = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const { userData } = useAuth();
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedDoctorForNewAppointment, setSelectedDoctorForNewAppointment] =
@@ -42,16 +35,15 @@ const PatientDashboard: React.FC = () => {
         `/api/appointments/user-appointments`
       );
       if (response.data && Array.isArray(response.data)) {
-        const mappedAppointments = response.data.map((appointment) => ({
+        const mappedAppointments = response.data.map((appointment: any) => ({
           ...appointment,
           doctor: {
             ...appointment.doctor,
-            userId: appointment.doctor_id, // Add userId to the doctor object
+            userId: appointment.doctor_id,
           },
           book_translation: appointment.bookTranslation,
         }));
         setAppointments(mappedAppointments);
-        console.log("Appointments: ", mappedAppointments);
       } else {
         console.error(
           "Unexpected response format for appointments:",
@@ -65,15 +57,14 @@ const PatientDashboard: React.FC = () => {
 
   const fetchDoctors = async () => {
     try {
-      console.log("ID: ", userData?.userId);
       const response = await axiosInstance.get(
-        `/api/appointments/user-doctors/'$userData.id'`
+        `/api/appointments/user-doctors/${userData?.userId}`
       );
       if (response.data && Array.isArray(response.data)) {
         const mappedDoctors: Doctor[] = response.data.map((doctor: any) => ({
           userId: doctor.id,
           specialization: {
-            id: doctor.specialization_id || 0, // Add a default value if not prov
+            id: doctor.specialization_id || 0,
             area_of_specialization: doctor.area_of_specialization,
           },
           first_name: doctor.doctor_name.split(" ")[1],
@@ -86,12 +77,11 @@ const PatientDashboard: React.FC = () => {
             postcode: doctor.postcode || "",
             city: doctor.city || "",
             state: doctor.state || "",
-            country: doctor.country || "", // Add a default value for country
+            country: doctor.country || "",
           },
           languages: doctor.languages || [],
         }));
         setDoctors(mappedDoctors);
-        console.log(mappedDoctors);
       } else {
         console.error("Unexpected response format for doctors:", response.data);
       }
@@ -106,7 +96,6 @@ const PatientDashboard: React.FC = () => {
   }, [userData]);
 
   const handleAddAppointment = (newAppointment: Omit<Appointment, "id">) => {
-    // Assuming your backend generates the ID and returns the full appointment
     axiosInstance
       .post("/api/appointments", newAppointment)
       .then((response) => {
@@ -119,7 +108,6 @@ const PatientDashboard: React.FC = () => {
       })
       .catch((error) => {
         console.error("Error adding appointment:", error);
-        // Handle error (e.g., show an error message to the user)
       });
   };
 
@@ -145,12 +133,12 @@ const PatientDashboard: React.FC = () => {
   };
 
   const handleCloseModal = () => {
-    setIsEditModalOpen(false);
     setSelectedAppointment(null);
+    setIsViewModalOpen(false);
   };
 
-  const openAddAppointmentModal = (doctor?: Doctor) => {
-    setSelectedDoctorForNewAppointment(doctor || doctors[0]);
+  const openAddAppointmentModal = (doctor: Doctor) => {
+    setSelectedDoctorForNewAppointment(doctor);
     setIsAddModalOpen(true);
   };
 
@@ -175,6 +163,19 @@ const PatientDashboard: React.FC = () => {
       )
     );
     handleCloseModal();
+  };
+
+  const toggleBookTranslation = (appointmentId: number) => {
+    setAppointments((prevAppointments) =>
+      prevAppointments.map((appointment) =>
+        appointment.id === appointmentId
+          ? {
+              ...appointment,
+              bookTranslation: !appointment.bookTranslation,
+            }
+          : appointment
+      )
+    );
   };
 
   return (
@@ -223,14 +224,17 @@ const PatientDashboard: React.FC = () => {
                   </div>
                   <div className="flex justify-end space-x-2 mt-2">
                     <button
-                      onClick={() => alert("Book translation service")}
+                      onClick={() => toggleBookTranslation(appointment.id)}
                       className="text-green-500 hover:text-green-700"
                     >
-                      <BsFillTelephoneForwardFill size={40} />
-                      <BsFillTelephoneXFill size={40} />
+                      {appointment.bookTranslation ? (
+                        <BsFillTelephoneForwardFill size={40} />
+                      ) : (
+                        <BsFillTelephoneXFill size={40} />
+                      )}
                     </button>
                     <button
-                      onClick={openViewAppointmentModal}
+                      onClick={() => openViewAppointmentModal(appointment)}
                       className="text-gray-500 hover:text-gray-700"
                     >
                       <FaSearch size={20} />
@@ -246,7 +250,7 @@ const PatientDashboard: React.FC = () => {
                     <div className="mt-4 flex justify-center">
                       <button
                         onClick={() => alert("Calling Translator...")}
-                        className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
+                        className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-400"
                       >
                         Call Translator
                       </button>
@@ -262,9 +266,7 @@ const PatientDashboard: React.FC = () => {
 
         {/* Doctors section */}
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-semibold text-blue-500 mb-4">
-            My Doctors
-          </h2>
+          <h2 className="text-2xl font-semibold text-blue- mb-4">My Doctors</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {doctors.map((doctor) => (
               <div key={doctor.userId} className="bg-gray-50 p-4 rounded-lg">
@@ -293,24 +295,16 @@ const PatientDashboard: React.FC = () => {
         </div>
 
         {/* Modals */}
-        {isEditModalOpen && selectedAppointment && (
-          <EditAppointmentUserModal
-            isOpen={isEditModalOpen}
-            onClose={handleCloseModal}
-            onSubmit={handleUpdateSuccess}
-            appointment={selectedAppointment}
-          />
-        )}
         <DeleteConfirmationModal
           isOpen={isDeleteModalOpen}
           onClose={() => setIsDeleteModalOpen(false)}
-          onConfirm={handleDeleteAppointment}
+          onConfirm={() => confirmDelete()}
         />
-        {isViewModalOpen && (
+        {isViewModalOpen && selectedAppointment && (
           <ViewAppointmentModal
             isOpen={isViewModalOpen}
             onClose={() => setIsViewModalOpen(false)}
-            appointment={appointmentToDelete}
+            appointmentId={selectedAppointment.id}
           />
         )}
       </div>

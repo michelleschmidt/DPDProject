@@ -19,11 +19,13 @@ const ManageDoctors: React.FC = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
 
-  const fetchDoctors = async () => {
+  const fetchDoctors = async (languageFilter?: string) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await axiosInstance.get("/api/users");
+      const response = await axiosInstance.get("/api/users/doctors", {
+        params: { language: languageFilter },
+      });
       const mappedDoctor: Doctor[] = response.data.map((doctor: any) => ({
         userId: doctor.id,
         first_name: doctor.first_name,
@@ -43,6 +45,11 @@ const ManageDoctors: React.FC = () => {
         insurance: doctor.insurance_type,
       }));
       setDoctors(mappedDoctor);
+      if (response.data && Array.isArray(response.data)) {
+        setDoctors(response.data);
+      } else {
+        throw new Error("Unexpected response format or no data");
+      }
     } catch (error: any) {
       console.error("Error fetching doctors:", error);
       setError("Failed to fetch doctors. Please try again.");
@@ -55,10 +62,10 @@ const ManageDoctors: React.FC = () => {
   };
 
   useEffect(() => {
-    if (isAuthenticated) {
-      fetchDoctors();
-    }
-  }, [isAuthenticated]);
+    const params = new URLSearchParams(location.search);
+    const language = params.get("language") || undefined;
+    fetchDoctors(language);
+  }, [location.search]);
 
   const handleEdit = (doctor: Doctor) => {
     setSelectedDoctor(doctor);
