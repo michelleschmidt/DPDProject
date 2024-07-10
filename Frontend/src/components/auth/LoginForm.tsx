@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../../Axios";
+import axiosInstance from "../../axios/Axios";
 import GenericForm, { FormField } from "./GenericForm";
 import { useAuth } from "./AuthContext";
 

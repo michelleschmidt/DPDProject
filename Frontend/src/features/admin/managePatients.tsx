@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import PageLayout from "../../components/layout/PageLayout";
-import axiosInstance from "../../Axios";
+import axiosInstance from "../../axios/Axios";
 import { useAuth } from "../../components/auth/AuthContext";
 import "../../Web.css";
 import DeleteConfirmationModal from "../../components/patientModal/DeleteConfirmationModal";
@@ -14,8 +14,6 @@ const ManagePatients: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { isAuthenticated, checkAuth, logout } = useAuth();
-  const DEFAULT_AVATAR = ""; // Set a default avatar URL if you have one
-
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);

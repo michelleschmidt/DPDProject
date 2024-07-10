@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import axiosInstance from "../../Axios";
+import axiosInstance from "../../axios/Axios";
 import Select, { SingleValue, MultiValue } from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import PageLayout from "../layout/PageLayout";
 import { Language, Specialization, Doctor } from "../Types";
 
 interface DoctorFormProps {
@@ -397,7 +398,7 @@ const DoctorForm: React.FC<DoctorFormProps> = ({
         </div>
       </div>
 
-      {/* Specialization */}
+      {/* Skills */}
       <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
         <h2 className="text-xl font-semibold mb-4">Skills</h2>
         <div className="grid grid-cols-2 gap-4 mb-4">
@@ -461,7 +462,7 @@ const DoctorForm: React.FC<DoctorFormProps> = ({
           type="submit"
           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
-          {data ? "Update Doctor" : "Add Doctor"}
+          {data ? "Update Patient" : "Add Patient"}
         </button>
       </div>
     </form>

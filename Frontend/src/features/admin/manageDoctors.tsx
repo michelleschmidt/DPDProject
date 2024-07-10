@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import PageLayout from "../../components/layout/PageLayout";
-import axiosInstance from "../../Axios";
+import axiosInstance from "../../axios/Axios";
 import { useAuth } from "../../components/auth/AuthContext";
 import "../../Web.css";
 import DeleteConfirmationModal from "../../components/docModal/DeleteConfirmationModal";
@@ -14,8 +14,6 @@ const ManageDoctors: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { isAuthenticated, checkAuth, logout } = useAuth();
-  const DEFAULT_AVATAR = ""; // Set a default avatar URL if you have one
-
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -26,7 +24,25 @@ const ManageDoctors: React.FC = () => {
       setLoading(true);
       setError(null);
       const response = await axiosInstance.get("/api/users");
-      setDoctors(response.data);
+      const mappedDoctor: Doctor[] = response.data.map((doctor: any) => ({
+        userId: doctor.id,
+        first_name: doctor.first_name,
+        last_name: doctor.last_name,
+        email: doctor.email,
+        languages: doctor.languages.map((lang: any) => ({
+          id: lang.id,
+          language_name: lang.language_name,
+        })),
+        title: doctor.title,
+        specialization: {
+          area_of_specialization:
+            doctor.specialization?.area_of_specialization || "Not specified",
+        },
+        phone_number: doctor.phone_number,
+        date_of_birth: new Date(doctor.date_of_birth),
+        insurance: doctor.insurance_type,
+      }));
+      setDoctors(mappedDoctor);
     } catch (error: any) {
       console.error("Error fetching doctors:", error);
       setError("Failed to fetch doctors. Please try again.");
@@ -103,7 +119,6 @@ const ManageDoctors: React.FC = () => {
               doctors={doctors}
               onEdit={handleEdit}
               onDelete={handleDelete}
-              DEFAULT_AVATAR={DEFAULT_AVATAR}
             />
           </div>
         </div>
@@ -123,7 +138,7 @@ const ManageDoctors: React.FC = () => {
         <EditDoctorModal
           isOpen={isEditModalOpen}
           onClose={handleEditModalClose}
-          doctor={selectedDoctor}
+          doctorId={selectedDoctor.userId}
           onUpdateSuccess={refreshDoctorList} // Add this prop
         />
       )}

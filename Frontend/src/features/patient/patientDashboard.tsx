@@ -6,15 +6,19 @@ import {
   MdEdit,
   MdDelete,
 } from "react-icons/md";
-import { FaPhone, FaCalendarAlt } from "react-icons/fa";
+import { FaPhone, FaCalendarAlt, FaSearch, FaLanguage } from "react-icons/fa";
 import "../../Web.css";
 import { Appointment, Doctor, Patient } from "../../components/Types";
-import axiosInstance from "../../Axios";
+import axiosInstance from "../../axios/Axios";
 import { useAuth } from "../../components/auth/AuthContext";
 import Button from "../../utils/Button";
-import EditAppointmentUserModal from "../../components/appointmentModal/EditAppointmentUser";
+import EditAppointmentUserModal from "../../components/appointmentModal/ViewAppointment";
 import DeleteConfirmationModal from "../../components/appointmentModal/DeleteConfirmationModal";
-import AddAppointmentModal from "../../components/appointmentModal/AddModal";
+import {
+  BsFillTelephoneForwardFill,
+  BsFillTelephoneXFill,
+} from "react-icons/bs";
+import ViewAppointmentModal from "../../components/appointmentModal/ViewAppointment";
 
 const PatientDashboard: React.FC = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -22,6 +26,7 @@ const PatientDashboard: React.FC = () => {
   const { userData } = useAuth();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedDoctorForNewAppointment, setSelectedDoctorForNewAppointment] =
     useState<Doctor | null>(null);
   const [selectedAppointment, setSelectedAppointment] =
@@ -62,7 +67,7 @@ const PatientDashboard: React.FC = () => {
     try {
       console.log("ID: ", userData?.userId);
       const response = await axiosInstance.get(
-        `/api/appointments/user-doctors`
+        `/api/appointments/user-doctors/'$userData.id'`
       );
       if (response.data && Array.isArray(response.data)) {
         const mappedDoctors: Doctor[] = response.data.map((doctor: any) => ({
@@ -81,7 +86,7 @@ const PatientDashboard: React.FC = () => {
             postcode: doctor.postcode || "",
             city: doctor.city || "",
             state: doctor.state || "",
-            country: "", // Add a default value for country
+            country: doctor.country || "", // Add a default value for country
           },
           languages: doctor.languages || [],
         }));
@@ -99,22 +104,6 @@ const PatientDashboard: React.FC = () => {
     fetchAppointments();
     fetchDoctors();
   }, [userData]);
-
-  const handleEditAppointment = (appointmentId: number) => {
-    const appointment = appointments.find((app) => app.id === appointmentId);
-    if (
-      appointment &&
-      appointment.doctor &&
-      appointment.doctor.specialization &&
-      appointment.doctor.userId
-    ) {
-      setSelectedAppointment(appointment);
-      setIsEditModalOpen(true);
-    } else {
-      console.error("Incomplete appointment data:", appointment);
-      // Handle the error, maybe show a message to the user
-    }
-  };
 
   const handleAddAppointment = (newAppointment: Omit<Appointment, "id">) => {
     // Assuming your backend generates the ID and returns the full appointment
@@ -165,6 +154,11 @@ const PatientDashboard: React.FC = () => {
     setIsAddModalOpen(true);
   };
 
+  const openViewAppointmentModal = (appointment: Appointment) => {
+    setSelectedAppointment(appointment);
+    setIsViewModalOpen(true);
+  };
+
   const handleUpdateSuccess = (updatedAppointment: Appointment) => {
     setAppointments((prevAppointments) =>
       prevAppointments.map((appointment) =>
@@ -187,7 +181,8 @@ const PatientDashboard: React.FC = () => {
     <PageLayout text="Dashboard">
       <div className="h-full w-full p-6 bg-gray-100">
         <h1 className="text-3xl font-semibold text-blue-600 mb-6">
-          Welcome to Your Health Dashboard, {userData?.first_name}
+          Welcome to Your Health Dashboard, {userData?.first_name}{" "}
+          {userData?.last_name}
         </h1>
 
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
@@ -228,10 +223,17 @@ const PatientDashboard: React.FC = () => {
                   </div>
                   <div className="flex justify-end space-x-2 mt-2">
                     <button
-                      onClick={() => handleEditAppointment(appointment.id)}
-                      className="text-blue-500 hover:text-blue-700"
+                      onClick={() => alert("Book translation service")}
+                      className="text-green-500 hover:text-green-700"
                     >
-                      <MdEdit size={20} />
+                      <BsFillTelephoneForwardFill size={40} />
+                      <BsFillTelephoneXFill size={40} />
+                    </button>
+                    <button
+                      onClick={openViewAppointmentModal}
+                      className="text-gray-500 hover:text-gray-700"
+                    >
+                      <FaSearch size={20} />
                     </button>
                     <button
                       onClick={() => handleDeleteAppointment(appointment.id)}
@@ -240,6 +242,16 @@ const PatientDashboard: React.FC = () => {
                       <MdDelete size={20} />
                     </button>
                   </div>
+                  {appointment.bookTranslation && (
+                    <div className="mt-4 flex justify-center">
+                      <button
+                        onClick={() => alert("Calling Translator...")}
+                        className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
+                      >
+                        Call Translator
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -292,15 +304,13 @@ const PatientDashboard: React.FC = () => {
         <DeleteConfirmationModal
           isOpen={isDeleteModalOpen}
           onClose={() => setIsDeleteModalOpen(false)}
-          onConfirm={confirmDelete}
+          onConfirm={handleDeleteAppointment}
         />
-        {isAddModalOpen && selectedDoctorForNewAppointment && (
-          <AddAppointmentModal
-            isOpen={isAddModalOpen}
-            onClose={() => setIsAddModalOpen(false)}
-            onSubmit={handleAddAppointment}
-            preselectedPatientId={userData?.userId}
-            preselectedDoctor={selectedDoctorForNewAppointment}
+        {isViewModalOpen && (
+          <ViewAppointmentModal
+            isOpen={isViewModalOpen}
+            onClose={() => setIsViewModalOpen(false)}
+            appointment={appointmentToDelete}
           />
         )}
       </div>

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Appointment, Patient, Doctor, Availability } from "../Types";
-import axiosInstance from "../../Axios";
+import axiosInstance from "../../axios/Axios";
 
 interface AddAppointmentModalProps {
   isOpen: boolean;
@@ -12,7 +12,11 @@ interface AddAppointmentModalProps {
   preselectedPatientId?: number;
 }
 
-const appointmentReasons = {
+type AppointmentReasons = {
+  [key: string]: string[];
+};
+
+const appointmentReasons: AppointmentReasons = {
   "Regular consultation": [
     "Routine Check-up",
     "Diagnostic appointment",
@@ -97,9 +101,9 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
       if (preselectedDoctor) {
         setDoctors([preselectedDoctor]);
       } else {
-        const response = await axiosInstance.get("/api/users/doctors");
+        const response = await axiosInstance.get("/api/users/");
         console.log("Fetched all doctors:", response.data);
-        setDoctors(response.data);
+        setDoctors(response.data || []);
       }
     } catch (error) {
       console.error("Error fetching doctors:", error);
@@ -255,12 +259,7 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
             ) : (
               <select
                 value={selectedPatient?.userId || ""}
-                onChange={(e) =>
-                  setSelectedPatient(
-                    patients.find((p) => p.userId === Number(e.target.value)) ||
-                      null
-                  )
-                }
+                onChange={handlePatientChange}
                 className="w-full p-2 border rounded"
               >
                 <option value="">Select a patient</option>
@@ -283,12 +282,7 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
             ) : (
               <select
                 value={selectedDoctor?.userId || ""}
-                onChange={(e) =>
-                  setSelectedDoctor(
-                    doctors.find((d) => d.userId === Number(e.target.value)) ||
-                      null
-                  )
-                }
+                onChange={handleDoctorChange}
                 className="w-full p-2 border rounded"
               >
                 <option value="">Select a doctor</option>
@@ -312,9 +306,7 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
                     setSelectedDate(date);
                     setSelectedTime(null);
                   }}
-                  includeDates={availabilities.map(
-                    (a) => new Date(a.availability_date)
-                  )}
+                  includeDates={getAvailableDates()}
                   dateFormat="MMMM d, yyyy"
                   placeholderText="Select an available date"
                   className="w-full p-2 border rounded"
@@ -325,26 +317,20 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
                 <div>
                   <label className="block mb-1">Select Time:</label>
                   <div className="grid grid-cols-3 gap-2">
-                    {availabilities
-                      .filter(
-                        (a) =>
-                          new Date(a.availability_date).toDateString() ===
-                          selectedDate.toDateString()
-                      )
-                      .map((a) => (
-                        <button
-                          key={a.id}
-                          type="button"
-                          onClick={() => setSelectedTime(a.availability_date)}
-                          className={`p-2 rounded ${
-                            selectedTime === a.availability_date
-                              ? "bg-blue-500 text-white"
-                              : "bg-gray-200 hover:bg-gray-300"
-                          }`}
-                        >
-                          {new Date(a.availability_date).toLocaleTimeString()}
-                        </button>
-                      ))}
+                    {getAvailableTimeSlots(selectedDate).map((time) => (
+                      <button
+                        key={time}
+                        type="button"
+                        onClick={() => setSelectedTime(time)}
+                        className={`p-2 rounded ${
+                          selectedTime === time
+                            ? "bg-blue-500 text-white"
+                            : "bg-gray-200 hover:bg-gray-300"
+                        }`}
+                      >
+                        {time}
+                      </button>
+                    ))}
                   </div>
                 </div>
               )}
@@ -382,7 +368,7 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
               >
                 <option value="">Select a specific reason</option>
                 {appointmentReasons[appointmentReasonCategory].map(
-                  (subcategory) => (
+                  (subcategory: string) => (
                     <option key={subcategory} value={subcategory}>
                       {subcategory}
                     </option>

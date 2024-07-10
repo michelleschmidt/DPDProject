@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Appointment, Patient, Doctor, Availability } from "../Types";
-import axiosInstance from "../../Axios";
+import axiosInstance from "../../axios/Axios";
 
 interface EditAppointmentModalProps {
   isOpen: boolean;

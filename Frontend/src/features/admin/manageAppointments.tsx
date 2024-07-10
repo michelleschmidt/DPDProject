@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axiosInstance from "../../Axios";
+import axiosInstance from "../../axios/Axios";
 import AppointmentTable from "../../components/tables/AppointmentTable";
 import { Appointment } from "../../components/Types";
 import PageLayout from "../../components/layout/PageLayout";
@@ -10,17 +10,21 @@ const ManageAppointments: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
+  const [selectedAppointment, setSelectedAppointment] =
+    useState<Appointment | null>(null);
 
   useEffect(() => {
     fetchAppointments();
   }, []);
 
-  const fetchAppointments = async () => {
+  const fetchAppointments = async (doctorId?: number) => {
     try {
       setLoading(true);
-      const response = await axiosInstance.get<Appointment[]>(
-        "/api/appointments/"
-      );
+      let url = "/api/appointments/";
+      if (doctorId) {
+        url += `?doctorId=${doctorId}`;
+      }
+      const response = await axiosInstance.get<Appointment[]>(url);
       setAppointments(response.data);
       console.log("Fetched appointments:", response.data);
       setLoading(false);

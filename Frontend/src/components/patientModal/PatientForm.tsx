@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Patient, Language } from "../Types";
-import axiosInstance from "../../Axios";
+import axiosInstance from "../../axios/Axios";
 import DatePicker from "react-datepicker";
 import Select from "react-select";
 
@@ -279,12 +279,7 @@ const PatientForm: React.FC<PatientFormProps> = ({
             <DatePicker
               id="date_of_birth"
               selected={formData.date_of_birth}
-              onChange={(date) =>
-                setFormData((prevFormData) => ({
-                  ...prevFormData,
-                  date_of_birth: date,
-                }))
-              }
+              onChange={handleDateChange}
               className="w-full p-2 border rounded"
             />
           </div>

@@ -1,5 +1,5 @@
 import React from "react";
-import axiosInstance from "../../Axios";
+import axiosInstance from "../../axios/Axios";
 import DoctorForm, { FormData } from "./DoctorForm";
 import Button from "../../utils/Button";
 

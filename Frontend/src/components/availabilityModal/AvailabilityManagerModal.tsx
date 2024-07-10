@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axiosInstance from "../../Axios";
+import axiosInstance from "../../axios/Axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -66,7 +66,7 @@ const DoctorAvailabilityModal: React.FC<DoctorAvailabilityModalProps> = ({
       );
 
       if (response.status === 201 || response.status === 200) {
-        console.log("Availability created successfully");
+        console.log("Availability created successfully ");
         fetchAvailabilities(); // Refresh the list of availabilities
         setNewDate(null);
         setNewTime("");

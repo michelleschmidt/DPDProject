@@ -5,7 +5,7 @@ import React, {
   ReactNode,
   useEffect,
 } from "react";
-import axiosInstance from "../../Axios"; // Adjust the path as needed
+import axiosInstance from "../../axios/Axios";
 import { User } from "../Types";
 
 interface AuthContextType {

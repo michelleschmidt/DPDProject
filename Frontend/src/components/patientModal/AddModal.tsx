@@ -1,5 +1,5 @@
 import React from "react";
-import axiosInstance from "../../Axios";
+import axiosInstance from "../../axios/Axios";
 import "react-datepicker/dist/react-datepicker.css";
 import PatientForm, { FormData } from "./PatientForm";
 

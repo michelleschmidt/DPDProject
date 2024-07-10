@@ -1,44 +1,51 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Doctor } from "../Types";
 
 interface DoctorTableProps {
   doctors: Doctor[];
   onEdit: (doctor: Doctor) => void;
   onDelete: (doctor: Doctor) => void;
-  DEFAULT_AVATAR: string;
+  filterLanguage?: string;
 }
 
 const DoctorTable: React.FC<DoctorTableProps> = ({
   doctors,
   onEdit,
   onDelete,
-  DEFAULT_AVATAR,
+  filterLanguage,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [filteredDoctors, setFilteredDoctors] = useState<Doctor[]>(doctors);
 
-  const handleImageError = (
-    e: React.SyntheticEvent<HTMLImageElement, Event>
-  ) => {
-    e.currentTarget.src = DEFAULT_AVATAR;
-  };
+  useEffect(() => {
+    const filtered = doctors.filter((doctor) => {
+      const searchLower = searchTerm.toLowerCase();
+      const fullName =
+        `${doctor.title} ${doctor.first_name} ${doctor.last_name}`.toLowerCase();
+      const specialization =
+        doctor.specialization?.area_of_specialization.toLowerCase() || "";
+      const languages =
+        doctor.languages
+          ?.map((lang) => lang.language_name.toLowerCase())
+          .join(" ") || "";
 
-  const filteredDoctors = doctors.filter((doctor) => {
-    const searchLower = searchTerm.toLowerCase();
-    const fullName =
-      `${doctor.title} ${doctor.first_name} ${doctor.last_name}`.toLowerCase();
-    const specialization =
-      doctor.specialization?.area_of_specialization.toLowerCase() || "";
-    const languages =
-      doctor.languages
-        ?.map((lang) => lang.language_name.toLowerCase())
-        .join(" ") || "";
+      const matchesSearch =
+        fullName.includes(searchLower) ||
+        specialization.includes(searchLower) ||
+        languages.includes(searchLower);
 
-    return (
-      fullName.includes(searchLower) ||
-      specialization.includes(searchLower) ||
-      languages.includes(searchLower)
-    );
-  });
+      const matchesFilterLanguage =
+        !filterLanguage ||
+        doctor.languages?.some(
+          (lang) =>
+            lang.language_name.toLowerCase() === filterLanguage.toLowerCase()
+        );
+
+      return matchesSearch && matchesFilterLanguage;
+    });
+
+    setFilteredDoctors(filtered);
+  }, [doctors, searchTerm, filterLanguage]);
 
   return (
     <div>
@@ -48,9 +55,22 @@ const DoctorTable: React.FC<DoctorTableProps> = ({
           placeholder="Search by name, specialization, or language"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded-lg"
+          className="w-Full p-2 border border-gray-300 rounded-lg"
         />
       </div>
+      {filterLanguage && (
+        <div className="mb-4">
+          <p>Filtered by language: {filterLanguage}</p>
+          <button
+            onClick={() =>
+              window.history.pushState({}, "", window.location.pathname)
+            }
+            className="px-2 py-1 bg-gray-200 rounded"
+          >
+            Clear filter
+          </button>
+        </div>
+      )}
       <table className="w-full">
         <thead>
           <tr className="font-medium">

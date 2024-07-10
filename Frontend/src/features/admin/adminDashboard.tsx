@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../../Axios";
+import axiosInstance from "../../axios/Axios";
 import PageLayout from "../../components/layout/PageLayout";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -10,6 +10,9 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 const Dashboard: React.FC = () => {
   const [doctorLanguageData, setDoctorLanguageData] = useState<any>(null);
   const [patientLanguageData, setPatientLanguageData] = useState<any>(null);
+  const [filterLanguage, setFilterLanguage] = useState<string | undefined>(
+    undefined
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -92,6 +95,7 @@ const Dashboard: React.FC = () => {
     if (elements.length > 0) {
       const clickedIndex = elements[0].index;
       const clickedLanguage = doctorLanguageData.labels[clickedIndex];
+      setFilterLanguage(clickedLanguage);
       navigate(`/patients?language=${clickedLanguage}`);
     }
   };

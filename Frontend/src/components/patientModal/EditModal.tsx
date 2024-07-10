@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from "react";
-import axiosInstance from "../../Axios";
-import AppointmentTable from "../tables/AppointmentTable";
+import { useEffect, useState } from "react";
+import axiosInstance from "../../axios/Axios";
+import PatientForm, { FormData } from "./PatientForm";
 import DoctorTable from "../tables/DoctorTable";
-import PatientForm from "./PatientForm";
+import AppointmentTable from "../tables/AppointmentTable";
+import { Patient } from "../Types";
 
 interface EditPatientModalProps {
   isOpen: boolean;
   onClose: () => void;
   onUpdateSuccess: () => void;
-  patientId?: number;
+  patientId: number;
 }
 
 const EditPatientModal: React.FC<EditPatientModalProps> = ({
@@ -24,13 +25,58 @@ const EditPatientModal: React.FC<EditPatientModalProps> = ({
   const [isDoctorTableExpanded, setIsDoctorTableExpanded] = useState(false);
   const [appointments, setAppointments] = useState<any[]>([]);
   const [doctors, setDoctors] = useState<any[]>([]);
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (isOpen && patientId) {
       fetchAppointmentsForPatient(patientId.toString());
       fetchDoctorsForPatient(patientId.toString());
+      fetchPatients();
     }
   }, [isOpen, patientId]);
+
+  const fetchPatients = async () => {
+    try {
+      setLoading(true);
+      const response = await axiosInstance.get(`/api/users/${patientId}`);
+      const patient = response.data;
+      const mappedPatient = {
+        userId: patient.id,
+        first_name: patient.first_name,
+        last_name: patient.last_name,
+        email: patient.email,
+        role: patient.role,
+        address: {
+          street: patient.address.street,
+          city: patient.address.city,
+          state: patient.address.state,
+          country: patient.address.country,
+          postcode: patient.address.postal_code,
+        },
+        languages: patient.languages.map((lang: any) => ({
+          id: lang.id,
+          language_name: lang.language_name,
+        })),
+        title: patient.title,
+        phone_number: patient.phone_number,
+        date_of_birth: patient.date_of_birth
+          ? new Date(patient.date_of_birth)
+          : new Date(),
+        insurance: patient.insurance_type,
+        accessibility_needs: patient.accessibility_needs,
+        emergency_contact_details: patient.emergency_contact_details,
+        gender: patient.gender,
+      };
+      setPatients([mappedPatient]);
+      console.log("Fetched patient: ", mappedPatient);
+    } catch (error: any) {
+      console.error("Error fetching patient:", error);
+      setError("Failed to fetch patient. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchAppointmentsForPatient = async (patientId: string) => {
     try {
@@ -101,7 +147,7 @@ const EditPatientModal: React.FC<EditPatientModalProps> = ({
     }
   };
 
-  const handleSubmit = async (formData: any) => {
+  const handleSubmit = async (formData: FormData) => {
     try {
       setError(null);
       const updatedPatient = {
@@ -111,22 +157,22 @@ const EditPatientModal: React.FC<EditPatientModalProps> = ({
         phone_number: formData.phone_number,
         title: formData.title,
         date_of_birth: formData.date_of_birth,
-        insurance_type: formData.insurance,
+        insurance_type: formData.insurance_type,
         accessibility_needs: formData.accessibility_needs,
         address: {
-          street: formData.street,
-          postal_code: formData.postcode,
-          city: formData.city,
-          state: formData.state,
+          street: formData.address.street,
+          postal_code: formData.address.postcode,
+          city: formData.address.city,
+          state: formData.address.state,
+          country: formData.address.country,
         },
         emergency_contact_details: {
-          name: formData.emergency_contact_name,
-          phone_number: formData.emergency_contact_phone,
-          relationship: formData.emergency_contact_relationship,
+          name: formData.emergency_contact_details.name,
+          phone_number: formData.emergency_contact_details.phone_number,
+          relationship: formData.emergency_contact_details.relationship,
         },
-        languages: formData.languages.map((lang: any) => ({
-          language_name: lang.value,
-        })),
+        languages: formData.languages.map((lang) => lang.value),
+        gender: formData.gender,
       };
 
       const response = await axiosInstance.put(
@@ -141,6 +187,7 @@ const EditPatientModal: React.FC<EditPatientModalProps> = ({
       } else {
         throw new Error(`Unexpected response status: ${response.status}`);
       }
+      console.log("Request payload:", updatedPatient);
     } catch (error: any) {
       console.error("Error updating patient:", error);
       if (error.response) {
@@ -224,7 +271,6 @@ const EditPatientModal: React.FC<EditPatientModalProps> = ({
               doctors={doctors}
               onEdit={(doctor) => console.log("Edit doctor", doctor)}
               onDelete={(doctor) => console.log("Delete doctor", doctor)}
-              DEFAULT_AVATAR={""}
             />
           )}
         </div>

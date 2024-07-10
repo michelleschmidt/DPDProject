@@ -14,6 +14,11 @@ const PatientTable: React.FC<PatientTableProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
 
+  // Ensure patients is always an array
+  if (!patients || !Array.isArray(patients)) {
+    return <div>No patients available.</div>;
+  }
+
   const filteredPatients = patients.filter((patient) => {
     const searchLower = searchTerm.toLowerCase();
     const fullName = `${patient.first_name} ${patient.last_name}`.toLowerCase();

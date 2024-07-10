@@ -14,7 +14,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ children, text }) => {
         <SideBar />
       </div>
       <div className="flex w-full flex-col">
-        <div className="fixed z-10 pl-[262px] w-full">
+        <div className="fixed pl-[262px] w-full">
           <AdminHeader text={text} />
         </div>
         <div className="ml-[262px] mt-[65px]">{children}</div>

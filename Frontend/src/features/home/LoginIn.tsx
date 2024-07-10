@@ -3,7 +3,7 @@ import AdminHeader from "../../components/layout/adminHeader";
 import Button from "../../utils/Button";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../components/auth/AuthContext";
-import axiosInstance from "../../Axios";
+import axiosInstance from "../../axios/Axios";
 import debounce from "lodash.debounce";
 
 const SignIn = () => {
@@ -108,8 +108,7 @@ const SignIn = () => {
             )}
             {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
             <div className="text-center text-sm">
-              If you do not have an account yet, please use our Helpcenter for
-              further information.
+              If you do not have an account yet, please sign in here.
             </div>
           </div>
         </div>

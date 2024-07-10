@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import AdminHeader from "../../components/layout/adminHeader";
-import axiosInstance from "../../Axios";
+import axiosInstance from "../../axios/Axios";
 import PatientForm, {
   FormData,
 } from "../../components/patientModal/PatientForm";

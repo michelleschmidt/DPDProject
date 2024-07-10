@@ -4,7 +4,7 @@ import EditDoctorModal from "../docModal/EditModal";
 import EditPatientModal from "../patientModal/EditModal";
 import DeleteConfirmationModal from "../appointmentModal/DeleteConfirmationModal";
 import EditAppointmentModal from "../appointmentModal/EditModal";
-import axiosInstance from "../../Axios";
+import axiosInstance from "../../axios/Axios";
 
 interface AppointmentTableProps {
   appointments: Appointment[];
@@ -58,6 +58,7 @@ const AppointmentTable: React.FC<AppointmentTableProps> = ({
   const handlePatientClick = (patient: Patient) => {
     setSelectedPatient(patient);
     setIsEditModalOpen(true);
+    console.log("Selected patient:", patient);
   };
 
   const handleCloseModal = () => {
@@ -231,14 +232,14 @@ const AppointmentTable: React.FC<AppointmentTableProps> = ({
           isOpen={isEditModalOpen}
           onClose={handleCloseModal}
           onUpdateSuccess={handleUpdateSuccess}
-          doctor={selectedDoctor}
+          doctorId={(selectedDoctor as any).id}
         />
       )}
       {isEditModalOpen && selectedPatient && (
         <EditPatientModal
           isOpen={isEditModalOpen}
           onClose={handleCloseModal}
-          patientId={selectedPatient.userId}
+          patientId={(selectedPatient as any).id} // Use selectedPatient.id here with a type assertion
           onUpdateSuccess={handleUpdateSuccess}
         />
       )}

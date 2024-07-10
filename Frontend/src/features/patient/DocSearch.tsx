@@ -9,10 +9,10 @@ import {
 import { FaPhone, FaCalendarAlt } from "react-icons/fa";
 import "../../Web.css";
 import { Appointment, Doctor, Patient } from "../../components/Types";
-import axiosInstance from "../../Axios";
+import axiosInstance from "../../axios/Axios";
 import { useAuth } from "../../components/auth/AuthContext";
 import Button from "../../utils/Button";
-import EditAppointmentUserModal from "../../components/appointmentModal/EditAppointmentUser";
+import EditAppointmentUserModal from "../../components/appointmentModal/ViewAppointment";
 import DeleteConfirmationModal from "../../components/appointmentModal/DeleteConfirmationModal";
 import AddAppointmentModal from "../../components/appointmentModal/AddModal";
 
