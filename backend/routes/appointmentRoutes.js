@@ -17,9 +17,9 @@ appointmentRouter.get("/user-appointments", isLoggedIn, appointmentController.ge
 
 appointmentRouter.get("/doctor-appointments", isLoggedIn, appointmentController.getDoctorAppointments);
 
-appointmentRouter.get("/doctor-patients", isLoggedIn, appointmentController.getDoctorPatients);
+appointmentRouter.get("/doctor-patients/:id", isLoggedIn, appointmentController.getDoctorPatients);
 
-appointmentRouter.get("/user-doctors", isLoggedIn, appointmentController.getUserDoctors);
+appointmentRouter.get("/user-doctors/:id", isLoggedIn, appointmentController.getUserDoctors);
 
 appointmentRouter.get("/user/:id", isLoggedIn, roleCheck('admin'), appointmentController.getUserAppointmentsByAdmin);
 
