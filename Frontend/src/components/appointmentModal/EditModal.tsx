@@ -194,9 +194,30 @@ const EditAppointmentModal: React.FC<EditAppointmentModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center overflow-y-auto">
-      <div className="bg-white p-6 rounded-lg max-w-md w-full m-4">
-        <h2 className="text-2xl font-bold mb-4">Edit Appointment</h2>
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center z-50">
+      <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-gray-800">Edit Appointment</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-600 hover:text-gray-800 transition-colors"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+
         {error && <div className="text-red-500 mb-4">{error}</div>}
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Patient selection */}
@@ -337,25 +358,24 @@ const EditAppointmentModal: React.FC<EditAppointmentModalProps> = ({
           )}
 
           {/* Book translation checkbox */}
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              checked={bookTranslation}
-              onChange={(e) => setBookTranslation(e.target.checked)}
-              className="mr-2"
-            />
-            <label>Book Translation</label>
+          <div className="bg-blue-100 p-4 rounded-lg">
+            <label className="flex items-center space-x-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={bookTranslation}
+                onChange={(e) => setBookTranslation(e.target.checked)}
+                className="form-checkbox h-5 w-5 text-blue-600"
+              />
+              <span className="text-lg font-medium">Book Translation</span>
+            </label>
+            <p className="text-sm text-gray-600 mt-1">
+              Check this if translation services for this appointment are
+              needed.
+            </p>
           </div>
 
           {/* Submit and Cancel buttons */}
           <div className="flex justify-end space-x-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 bg-gray-300 text-black rounded-lg hover:bg-gray-400"
-            >
-              Cancel
-            </button>
             <button
               type="submit"
               className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"

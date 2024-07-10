@@ -33,6 +33,7 @@ export interface User {
 }
 
 export interface Doctor extends User {
+  id?: number; //Workaround
   specialization: Specialization;
 }
 

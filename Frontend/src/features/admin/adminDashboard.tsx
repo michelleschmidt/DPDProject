@@ -195,14 +195,6 @@ const Dashboard: React.FC = () => {
         </div>
         <div className="p-6 bg-white shadow-custom rounded-2xl">
           <h2 className="text-xl font-semibold mb-4 text-center">
-            Total Appointments
-          </h2>
-          <p className="text-center text-3xl font-bold">
-            {appointmentData?.totalAppointments}
-          </p>
-        </div>
-        <div className="p-6 bg-white shadow-custom rounded-2xl">
-          <h2 className="text-xl font-semibold mb-4 text-center">
             Doctors by Language
           </h2>
           {doctorLanguageData && (
@@ -243,6 +235,15 @@ const Dashboard: React.FC = () => {
             </div>
           )}
         </div>
+        <div className="p-6 bg-white shadow-custom rounded-2xl">
+          <h2 className="text-xl font-semibold mb-4 text-center">
+            Total Appointments
+          </h2>
+          <p className="text-center text-3xl font-bold">
+            {appointmentData?.totalAppointments}
+          </p>
+        </div>
+
         <div className="p-6 bg-white shadow-custom rounded-2xl">
           <h2 className="text-xl font-semibold mb-4 text-center">
             Appointments by Day

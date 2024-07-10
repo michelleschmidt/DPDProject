@@ -29,6 +29,8 @@ const DoctorTable: React.FC<DoctorTableProps> = ({
           ?.map((lang) => lang.language_name.toLowerCase())
           .join(" ") || "";
 
+      console.log("From List", doctor);
+
       const matchesSearch =
         fullName.includes(searchLower) ||
         specialization.includes(searchLower) ||
@@ -58,7 +60,7 @@ const DoctorTable: React.FC<DoctorTableProps> = ({
           className="w-Full p-2 border border-gray-300 rounded-lg"
         />
       </div>
-      {filterLanguage && (
+      {/* {filterLanguage && (
         <div className="mb-4">
           <p>Filtered by language: {filterLanguage}</p>
           <button
@@ -70,7 +72,7 @@ const DoctorTable: React.FC<DoctorTableProps> = ({
             Clear filter
           </button>
         </div>
-      )}
+      )} */}
       <table className="w-full">
         <thead>
           <tr className="font-medium">

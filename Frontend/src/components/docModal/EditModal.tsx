@@ -43,8 +43,8 @@ const EditDoctorModal: React.FC<EditDoctorModalProps> = ({
   const fetchedRef = useRef(false);
 
   const fetchData = useCallback(async () => {
+    console.log("doctorId in EditDoctorModal:", doctorId);
     if (fetchedRef.current || !doctorId) return;
-
     try {
       setLoading(true);
       setError(null);
@@ -167,6 +167,7 @@ const EditDoctorModal: React.FC<EditDoctorModalProps> = ({
 
       fetchedRef.current = true;
     } catch (error: any) {
+      console.log("doctoId", doctorId);
       console.error("Error fetching data:", error);
       setError("Failed to fetch data. Please try again.");
     } finally {

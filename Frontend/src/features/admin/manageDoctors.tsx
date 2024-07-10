@@ -23,9 +23,10 @@ const ManageDoctors: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await axiosInstance.get("/api/users/doctors", {
+      const response = await axiosInstance.get("/api/users/", {
         params: { language: languageFilter },
       });
+      console.log("Raw fetch", response.data);
       const mappedDoctor: Doctor[] = response.data.map((doctor: any) => ({
         userId: doctor.id,
         first_name: doctor.first_name,
@@ -45,8 +46,10 @@ const ManageDoctors: React.FC = () => {
         insurance: doctor.insurance_type,
       }));
       setDoctors(mappedDoctor);
+      console.log("Mapped Data", mappedDoctor);
       if (response.data && Array.isArray(response.data)) {
         setDoctors(response.data);
+        console.log("set doctor", response.data);
       } else {
         throw new Error("Unexpected response format or no data");
       }
@@ -65,10 +68,12 @@ const ManageDoctors: React.FC = () => {
     const params = new URLSearchParams(location.search);
     const language = params.get("language") || undefined;
     fetchDoctors(language);
-  }, [location.search]);
+  }, []);
 
   const handleEdit = (doctor: Doctor) => {
+    console.log("Editing doctor:", doctor);
     setSelectedDoctor(doctor);
+    console.log("Selected User", selectedDoctor);
     setIsEditModalOpen(true);
   };
 
@@ -141,14 +146,17 @@ const ManageDoctors: React.FC = () => {
         }
       />
 
-      {isEditModalOpen && selectedDoctor && (
-        <EditDoctorModal
-          isOpen={isEditModalOpen}
-          onClose={handleEditModalClose}
-          doctorId={selectedDoctor.userId}
-          onUpdateSuccess={refreshDoctorList} // Add this prop
-        />
-      )}
+      {isEditModalOpen &&
+        selectedDoctor &&
+        (console.log("From Manage Doctor", selectedDoctor.userId),
+        (
+          <EditDoctorModal
+            isOpen={isEditModalOpen}
+            onClose={handleEditModalClose}
+            doctorId={selectedDoctor.id || 0} //contains the userId
+            onUpdateSuccess={refreshDoctorList} // Add this prop
+          />
+        ))}
 
       <AddDoctorModal
         isOpen={isAddModalOpen}

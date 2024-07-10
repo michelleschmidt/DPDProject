@@ -389,7 +389,8 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
               <span className="text-lg font-medium">Book Translation</span>
             </label>
             <p className="text-sm text-gray-600 mt-1">
-              Check this if you need translation services for your appointment.
+              Check this if translation services for this appointment are
+              needed.
             </p>
           </div>
 

@@ -82,11 +82,11 @@ const SignUp: React.FC = () => {
   };
 
   return (
-    <div className="h-screen w-full">
+    <div className="min-h-screen w-full bg-blue-50">
       <AdminHeader text={""} />
-      <div className="h-full w-full gap-8 flex bg-blue-50 flex-col items-center pt-28">
-        <div className="flex flex-col gap-8 w-[400px] bg-white rounded-2xl px-5 py-6 shadow-custom">
-          <h1 className="text-center text-blue-600 font-semibold text-3xl">
+      <div className="container mx-auto px-4 py-10 flex justify-center items-center">
+        <div className="w-full max-w-3xl bg-white rounded-2xl px-8 py-10 shadow-custom">
+          <h1 className="text-center text-blue-600 font-semibold text-3xl mb-8">
             Register
           </h1>
           <PatientForm handleSubmit={handleSubmit} onClose={handleClose} />
