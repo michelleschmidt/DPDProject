@@ -13,7 +13,6 @@ class AvailabilityController {
   }
   async createAvailabilityByDoctor(req, res, next) {
     try {
-      req.body.doctor_id = req.user.userId;
       const availability = await AvailabilityService.createAvailabilityByDoctor(
         req.body
       );

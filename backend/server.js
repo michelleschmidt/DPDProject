@@ -12,14 +12,27 @@ const dashboardRoutes = require("./routes/dashboardRoutes.js")
 const errorHandler = require("./middleware/errorHandler");
 const cookieParser = require("cookie-parser");
 
+
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://health-connect:5173',
+  'http://host.docker.internal:5173'
+];
+
 const app = express();
 
 
 app.set("trust proxy", 1);
 
-// Configure CORS to allow requests from your React app's origin
+// Configure CORS to allow requests from the frontend origin locally or via docker
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: function (origin, callback) {
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 

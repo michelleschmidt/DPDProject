@@ -41,7 +41,7 @@ class AppointmentService {
         {
           model: User,
           as: "patient",
-          attributes: ["id","title", "first_name", "last_name", "address"],
+          attributes: ["id", "title", "first_name", "last_name", "address"],
         },
         {
           model: User,
@@ -229,12 +229,8 @@ class AppointmentService {
 
     // Convert the grouped object into an array
     const result = Object.values(groupedPatients);
-    
     return result;
 }
-
-  
-  
   
   async updateAppointment(appointmentId, updates) {
     const appointment = await Appointment.findByPk(appointmentId);
