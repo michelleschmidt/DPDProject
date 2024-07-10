@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import axiosInstance from "../../axios/Axios";
 import PatientForm, { FormData } from "./PatientForm";
 import DoctorTable from "../tables/DoctorTable";
 import AppointmentTable from "../tables/AppointmentTable";
-import { Patient } from "../Types";
+import { Doctor, Patient } from "../Types";
 
 interface EditPatientModalProps {
   isOpen: boolean;
@@ -25,13 +25,13 @@ const EditPatientModal: React.FC<EditPatientModalProps> = ({
   const [isDoctorTableExpanded, setIsDoctorTableExpanded] = useState(false);
   const [appointments, setAppointments] = useState<any[]>([]);
   const [doctors, setDoctors] = useState<any[]>([]);
-  const [patients, setPatients] = useState<Patient[]>([]);
+  const [, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (isOpen && patientId) {
       fetchAppointmentsForPatient(patientId.toString());
-      fetchDoctorsForPatient(patientId.toString());
+      fetchDoctorsForPatient();
       fetchPatients();
     }
   }, [isOpen, patientId]);
@@ -42,22 +42,23 @@ const EditPatientModal: React.FC<EditPatientModalProps> = ({
       const response = await axiosInstance.get(`/api/users/${patientId}`);
       const patient = response.data;
       const mappedPatient = {
-        userId: patient.id,
+        userId: patient.id.toString(),
         first_name: patient.first_name,
         last_name: patient.last_name,
         email: patient.email,
         role: patient.role,
         address: {
-          street: patient.address.street,
-          city: patient.address.city,
-          state: patient.address.state,
-          country: patient.address.country,
-          postcode: patient.address.postal_code,
+          street: patient.address?.street || "",
+          city: patient.address?.city || "",
+          state: patient.address?.state || "",
+          country: patient.address?.country || "",
+          postcode: patient.address?.postal_code || "",
         },
-        languages: patient.languages.map((lang: any) => ({
-          id: lang.id,
-          language_name: lang.language_name,
-        })),
+        languages:
+          patient.languages?.map((lang: any) => ({
+            id: lang.id,
+            language_name: lang.language_name,
+          })) || [],
         title: patient.title,
         phone_number: patient.phone_number,
         date_of_birth: patient.date_of_birth
@@ -117,24 +118,42 @@ const EditPatientModal: React.FC<EditPatientModalProps> = ({
     }
   };
 
-  const fetchDoctorsForPatient = async (patientId: string) => {
+  const fetchDoctorsForPatient = async () => {
     try {
+      setLoading(true);
       const response = await axiosInstance.get(
         `/api/appointments/user-doctors/${patientId}`
       );
-      console.log("Doctors response:", response.data);
       if (response.data && Array.isArray(response.data)) {
-        const processedDoctors = response.data.map((doctor: any) => ({
-          id: doctor.id,
-          title: doctor.title || "",
-          first_name: doctor.first_name || "",
-          last_name: doctor.last_name || "",
-          profileImage: doctor.profileImage || "",
-          specialization: {
-            area_of_specialization:
-              doctor.specialization?.area_of_specialization || "Not specified",
+        const processedDoctors: Doctor[] = response.data.map((doctor: any) => ({
+          userId: doctor.id,
+          id: doctor.id, // Add this line to include the id property
+          title: doctor.doctor_name.split(" ")[0] || "",
+          first_name: doctor.doctor_name.split(" ")[1] || "",
+          last_name: doctor.doctor_name.split(" ").slice(2).join(" ") || "",
+          email: doctor.email || "",
+          role: "doctor",
+          address: {
+            street: doctor.address?.street || "",
+            city: doctor.address?.city || "",
+            state: doctor.address?.state || "",
+            country: doctor.address?.country || "",
+            postcode: doctor.address?.postal_code || "",
           },
-          languages: doctor.languages || [],
+          languages: doctor.languages.map((lang: string) => ({
+            language_name: lang,
+            id: 0, // You might want to generate a unique id or fetch it from the API
+          })),
+          phone_number: doctor.phone_number || "",
+          date_of_birth: doctor.date_of_birth
+            ? new Date(doctor.date_of_birth)
+            : undefined,
+          gender: doctor.gender || "",
+          specialization: {
+            id: doctor.specialization?.id || 0, // Add this line to include the id in specialization
+            area_of_specialization:
+              doctor.area_of_specialization || "Not specified",
+          },
         }));
         setDoctors(processedDoctors);
       } else {
@@ -144,6 +163,8 @@ const EditPatientModal: React.FC<EditPatientModalProps> = ({
     } catch (error) {
       console.error("Error fetching doctors:", error);
       setError("Failed to fetch doctors. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -281,8 +302,9 @@ const EditPatientModal: React.FC<EditPatientModalProps> = ({
           {isDoctorTableExpanded && (
             <DoctorTable
               doctors={doctors}
-              onEdit={(doctor) => console.log("Edit doctor", doctor)}
-              onDelete={(doctor) => console.log("Delete doctor", doctor)}
+              loading={loading}
+              error={error}
+              onRefresh={() => fetchDoctorsForPatient()}
             />
           )}
         </div>

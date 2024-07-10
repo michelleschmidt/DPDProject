@@ -5,40 +5,13 @@ import axiosInstance from "../../axios/Axios";
 interface ViewAppointmentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  appointmentId: number;
+  appointment: Appointment;
 }
 
 const ViewAppointmentModal: React.FC<ViewAppointmentModalProps> = ({
   onClose,
-  appointmentId,
+  appointment,
 }) => {
-  const [appointment, setAppointment] = useState<Appointment | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchAppointment = useCallback(async () => {
-    if (!appointmentId) return;
-
-    try {
-      setLoading(true);
-      const response = await axiosInstance.get(
-        `/api/appointments/${appointmentId}`
-      );
-      setAppointment(response.data);
-    } catch (error: any) {
-      console.error("Error fetching appointment:", error);
-      setError("Failed to fetch appointment details. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  }, [appointmentId]);
-
-  useEffect(() => {
-    fetchAppointment();
-  }, [fetchAppointment]);
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
   if (!appointment) return null;
 
   return (

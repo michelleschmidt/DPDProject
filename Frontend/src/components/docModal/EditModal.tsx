@@ -368,4 +368,4 @@ const EditDoctorModal: React.FC<EditDoctorModalProps> = ({
   );
 };
 
-export default EditDoctorModal;
+export default React.memo(EditDoctorModal);

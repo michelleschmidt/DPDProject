@@ -90,19 +90,6 @@ const DoctorAvailabilityModal: React.FC<DoctorAvailabilityModalProps> = ({
     }
   };
 
-  const handleToggleActive = async (availability: Availability) => {
-    try {
-      await axiosInstance.put(`/api/availabilities/${availability.id}`, {
-        ...availability,
-        active: !availability.active,
-      });
-      fetchAvailabilities();
-    } catch (error) {
-      console.error("Error updating availability:", error);
-      setError("Failed to update availability. Please try again.");
-    }
-  };
-
   if (!isOpen) return null;
 
   return (

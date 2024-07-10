@@ -36,6 +36,12 @@ const Dashboard: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const appointmentChartRef = useRef<ChartJS<"bar", number[], string>>(null);
+  const today = new Date();
+  const sevenDaysAgo = new Date(today);
+  const sevenDaysFromNow = new Date(today);
+
+  sevenDaysAgo.setDate(today.getDate() - 7);
+  sevenDaysFromNow.setDate(today.getDate() + 7);
 
   useEffect(() => {
     fetchData();

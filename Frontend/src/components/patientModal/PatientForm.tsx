@@ -38,10 +38,8 @@ export interface FormData {
 }
 
 const PatientForm: React.FC<PatientFormProps> = ({
-  data,
   handleSubmit,
   patientId,
-  onClose,
 }) => {
   const [languages, setLanguages] = useState<Language[]>([]);
   const [formData, setFormData] = useState<FormData>({

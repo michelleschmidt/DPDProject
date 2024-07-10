@@ -1,7 +1,6 @@
 import React from "react";
 import axiosInstance from "../../axios/Axios";
 import DoctorForm, { FormData } from "./DoctorForm";
-import Button from "../../utils/Button";
 
 interface AddDoctorModalProps {
   isOpen: boolean;

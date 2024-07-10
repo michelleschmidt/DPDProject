@@ -3,7 +3,6 @@ import axiosInstance from "../../axios/Axios";
 import Select, { SingleValue, MultiValue } from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import PageLayout from "../layout/PageLayout";
 import { Language, Specialization, Doctor } from "../Types";
 
 interface DoctorFormProps {
@@ -30,11 +29,7 @@ export interface FormData {
   password: string;
 }
 
-const DoctorForm: React.FC<DoctorFormProps> = ({
-  handleSubmit,
-  data,
-  onClose,
-}) => {
+const DoctorForm: React.FC<DoctorFormProps> = ({ handleSubmit, data }) => {
   const [formData, setFormData] = useState<FormData>({
     title: "",
     first_name: "",
@@ -126,13 +121,6 @@ const DoctorForm: React.FC<DoctorFormProps> = ({
     setFormData((prevFormData) => ({
       ...prevFormData,
       [id]: value,
-    }));
-  };
-
-  const handleDateChange = (date: Date | null) => {
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      date_of_birth: date,
     }));
   };
 

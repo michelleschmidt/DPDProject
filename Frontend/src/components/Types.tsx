@@ -16,6 +16,11 @@ export interface Specialization {
   area_of_specialization: string;
 }
 
+export interface Location {
+  latitude: number;
+  longitude: number;
+}
+
 export interface User {
   userId: number;
   token?: string;
@@ -30,6 +35,7 @@ export interface User {
   date_of_birth?: Date;
   password?: string;
   gender?: string;
+  location?: Location;
 }
 
 export interface Doctor extends User {
@@ -64,6 +70,6 @@ export interface Appointment {
   bookTranslation: boolean;
   completed: boolean;
   doctor: Doctor;
-  patient: Patient;
+  patient: Patient; // Make patient properties optional
   availability: Availability;
 }

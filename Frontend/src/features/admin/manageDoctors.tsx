@@ -1,33 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import PageLayout from "../../components/layout/PageLayout";
-import axiosInstance from "../../axios/Axios";
-import { useAuth } from "../../components/auth/AuthContext";
-import "../../Web.css";
-import DeleteConfirmationModal from "../../components/docModal/DeleteConfirmationModal";
-import EditDoctorModal from "../../components/docModal/EditModal";
-import AddDoctorModal from "../../components/docModal/AddModal";
 import DoctorTable from "../../components/tables/DoctorTable";
-import { Language, Doctor, Specialization } from "../../components/Types";
+import AddDoctorModal from "../../components/docModal/AddModal";
+import axiosInstance from "../../axios/Axios";
+import { Doctor } from "../../components/Types";
 
 const ManageDoctors: React.FC = () => {
-  const [doctors, setDoctors] = useState<Doctor[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const { isAuthenticated, checkAuth, logout } = useAuth();
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const fetchDoctors = async (languageFilter?: string) => {
+  const fetchDoctors = useCallback(async (filterLanguage?: string) => {
     try {
       setLoading(true);
       setError(null);
       const response = await axiosInstance.get("/api/users/", {
-        params: { language: languageFilter },
+        params: { language: filterLanguage },
       });
-      console.log("Raw fetch", response.data);
-      const mappedDoctor: Doctor[] = response.data.map((doctor: any) => ({
+      const mappedDoctors: Doctor[] = response.data.map((doctor: any) => ({
         userId: doctor.id,
         first_name: doctor.first_name,
         last_name: doctor.last_name,
@@ -45,73 +36,27 @@ const ManageDoctors: React.FC = () => {
         date_of_birth: new Date(doctor.date_of_birth),
         insurance: doctor.insurance_type,
       }));
-      setDoctors(mappedDoctor);
-      console.log("Mapped Data", mappedDoctor);
-      if (response.data && Array.isArray(response.data)) {
-        setDoctors(response.data);
-        console.log("set doctor", response.data);
-      } else {
-        throw new Error("Unexpected response format or no data");
-      }
+      setDoctors(mappedDoctors);
     } catch (error: any) {
       console.error("Error fetching doctors:", error);
       setError("Failed to fetch doctors. Please try again.");
-      if (error.response && error.response.status === 401) {
-        logout();
-      }
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const language = params.get("language") || undefined;
-    fetchDoctors(language);
   }, []);
 
-  const handleEdit = (doctor: Doctor) => {
-    console.log("Editing doctor:", doctor);
-    setSelectedDoctor(doctor);
-    console.log("Selected User", selectedDoctor);
-    setIsEditModalOpen(true);
-  };
-
-  const handleDelete = (doctor: Doctor) => {
-    setSelectedDoctor(doctor);
-    setIsDeleteModalOpen(true);
-  };
+  useEffect(() => {
+    fetchDoctors();
+  }, [fetchDoctors]);
 
   const handleAddDoctor = () => {
     setIsAddModalOpen(true);
   };
 
-  const refreshDoctorList = () => {
-    fetchDoctors();
+  const handleAddModalClose = () => {
+    setIsAddModalOpen(false);
+    fetchDoctors(); // Refresh the list after adding a new doctor
   };
-
-  const handleEditModalClose = () => {
-    setIsEditModalOpen(false);
-    refreshDoctorList(); // Refresh the list when the modal is closed
-  };
-
-  const confirmDelete = async () => {
-    if (selectedDoctor) {
-      try {
-        await axiosInstance.delete(`/api/users/${selectedDoctor.userId}`);
-        refreshDoctorList();
-      } catch (error) {
-        console.error("Error deleting patient:", error);
-      } finally {
-        setIsDeleteModalOpen(false);
-      }
-    }
-    console.log("Deleting doctor:", selectedDoctor);
-    setIsDeleteModalOpen(false);
-  };
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div className="error-message">{error}</div>;
 
   return (
     <PageLayout text="Manage Doctors">
@@ -129,39 +74,14 @@ const ManageDoctors: React.FC = () => {
             </div>
             <DoctorTable
               doctors={doctors}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
+              loading={loading}
+              error={error}
+              onRefresh={fetchDoctors}
             />
           </div>
         </div>
       </div>
-      <DeleteConfirmationModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        onConfirm={confirmDelete}
-        doctorName={
-          selectedDoctor
-            ? `${selectedDoctor.first_name} ${selectedDoctor.last_name}`
-            : ""
-        }
-      />
-
-      {isEditModalOpen &&
-        selectedDoctor &&
-        (console.log("From Manage Doctor", selectedDoctor.userId),
-        (
-          <EditDoctorModal
-            isOpen={isEditModalOpen}
-            onClose={handleEditModalClose}
-            doctorId={selectedDoctor.id || 0} //contains the userId
-            onUpdateSuccess={refreshDoctorList} // Add this prop
-          />
-        ))}
-
-      <AddDoctorModal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-      />
+      <AddDoctorModal isOpen={isAddModalOpen} onClose={handleAddModalClose} />
     </PageLayout>
   );
 };

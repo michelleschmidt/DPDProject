@@ -1,53 +1,87 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Doctor } from "../Types";
+import DeleteConfirmationModal from "../docModal/DeleteConfirmationModal";
+import EditDoctorModal from "../docModal/EditModal";
+import axiosInstance from "../../axios/Axios";
 
 interface DoctorTableProps {
   doctors: Doctor[];
-  onEdit: (doctor: Doctor) => void;
-  onDelete: (doctor: Doctor) => void;
-  filterLanguage?: string;
+  loading: boolean;
+  error: string | null;
+  onRefresh: (filterLanguage?: string) => void;
 }
 
 const DoctorTable: React.FC<DoctorTableProps> = ({
   doctors,
-  onEdit,
-  onDelete,
-  filterLanguage,
+  loading,
+  error,
+  onRefresh,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredDoctors, setFilteredDoctors] = useState<Doctor[]>(doctors);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
+
+  const handleEdit = (doctor: Doctor) => {
+    console.log("handleEdit called", doctor);
+    setSelectedDoctor(doctor);
+  };
 
   useEffect(() => {
-    const filtered = doctors.filter((doctor) => {
-      const searchLower = searchTerm.toLowerCase();
-      const fullName =
-        `${doctor.title} ${doctor.first_name} ${doctor.last_name}`.toLowerCase();
-      const specialization =
-        doctor.specialization?.area_of_specialization.toLowerCase() || "";
-      const languages =
-        doctor.languages
-          ?.map((lang) => lang.language_name.toLowerCase())
-          .join(" ") || "";
+    if (selectedDoctor) {
+      setIsEditModalOpen(true);
+      console.log("Modal should open now", {
+        isEditModalOpen: true,
+        selectedDoctor,
+      });
+    }
+  }, [selectedDoctor]);
 
-      console.log("From List", doctor);
+  const handleDelete = (doctor: Doctor) => {
+    setSelectedDoctor(doctor);
+    setIsDeleteModalOpen(true);
+  };
 
-      const matchesSearch =
-        fullName.includes(searchLower) ||
-        specialization.includes(searchLower) ||
-        languages.includes(searchLower);
+  const confirmDelete = async () => {
+    if (selectedDoctor) {
+      try {
+        await axiosInstance.delete(`/api/users/${selectedDoctor.userId}`);
+        onRefresh(); // Refresh the list after deletion
+      } catch (error) {
+        console.error("Error deleting doctor:", error);
+        // Handle error (you might want to pass this up to the parent component)
+      } finally {
+        setIsDeleteModalOpen(false);
+      }
+    }
+  };
 
-      const matchesFilterLanguage =
-        !filterLanguage ||
-        doctor.languages?.some(
-          (lang) =>
-            lang.language_name.toLowerCase() === filterLanguage.toLowerCase()
-        );
+  const handleEditModalClose = () => {
+    setIsEditModalOpen(false);
+    onRefresh(); // Refresh the list when the modal is closed
+  };
 
-      return matchesSearch && matchesFilterLanguage;
-    });
+  const filteredDoctors = doctors.filter((doctor) => {
+    const searchLower = searchTerm.toLowerCase();
+    const fullName = `${doctor.title || ""} ${doctor.first_name || ""} ${
+      doctor.last_name || ""
+    }`.toLowerCase();
+    const specialization =
+      doctor.specialization?.area_of_specialization?.toLowerCase() || "";
+    const languages =
+      doctor.languages
+        ?.map((lang) => lang.language_name.toLowerCase())
+        .join(" ") || "";
 
-    setFilteredDoctors(filtered);
-  }, [doctors, searchTerm, filterLanguage]);
+    return (
+      fullName.includes(searchLower) ||
+      specialization.includes(searchLower) ||
+      languages.includes(searchLower)
+    );
+  });
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div className="error-message">{error}</div>;
 
   return (
     <div>
@@ -57,22 +91,9 @@ const DoctorTable: React.FC<DoctorTableProps> = ({
           placeholder="Search by name, specialization, or language"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-Full p-2 border border-gray-300 rounded-lg"
+          className="w-full p-2 border border-gray-300 rounded-lg"
         />
       </div>
-      {/* {filterLanguage && (
-        <div className="mb-4">
-          <p>Filtered by language: {filterLanguage}</p>
-          <button
-            onClick={() =>
-              window.history.pushState({}, "", window.location.pathname)
-            }
-            className="px-2 py-1 bg-gray-200 rounded"
-          >
-            Clear filter
-          </button>
-        </div>
-      )} */}
       <table className="w-full">
         <thead>
           <tr className="font-medium">
@@ -83,37 +104,28 @@ const DoctorTable: React.FC<DoctorTableProps> = ({
           </tr>
         </thead>
         <tbody>
-          {filteredDoctors.map((doctor, index) => (
-            <tr
-              key={doctor.userId || index}
-              className="border-b border-blue-200"
-            >
+          {filteredDoctors.map((doctor) => (
+            <tr key={doctor.userId} className="border-b border-blue-200">
               <td>
-                {`${doctor.title} ${doctor.first_name || ""} ${
+                {`${doctor.title || ""} ${doctor.first_name || ""} ${
                   doctor.last_name || ""
                 }`}
               </td>
-              <td>
-                {doctor.specialization
-                  ? doctor.specialization.area_of_specialization
-                  : ""}
-              </td>
+              <td>{doctor.specialization?.area_of_specialization || ""}</td>
               <td>
                 {doctor.languages
-                  ? doctor.languages
-                      .map((lang) => lang.language_name)
-                      .join(", ")
-                  : ""}
+                  ?.map((lang) => lang.language_name)
+                  .join(", ") || ""}
               </td>
               <td>
                 <button
-                  onClick={() => onEdit(doctor)}
+                  onClick={() => handleEdit(doctor)}
                   className="mr-2 px-4 py-2 border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-100"
                 >
                   Edit
                 </button>
                 <button
-                  onClick={() => onDelete(doctor)}
+                  onClick={() => handleDelete(doctor)}
                   className="px-4 py-2 border border-red-500 text-red-500 rounded-lg hover:bg-red-100"
                 >
                   Delete
@@ -123,8 +135,26 @@ const DoctorTable: React.FC<DoctorTableProps> = ({
           ))}
         </tbody>
       </table>
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={confirmDelete}
+        doctorName={
+          selectedDoctor
+            ? `${selectedDoctor.first_name} ${selectedDoctor.last_name}`
+            : ""
+        }
+      />
+      {isEditModalOpen && selectedDoctor && (
+        <EditDoctorModal
+          isOpen={isEditModalOpen}
+          onClose={handleEditModalClose}
+          doctorId={selectedDoctor.userId}
+          onUpdateSuccess={onRefresh}
+        />
+      )}
     </div>
   );
 };
 
-export default DoctorTable;
+export default React.memo(DoctorTable);

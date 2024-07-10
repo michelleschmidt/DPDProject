@@ -20,22 +20,17 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userData, setUserData] = useState<User | null>(() => {
-    const storedUser = localStorage.getItem("userData");
-    return storedUser ? JSON.parse(storedUser) : null;
-  });
+  const [userData, setUserData] = useState<User | null>(null);
 
   const checkAuth = async () => {
     try {
       const response = await axiosInstance.get("/api/auth/check-auth");
       setIsAuthenticated(true);
       setUserData(response.data.user);
-      localStorage.setItem("userData", JSON.stringify(response.data.user));
       return true;
     } catch (error) {
       setIsAuthenticated(false);
       setUserData(null);
-      localStorage.removeItem("userData");
       return false;
     }
   };
@@ -45,10 +40,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const login = (data: User) => {
-    console.log("Login data: ", data);
     setUserData(data);
     setIsAuthenticated(true);
-    localStorage.setItem("userData", JSON.stringify(data));
   };
 
   const logout = async () => {
@@ -59,7 +52,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
     setUserData(null);
     setIsAuthenticated(false);
-    localStorage.removeItem("userData");
   };
 
   return (

@@ -60,7 +60,7 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
   const [appointmentReasonSubcategory, setAppointmentReasonSubcategory] =
     useState("");
   const [bookTranslation, setBookTranslation] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
