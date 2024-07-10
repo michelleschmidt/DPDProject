@@ -34,7 +34,6 @@ const SignUp: React.FC = () => {
         emergency_contact_details: formData.emergency_contact_details || null,
         language: formData.languages.values,
       };
-      console.log("Submitting data:", postData);
 
       const token = localStorage.getItem("token");
 
@@ -49,8 +48,6 @@ const SignUp: React.FC = () => {
           },
         }
       );
-
-      console.log("Registration successful:", response.data);
 
       navigate("/signin");
     } catch (error: any) {

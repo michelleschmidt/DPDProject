@@ -70,7 +70,6 @@ const EditPatientModal: React.FC<EditPatientModalProps> = ({
         gender: patient.gender,
       };
       setPatients([mappedPatient]);
-      console.log("Fetched patient: ", mappedPatient);
     } catch (error: any) {
       console.error("Error fetching patient:", error);
       setError("Failed to fetch patient. Please try again.");
@@ -84,7 +83,6 @@ const EditPatientModal: React.FC<EditPatientModalProps> = ({
       const response = await axiosInstance.get(
         `/api/appointments/user/${patientId}`
       );
-      console.log("Appointments response:", response.data);
       if (response.data && Array.isArray(response.data)) {
         const processedAppointments = response.data.map((appointment: any) => ({
           id: appointment.id,
@@ -208,7 +206,6 @@ const EditPatientModal: React.FC<EditPatientModalProps> = ({
       } else {
         throw new Error(`Unexpected response status: ${response.status}`);
       }
-      console.log("Request payload:", updatedPatient);
     } catch (error: any) {
       console.error("Error updating patient:", error);
       if (error.response) {

@@ -47,7 +47,6 @@ const ManagePatients: React.FC = () => {
         insurance: patient.insurance_type,
       }));
       setPatients(mappedPatients);
-      console.log(mappedPatients);
     } catch (error: any) {
       console.error("Error fetching Patients:", error);
       setError("Failed to fetch Patients. Please try again.");

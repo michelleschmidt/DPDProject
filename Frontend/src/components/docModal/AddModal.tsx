@@ -33,7 +33,6 @@ const AddDoctorModal: React.FC<AddDoctorModalProps> = ({ isOpen, onClose }) => {
         },
       })
       .then((response) => {
-        console.log("Registration successful:", response.data);
         onClose(); // Close modal after successful registration
       })
       .catch((error) => {

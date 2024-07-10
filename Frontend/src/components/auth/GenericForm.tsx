@@ -105,7 +105,6 @@ const GenericForm: React.FC<GenericFormProps> = ({
     setErrors(newErrors);
 
     if (formIsValid) {
-      console.log("Calling onSubmit with formData:", formData);
       onSubmit(formData);
     }
   };

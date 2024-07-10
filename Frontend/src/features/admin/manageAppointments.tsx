@@ -26,7 +26,6 @@ const ManageAppointments: React.FC = () => {
       }
       const response = await axiosInstance.get<Appointment[]>(url);
       setAppointments(response.data);
-      console.log("Fetched appointments:", response.data);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching appointments:", error);

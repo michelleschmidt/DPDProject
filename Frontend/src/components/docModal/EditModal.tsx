@@ -43,7 +43,6 @@ const EditDoctorModal: React.FC<EditDoctorModalProps> = ({
   const fetchedRef = useRef(false);
 
   const fetchData = useCallback(async () => {
-    console.log("doctorId in EditDoctorModal:", doctorId);
     if (fetchedRef.current || !doctorId) return;
     try {
       setLoading(true);
@@ -167,7 +166,6 @@ const EditDoctorModal: React.FC<EditDoctorModalProps> = ({
 
       fetchedRef.current = true;
     } catch (error: any) {
-      console.log("doctoId", doctorId);
       console.error("Error fetching data:", error);
       setError("Failed to fetch data. Please try again.");
     } finally {
@@ -202,8 +200,6 @@ const EditDoctorModal: React.FC<EditDoctorModalProps> = ({
         phone_number: formData.phone_number,
       };
 
-      console.log("Updated Doctor Data:", updatedDoctor);
-
       const response = await axiosInstance.put(
         `/api/users/${doctorId}`,
         updatedDoctor,
@@ -214,7 +210,6 @@ const EditDoctorModal: React.FC<EditDoctorModalProps> = ({
         }
       );
 
-      console.log("Server response:", response.data);
       onClose();
       onUpdateSuccess();
     } catch (error: any) {

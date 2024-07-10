@@ -31,7 +31,6 @@ const SignIn = () => {
 
       if (response.status === 201 && response.data) {
         const userData = response.data;
-        console.log("Response data:", userData);
 
         if (userData && userData.role) {
           login(userData); // Pass the entire userData object

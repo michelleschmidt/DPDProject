@@ -25,7 +25,6 @@ export const fetchAppointmentsForDoctor = async (
     const response = await axiosInstance.get(
       `/api/appointments/doctor/${doctorId}`
     );
-    console.log("Raw appointment data:", response.data);
     if (response.data && Array.isArray(response.data)) {
       const mappedAppointments = response.data.map((appointment: any) => ({
         ...appointment,
@@ -54,7 +53,6 @@ export const fetchAppointmentsForDoctor = async (
         status: appointment.status || "Unknown",
       }));
       setAppointments(mappedAppointments);
-      console.log("Fetched and formatted appointments:", mappedAppointments);
     } else {
       console.error(
         "Unexpected response format for appointments:",
@@ -84,7 +82,6 @@ export const fetchUserAppointments = async (setAppointments: Function) => {
         book_translation: appointment.bookTranslation,
       }));
       setAppointments(mappedAppointments);
-      console.log("Appointments: ", mappedAppointments);
     } else {
       console.error(
         "Unexpected response format for appointments:",
@@ -117,7 +114,6 @@ export const fetchDoctors = async (setDoctors: Function) => {
 // Fetch user-specific doctors
 export const fetchUserDoctors = async (setDoctors: Function, userData: any) => {
   try {
-    console.log("ID: ", userData?.userId);
     const response = await axiosInstance.get("/api/appointments/user-doctors");
     if (response.data && Array.isArray(response.data)) {
       const mappedDoctors: Doctor[] = response.data.map((doctor: any) => ({
@@ -141,7 +137,6 @@ export const fetchUserDoctors = async (setDoctors: Function, userData: any) => {
         languages: doctor.languages || [],
       }));
       setDoctors(mappedDoctors);
-      console.log(mappedDoctors);
     } else {
       console.error("Unexpected response format for doctors:", response.data);
     }
@@ -179,7 +174,6 @@ export const fetchPatients = async (setPatients: Function) => {
       insurance: patient.insurance_type,
     }));
     setPatients(mappedPatients);
-    console.log(mappedPatients);
   } catch (error: any) {
     console.error("Error fetching Patients:", error);
     setError("Failed to fetch Patients. Please try again.");

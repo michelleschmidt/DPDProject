@@ -175,7 +175,6 @@ const EditAppointmentModal: React.FC<EditAppointmentModalProps> = ({
           `/api/appointments/${appointment.id}`,
           newAppointment
         );
-        console.log("Appointment updated successfully:", response.data);
         onSubmit(response.data);
         onClose();
       } catch (error: any) {

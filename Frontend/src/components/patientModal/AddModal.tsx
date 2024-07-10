@@ -53,7 +53,6 @@ const AddPatientModal: React.FC<AddPatientModalProps> = ({
         }
       );
 
-      console.log("Registration successful:", response.data);
       onClose();
       onUpdateSuccess();
     } catch (error: any) {

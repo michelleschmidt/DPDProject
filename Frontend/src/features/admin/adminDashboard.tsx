@@ -127,19 +127,30 @@ const Dashboard: React.FC = () => {
     return { totalUsers, newUsers };
   };
 
+  // Process appointment data
   const processAppointmentData = (appointments: any[]) => {
     const totalAppointments = appointments.length;
-    const successfulAppointments = appointments.filter(
-      (apt) => apt.status === "successful"
+    const completedAppointments = appointments.filter(
+      (apt) => apt.completed === true
     ).length;
     const pendingAppointments = appointments.filter(
-      (apt) => apt.status === "pending"
+      (apt) => apt.completed === false
     ).length;
-
     const appointmentsByDay: { [key: string]: number } = {};
+
+    const today = new Date();
+    const sevenDaysAgo = new Date(today);
+    const sevenDaysFromNow = new Date(today);
+    sevenDaysAgo.setDate(today.getDate() - 7);
+    sevenDaysFromNow.setDate(today.getDate() + 7);
+
     appointments.forEach((apt) => {
       const date = new Date(apt.date);
-      if (!isNaN(date.getTime())) {
+      if (
+        !isNaN(date.getTime()) &&
+        date >= sevenDaysAgo &&
+        date <= sevenDaysFromNow
+      ) {
         const dateString = date.toISOString().split("T")[0];
         appointmentsByDay[dateString] =
           (appointmentsByDay[dateString] || 0) + 1;
@@ -155,7 +166,7 @@ const Dashboard: React.FC = () => {
 
     return {
       totalAppointments,
-      successfulAppointments,
+      completedAppointments,
       pendingAppointments,
       appointmentsByDay,
       sortedDates,
@@ -306,11 +317,11 @@ const Dashboard: React.FC = () => {
           <div className="h-64">
             <Pie
               data={{
-                labels: ["Successful", "Pending"],
+                labels: ["Completed", "Pending"],
                 datasets: [
                   {
                     data: [
-                      appointmentData?.successfulAppointments,
+                      appointmentData?.completedAppointments,
                       appointmentData?.pendingAppointments,
                     ],
                     backgroundColor: ["#36A2EB", "#FFCE56"],

@@ -66,7 +66,6 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
   useEffect(() => {
     if (preselectedDoctor) {
       setSelectedDoctor(preselectedDoctor);
-      console.log("Preselected doctor set:", preselectedDoctor);
     } else {
       console.log("No preselected doctor provided");
     }
@@ -79,7 +78,6 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
         const response = await axiosInstance.get(
           `/api/users/${preselectedPatientId}`
         );
-        console.log("Fetched preselected patient:", response.data);
         setPatients([response.data]);
         setSelectedPatient(response.data);
       } else {
@@ -102,7 +100,6 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
         setDoctors([preselectedDoctor]);
       } else {
         const response = await axiosInstance.get("/api/users/");
-        console.log("Fetched all doctors:", response.data);
         setDoctors(response.data || []);
       }
     } catch (error) {
@@ -131,7 +128,6 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
       if (response.data && Array.isArray(response.data)) {
         setAvailabilities(response.data);
         setAvailabilitiesFetched(true);
-        console.log("Fetched availabilities:", response.data);
       } else {
         throw new Error("Unexpected response format for availabilities");
       }
@@ -146,7 +142,6 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
 
   useEffect(() => {
     if (selectedDoctor && selectedDoctor.userId) {
-      console.log("Fetching availabilities for doctor:", selectedDoctor.userId);
       fetchDoctorAvailability(selectedDoctor.userId);
     } else {
       console.log("No doctor selected or invalid doctor data");
@@ -205,7 +200,6 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
           "/api/appointments/create-new",
           newAppointment
         );
-        console.log("Appointment added successfully:", response.data);
         onSubmit(response.data);
         onClose();
       } catch (error: any) {

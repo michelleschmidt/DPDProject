@@ -101,7 +101,6 @@ const PatientDashboard: React.FC = () => {
             active: true, // Assuming active is always true for booked appointments
           },
         }));
-        console.log("Fetched appointments:", mappedAppointments);
         setAppointments(mappedAppointments);
       } else {
         console.error(
@@ -204,14 +203,10 @@ const PatientDashboard: React.FC = () => {
 
       // Toggle the book_translation value
       const updatedBookTranslation = !appointment.bookTranslation;
-      console.log("Updating book_translation to:", updatedBookTranslation);
-
       const response = await axiosInstance.put(
         `/api/appointments/${appointment.id}`,
         { book_translation: updatedBookTranslation }
       );
-
-      console.log("PUT request response:", response);
 
       if (response.status === 200 || response.status === 201) {
         console.log(

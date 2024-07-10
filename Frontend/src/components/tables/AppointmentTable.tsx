@@ -58,7 +58,6 @@ const AppointmentTable: React.FC<AppointmentTableProps> = ({
   const handlePatientClick = (patient: Patient) => {
     setSelectedPatient(patient);
     setIsEditModalOpen(true);
-    console.log("Selected patient:", patient);
   };
 
   const handleCloseModal = () => {
@@ -83,7 +82,6 @@ const AppointmentTable: React.FC<AppointmentTableProps> = ({
     if (!selectedAppointment) return;
     try {
       await axiosInstance.delete(`/api/appointments/${selectedAppointment.id}`);
-      console.log("Deleted Appointment:", selectedAppointment);
       setIsDeleteModalOpen(false);
       fetchAppointments(doctorId); // Adjusted to pass doctorId directly
     } catch (error) {

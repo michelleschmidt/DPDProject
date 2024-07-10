@@ -23,17 +23,12 @@ const DoctorTable: React.FC<DoctorTableProps> = ({
   const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
 
   const handleEdit = (doctor: Doctor) => {
-    console.log("handleEdit called", doctor);
     setSelectedDoctor(doctor);
   };
 
   useEffect(() => {
     if (selectedDoctor) {
       setIsEditModalOpen(true);
-      console.log("Modal should open now", {
-        isEditModalOpen: true,
-        selectedDoctor,
-      });
     }
   }, [selectedDoctor]);
 
