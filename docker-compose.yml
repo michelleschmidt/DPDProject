@@ -9,14 +9,14 @@ services:
       - "3307:3306"
     volumes:
       - project-database:/var/lib/mysql
-      - ./mysql/projectschema.sql:/docker-entrypoint-initdb.d/projectschema.sql
+      - ./mysql/schema.sql:/docker-entrypoint-initdb.d/projectschema.sql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  app:
+  server-app:
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -33,8 +33,9 @@ services:
     ports:
       - "7000:7000"
     volumes:
-      - .:/usr/src/app
-      
+      - ./backend:/server-app
+      - /server-app/node_modules
+
   health-connect:
     build:
       context: ./frontend
@@ -42,13 +43,10 @@ services:
     ports:
       - "5173:5173"
     depends_on:
-      - app
+      - server-app
     environment:
-      - REACT_APP_API_URL=http://app:7000
+      - VITE_API_URL=http://server-app:7000
       - DOCKER_ENV=true
     volumes:
-      - .:/health-connect
+      - ./frontend:/health-connect
       - /health-connect/node_modules
-
-volumes:
-  project-database:
