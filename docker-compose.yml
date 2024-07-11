@@ -5,9 +5,11 @@ services:
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_SSL_MODE: DISABLED
     ports:
       - "3307:3306"
     volumes:
+      - ./my.cnf:/etc/mysql/conf.d/my.cnf
       - project-database:/var/lib/mysql
       - ./mysql/schema.sql:/docker-entrypoint-initdb.d/projectschema.sql
     healthcheck:
@@ -22,11 +24,12 @@ services:
       dockerfile: Dockerfile
     environment:
       DB_HOST: db
-      DB_USER: ${DB_USER}
+      DB_USER: root
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
       SECRETE: ${SECRETE}
       API_ACCESS_KEY: ${API_ACCESS_KEY}
+      DOCKER_ENV: 'true'  # Add this line
     depends_on:
       db:
         condition: service_healthy
@@ -50,3 +53,5 @@ services:
     volumes:
       - ./frontend:/health-connect
       - /health-connect/node_modules
+volumes:
+  project-database:
