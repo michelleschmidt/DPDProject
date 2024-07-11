@@ -1,4 +1,3 @@
-const { getCoordinates } = require("../utils");
 
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define(
