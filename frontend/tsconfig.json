@@ -15,8 +15,8 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "types": ["node", "jest"]
+    "types": ["node", "jest", "vite"]
   },
-  "include": ["src", "src/postcss.config.js", "src/setupTest.ts"],
+  "include": ["src", "src/postcss.config.js", "src/setupTest.ts", "vite.config.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

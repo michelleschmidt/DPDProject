@@ -12,7 +12,7 @@ export default defineConfig({
     open: true, // Automatically opens the browser
     proxy: {
       '/api': {
-        target: isDocker ? 'http://app:7000' : 'https://health-connect-kyp7.onrender.com',
+        target: isDocker ? 'http://server-app:7000' : 'https://health-connect-kyp7.onrender.com',
         changeOrigin: true,
         secure: false, // Set to true if the target server uses a valid SSL certificate
         rewrite: (path) => path.replace(/^\/api/, ''),
