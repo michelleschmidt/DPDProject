@@ -1,0 +1,426 @@
+.fixed-footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: #f8f9fa; /* Example background color */
+  padding: 10px 0; /* Adjust padding as needed */
+}
+
+.regForm {
+  padding-bottom: 20%;
+}
+
+.relative-footer {
+  width: 100%;
+  background-color: #f8f9fa; /* Example background color */
+  padding: 10px 0; /* Adjust padding as needed */
+}
+
+.simple-form {
+  max-width: 80%;
+  margin: 0 auto;
+  padding: 2%;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 2% 5px rgba(0, 0, 0, 0.1);
+}
+
+.simple-form .form-group {
+  margin-bottom: 15%;
+}
+
+.simple-form .form-control {
+  border-radius: 5px;
+  border-color: #ccc;
+  box-shadow: none;
+}
+
+.simple-form .form-control:focus {
+  border-color: #337ab7;
+  box-shadow: 0 0 5px rgba(51, 122, 183, 0.5);
+}
+
+.simple-form .form-control::placeholder {
+  color: #ccc;
+}
+
+.simple-form .form-check {
+  margin-bottom: 10%;
+}
+
+.simple-form .btn-primary {
+  border-radius: 5px;
+  padding: 8px 20px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.simple-form .invalid-feedback {
+  display: block;
+  color: #d53;
+  font-size: 80%;
+}
+
+.doctor-list {
+  flex: 2;
+  padding-right: 1rem;
+}
+
+.search-radius {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
+  padding: 0.5rem;
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+}
+
+.appointment-cards-container {
+  overflow-x: auto;
+  white-space: nowrap;
+}
+.doctor-cards-container {
+  width: 100%;
+}
+.appointment-card {
+  display: inline-block;
+  margin-right: 10px; /* Add some margin between cards */
+  cursor: pointer;
+  margin-bottom: 1rem;
+  width: 450px; /* Set a fixed width */
+  height: 200px; /* Set a fixed height */
+}
+
+.doctor-card {
+  display: block;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  width: 450px; /* Set a fixed width */
+  height: 200px; /* Set a fixed height */
+}
+
+.appointment-cards {
+  flex-direction: column; /* Ensure cards stack vertically */
+}
+
+.doctor-details {
+  flex: 1; /* Expand to fill available space */
+  margin-left: 1rem;
+}
+
+.doctor-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: left;
+}
+
+.doctor-appointment {
+  margin-top: 1rem;
+}
+
+.doctor-appointment p {
+  font-weight: bold; /* Make the appointment time more prominent */
+}
+
+.doctor-divider {
+  width: 100%;
+  height: 1px;
+  background-color: #ccc;
+  margin: 10px 0;
+}
+.auth-form {
+  max-width: 400px;
+  background-color: rgba(251, 252, 251, 0.89);
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.auth-form .form-group {
+  margin-bottom: 15px;
+}
+
+.auth-form .form-control {
+  border-radius: 5px;
+  border-color: #ccc;
+  box-shadow: none;
+}
+
+.auth-form .form-control:focus {
+  border-color: #337ab7;
+  box-shadow: 0 0 5px rgba(51, 122, 183, 0.5);
+}
+
+.auth-form .form-control::placeholder {
+  color: #ccc;
+}
+
+.auth-form .form-check {
+  margin-bottom: 10px;
+}
+
+.auth-form .btn-primary {
+  border-radius: 5px;
+  padding: 8px 20px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.auth-button {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px; /* Add some bottom margin for spacing */
+}
+
+.centered-button {
+  display: flex;
+  justify-content: center;
+  align-self: center !important;
+  margin-bottom: 0.5%;
+  margin-top: 0.5%;
+}
+
+.admin-dashboard {
+  display: flex;
+  height: 100vh;
+}
+
+.content {
+  flex: 1;
+  padding: 20px;
+  background-color: #f4f4f4;
+}
+
+/* src/components/AdminHeader.css */
+.AdminHeader {
+  width: 250px;
+  background-color: #ffffff;
+  border-right: 1px solid #ddd;
+  padding: 20px;
+}
+
+.AdminHeader h2 {
+  margin-bottom: 20px;
+}
+
+.AdminHeader ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.AdminHeader ul li {
+  margin: 15px 0;
+}
+
+.logout-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #ff6b6b;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* src/components/ManageInteractions.css */
+.manage-interactions {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.manage-interactions h2 {
+  margin-bottom: 20px;
+}
+
+.filter-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+#language-filter {
+  margin-left: 10px;
+  margin-right: 20px;
+  padding: 5px;
+}
+
+.add-appointment-button {
+  padding: 10px 20px;
+  background-color: #ff6b6b;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+button {
+  padding: 5px 10px;
+  margin: 0 5px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #ddd;
+}
+
+.container {
+  display: flex;
+}
+
+.AdminHeader {
+  flex: 1;
+}
+
+.manage-interactions {
+  flex: 3;
+}
+
+.docfind-container {
+  display: flex;
+  flex-direction: column;
+  height: 280px;
+}
+
+.docfind-content {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  padding-top: 10px; /* Adjust the top padding as needed */
+  padding-left: 40px;
+}
+
+.phone-field {
+  background-color: #f8f9fa;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.phone-field:hover {
+  background-color: #e9ecef;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.phone-field h5 {
+  margin-bottom: 0.5rem;
+  color: #495057;
+}
+
+.phone-field .form-check {
+  margin-left: 1rem;
+}
+
+.phone-field .form-check-input {
+  margin-right: 0.5rem;
+}
+
+.phone-field .form-check-label {
+  font-weight: bold;
+  color: #495057;
+}
+
+.phone-field .form-check-input:checked + .form-check-label {
+  color: #007bff;
+}
+
+.doctor-list-container {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Appropriate CSS for positioning the maps */
+.map-container {
+  position: relative;
+  width: 100%; /* Adjust width to your preference */
+  height: 60vh; /* Fill the entire viewport height */
+  float: right; /* Float to the left */
+  z-index: 1; /* Ensure it's above background */
+}
+
+.map-container-login {
+  width: 100vw; /* Fill entire viewport width */
+  height: 100vh; /* Fill entire viewport height */
+  position: fixed; /* Fixed position to cover entire viewport */
+  top: 0;
+  left: 0;
+  z-index: -1; /* Behind other content */
+}
+
+.map-slider-container {
+  flex: 1;
+  position: relative;
+}
+
+.slider-container {
+  display: flex;
+  align-items: center;
+  margin: 1rem;
+  padding: 0.5rem;
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  position: absolute;
+  top: 0;
+  width: calc(100% - 2rem);
+  z-index: 1000;
+}
+
+.slider-label {
+  margin-right: 1rem;
+}
+
+.slider-value {
+  margin-left: 1rem;
+}
+
+.appointment-booking-form .form-check {
+  background-color: #f8f9fa;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.appointment-booking-form .form-check:hover {
+  background-color: #e9ecef;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.appointment-booking-form .form-check-input {
+  margin-right: 0.5rem;
+}
+
+.appointment-booking-form .form-check-label {
+  font-weight: bold;
+  color: #495057;
+}
+
+.appointment-booking-form .form-check-input:checked + .form-check-label {
+  color: #007bff;
+}
