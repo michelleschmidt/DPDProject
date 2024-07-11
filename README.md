@@ -26,6 +26,10 @@ This project leverages a powerful combination of React and Node.js, along with a
 ## Frontend
 
 - **React**: Our user interface is built with React, enabling us to create a dynamic and responsive experience for our users. React's component-based architecture allows for efficient code reuse and faster development.
+- **TypeScript**: Adds static types to JavaScript, improving developer productivity and code quality.
+- **Vite**: A next-generation frontend tooling that is blazing fast and offers a great development experience.
+- **Tailwind CSS**: Configured with custom screen sizes, font families, colors, and box shadows to fit the design requirements.
+- **Bootstrap**: Another CSS framework used to style the application.
 
 ## Backend
 
@@ -43,3 +47,7 @@ This project leverages a powerful combination of React and Node.js, along with a
 - **MySQL2**: A MySQL client for Node.js with focus on performance. Supports prepared statements, non-UTF8 encodings, binary log protocol, compression, and SSL.
 - **Nodemon**: Simplifies development.
 - **Sequelize**: A promise-based Node.js ORM for Postgres, MySQL, MariaDB, SQLite, and Microsoft SQL Server. It features solid transaction support, relations, eager and lazy loading, read replication, and more.
+- **React Hook Form**: Simplifies form handling and validation.
+- **React Router**: Manages navigation and routing within the application.
+- **Chart.js & React-Chartjs-2**: For data visualization and charting.
+- **Date-fns & React Datepicker**: For date manipulation and date picking functionalities.
