@@ -1,29 +1,23 @@
-# Stage 1: Build the React application
-FROM node:22-alpine3.19 AS builder
+# Use a Node.js base image
+FROM node:22-alpine3.19
 
-# Set the working directory in the container
+# Set the working directory
 WORKDIR /health-connect
 
-# Copy package.json and package-lock.json to the working directory
+# Copy package.json and package-lock.json
 COPY package*.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy the rest of the application code to the working directory
+# Copy the rest of the application code
 COPY . .
 
-# Build the application for production
+# Build the React application
 RUN npm run build
 
-# Stage 2: Serve the built application using an official Nginx image
-FROM nginx:1.24-alpine
+# Expose port 80
+EXPOSE 80
 
-# Copy the build output to the Nginx HTML directory from the previous stage
-COPY --from=builder /health-connect/dist /usr/share/nginx/html
-
-# Expose port 5173
-EXPOSE 5173
-
-# Start Nginx server
-CMD ["nginx", "-g", "daemon off;"]
+# Start the server
+CMD ["node", "frontend-server.js"]

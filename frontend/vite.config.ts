@@ -7,6 +7,11 @@ const isDocker = process.env.DOCKER_ENV === 'true';
 
 export default defineConfig({
   plugins: [react()],
+  build: {
+    rollupOptions: {
+      input: '/index.html'
+    }
+  },
   server: {
     port: 5173, // This should match the port you are trying to access
     open: true, // Automatically opens the browser
