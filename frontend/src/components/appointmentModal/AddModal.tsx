@@ -1,7 +1,14 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { useForm, Controller } from "react-hook-form";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { Appointment, Patient, Doctor, Availability } from "../Types";
+import {
+  Appointment,
+  Patient,
+  Doctor,
+  Availability,
+  AppointmentReason,
+} from "../Types";
 import axiosInstance from "../../axios/Axios";
 import { API_ENDPOINTS } from "../../axios/ConstantsAxios";
 
@@ -14,11 +21,7 @@ interface AddAppointmentModalProps {
   sendby: "Admin" | "Patient";
 }
 
-type AppointmentReasons = {
-  [key: string]: string[];
-};
-
-const appointmentReasons: AppointmentReasons = {
+const appointmentReasons: { [key: string]: string[] } = {
   "Regular consultation": [
     "Routine Check-up",
     "Diagnostic appointment",
@@ -40,6 +43,16 @@ const appointmentReasons: AppointmentReasons = {
   ],
 };
 
+interface FormData {
+  patientId: number;
+  doctorId: number;
+  date: Date | null;
+  time: string;
+  appointmentReasonCategory: string;
+  appointmentReasonSubcategory: string;
+  bookTranslation: boolean;
+}
+
 const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
   isOpen,
   onClose,
@@ -49,58 +62,56 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
   preselectedDoctor,
 }) => {
   const [patients, setPatients] = useState<Patient[]>([]);
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [availabilities, setAvailabilities] = useState<Availability[]>([]);
-  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
-  const [availabilitiesFetched, setAvailabilitiesFetched] = useState(false);
-  const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(
-    preselectedDoctor || null
-  );
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [selectedTime, setSelectedTime] = useState<string | null>(null);
-  const [appointmentReasonCategory, setAppointmentReasonCategory] =
-    useState("");
-  const [appointmentReasonSubcategory, setAppointmentReasonSubcategory] =
-    useState("");
-  const [bookTranslation, setBookTranslation] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (preselectedDoctor) {
-      setSelectedDoctor(preselectedDoctor);
-    } else {
-      console.log("No preselected doctor provided");
-    }
-  }, [preselectedDoctor]);
+  const { control, handleSubmit, watch, setValue } = useForm<FormData>({
+    defaultValues: {
+      patientId: preselectedPatientId || 0,
+      doctorId: preselectedDoctor?.id || 0,
+      date: null,
+      time: "",
+      appointmentReasonCategory: "",
+      appointmentReasonSubcategory: "",
+      bookTranslation: false,
+    },
+  });
+
+  const selectedDoctorId = watch("doctorId");
+  const selectedDate = watch("date");
+  const selectedTime = watch("time");
 
   const fetchPatients = useCallback(async () => {
+    if (sendby !== "Admin") return;
     try {
       setLoading(true);
-      if (preselectedPatientId) {
-        const response = await axiosInstance.get(
-          `/api/users/${preselectedPatientId}`
-        );
-        setPatients([response.data]);
-        setSelectedPatient(response.data);
-      } else {
-        const response = await axiosInstance.get(API_ENDPOINTS.GET_PATIENTS);
-        console.log("Fetched all patients:", response.data);
-        setPatients(response.data);
-      }
+      const response = await axiosInstance.get(API_ENDPOINTS.GET_PATIENTS);
+      const mappedPatients: Patient[] = response.data.map((patient: any) => ({
+        userId: patient.id,
+        first_name: patient.first_name,
+        last_name: patient.last_name,
+        address: patient.address,
+        languages: patient.languages,
+        location: patient.location,
+        insurance: patient.insurance_type,
+      }));
+      setPatients(mappedPatients);
     } catch (error) {
       console.error("Error fetching patients:", error);
       setError("Failed to fetch patients. Please try again.");
     } finally {
       setLoading(false);
     }
-  }, [preselectedPatientId]);
+  }, [sendby]);
 
   const fetchDoctors = useCallback(async () => {
     try {
       setLoading(true);
       const response = await axiosInstance.get(API_ENDPOINTS.GET_DOCTORS);
-      setDoctors(response.data || []);
+      setDoctors(response.data);
     } catch (error) {
       console.error("Error fetching doctors:", error);
       setError("Failed to fetch doctors. Please try again.");
@@ -125,7 +136,6 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
       );
       if (response.data && Array.isArray(response.data)) {
         setAvailabilities(response.data);
-        setAvailabilitiesFetched(true);
       } else {
         throw new Error("Unexpected response format for availabilities");
       }
@@ -139,14 +149,10 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
   }, []);
 
   useEffect(() => {
-    if (selectedDoctor && selectedDoctor.userId) {
-      fetchDoctorAvailability(selectedDoctor.userId);
-    } else {
-      console.log("No doctor selected or invalid doctor data");
-      setAvailabilities([]);
-      setAvailabilitiesFetched(false);
+    if (selectedDoctorId) {
+      fetchDoctorAvailability(Number(selectedDoctorId));
     }
-  }, [selectedDoctor, fetchDoctorAvailability]);
+  }, [selectedDoctorId, fetchDoctorAvailability]);
 
   const getAvailableDates = () => {
     const dates = [
@@ -162,78 +168,51 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
       .map((a) => a.availability_date.split("T")[1].substring(0, 5));
   };
 
-  const handlePatientChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const patient = patients.find((p) => p.userId === Number(e.target.value));
-    setSelectedPatient(patient || null);
-  };
-
-  const handleDoctorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const doctor = doctors.find((d) => d.userId === Number(e.target.value));
-    setSelectedDoctor(doctor || null);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Form submitted and user_id", preselectedPatientId);
-
-    let patientId = preselectedPatientId || selectedPatient?.userId;
-
-    if (!patientId || !selectedDoctor || !selectedDate || !selectedTime) {
-      console.log("Form validation failed");
-      console.log("Selected Patient:", selectedPatient);
-      console.log("Selected Doctor:", selectedDoctor);
-      console.log("Selected Date:", selectedDate);
-      console.log("Selected Time:", selectedTime);
-      setError("Please fill in all required fields.");
-      return;
-    }
-
-    const newAppointment = {
-      user_id: patientId,
-      doctor_id: selectedDoctor.userId,
-      availability_id: availabilities.find(
-        (a) =>
-          a.availability_date.startsWith(
-            selectedDate.toISOString().split("T")[0]
-          ) && a.availability_date.includes(selectedTime)
-      )?.id,
-      appointment_reason: {
-        reason: appointmentReasonCategory,
-        notes: appointmentReasonSubcategory,
-      },
-      book_translation: bookTranslation,
-    };
-
-    console.log("New appointment data:", newAppointment);
-
+  const onSubmitForm = async (data: FormData) => {
     try {
       setLoading(true);
       setError(null);
 
+      const selectedAvailability = availabilities.find(
+        (a) =>
+          a.availability_date.startsWith(
+            data.date!.toISOString().split("T")[0]
+          ) && a.availability_date.includes(data.time)
+      );
+
+      if (!selectedAvailability || !selectedAvailability.id) {
+        throw new Error("Selected availability not found or invalid");
+      }
+
+      const newAppointment = {
+        user_id: sendby === "Patient" ? preselectedPatientId : data.patientId,
+        doctor_id: data.doctorId,
+        availability_id: selectedAvailability.id,
+        appointment_reason: {
+          reason: data.appointmentReasonCategory,
+          notes: data.appointmentReasonSubcategory,
+        },
+        book_translation: data.bookTranslation,
+      };
+
+      console.log("New appointment data:", newAppointment);
+
       let response;
       if (sendby === "Admin") {
-        console.log("Sending request as Admin");
         response = await axiosInstance.post(
           "/api/appointments/create-new",
           newAppointment
         );
       } else if (sendby === "Patient") {
-        console.log("Sending request as Patient");
         response = await axiosInstance.post(
           "/api/appointments/new",
           newAppointment
         );
       }
 
-      console.log("Response received:", response);
-
       if (response && response.data) {
-        console.log("Appointment added successfully:", response.data);
         onSubmit(response.data);
         onClose();
-      } else {
-        console.log("No response data");
-        throw new Error("No response data received");
       }
     } catch (error: any) {
       console.error("Error adding appointment:", error);
@@ -247,151 +226,196 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="modal">
-      <div className="modal-content">
-        <h2>Add New Appointment</h2>
-        {error && <p className="error">{error}</p>}
-        <form onSubmit={handleSubmit}>
-          {/* Patient Selection */}
-          <div>
-            <label>Patient:</label>
-            {preselectedPatientId ? (
-              <p>
-                {selectedPatient?.first_name} {selectedPatient?.last_name}
-              </p>
-            ) : (
-              <select
-                onChange={handlePatientChange}
-                value={selectedPatient?.userId || ""}
-              >
-                <option value="">Select a patient</option>
-                {patients.map((patient) => (
-                  <option key={patient.userId} value={patient.userId}>
-                    {patient.first_name} {patient.last_name}
-                  </option>
-                ))}
-              </select>
-            )}
-          </div>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
+        <h2 className="text-2xl font-bold mb-4">Add New Appointment</h2>
+        {error && <p className="text-red-500 mb-4">{error}</p>}
+        <form onSubmit={handleSubmit(onSubmitForm)}>
+          {sendby === "Admin" && (
+            <div className="mb-4">
+              <label className="block mb-2">Patient:</label>
+              <Controller
+                name="patientId"
+                control={control}
+                rules={{ required: "Patient is required" }}
+                render={({ field }) => (
+                  <select
+                    {...field}
+                    className="w-full p-2 border rounded"
+                    onChange={(e) => {
+                      const selectedPatientId = Number(e.target.value);
+                      field.onChange(selectedPatientId);
+                    }}
+                  >
+                    <option value="">Select a patient</option>
+                    {patients.map((patient) => (
+                      <option key={patient.userId} value={patient.userId}>
+                        {patient.first_name} {patient.last_name}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              />
+            </div>
+          )}
 
-          {/* Doctor Selection */}
-          <div>
-            <label>Doctor:</label>
-            {preselectedDoctor ? (
-              <p>
-                {preselectedDoctor.title} {preselectedDoctor.first_name}{" "}
-                {preselectedDoctor.last_name}
-              </p>
-            ) : (
-              <select
-                onChange={handleDoctorChange}
-                value={selectedDoctor?.userId || ""}
-              >
-                <option value="">Select a doctor</option>
-                {doctors.map((doctor) => (
-                  <option key={doctor.userId} value={doctor.userId}>
-                    {doctor.title} {doctor.first_name} {doctor.last_name} -{" "}
-                    {doctor.specialization?.area_of_specialization}
-                  </option>
-                ))}
-              </select>
-            )}
-          </div>
-
-          {selectedDoctor && availabilitiesFetched && (
-            <>
-              <div>
-                <label>Select Date:</label>
-                <DatePicker
-                  selected={selectedDate}
-                  onChange={(date) => {
-                    setSelectedDate(date);
-                    setSelectedTime(null);
-                  }}
-                  includeDates={getAvailableDates()}
-                  dateFormat="MMMM d, yyyy"
-                  placeholderText="Select an available date"
+          <div className="mb-4">
+            <label className="block mb-2">Doctor:</label>
+            <Controller
+              name="doctorId"
+              control={control}
+              rules={{ required: "Doctor is required" }}
+              render={({ field }) => (
+                <select
+                  {...field}
                   className="w-full p-2 border rounded"
+                  onChange={(e) => {
+                    const selectedDoctorId = Number(e.target.value);
+                    field.onChange(selectedDoctorId);
+                  }}
+                >
+                  <option value="">Select a doctor</option>
+                  {doctors.map((doctor) => (
+                    <option key={doctor.id} value={doctor.id}>
+                      {doctor.title} {doctor.first_name} {doctor.last_name} -{" "}
+                      {doctor.specialization?.area_of_specialization}
+                    </option>
+                  ))}
+                </select>
+              )}
+            />
+          </div>
+
+          {selectedDoctorId && availabilities.length > 0 && (
+            <>
+              <div className="mb-4">
+                <label className="block mb-2">Select Date:</label>
+                <Controller
+                  name="date"
+                  control={control}
+                  rules={{ required: "Date is required" }}
+                  render={({ field }) => (
+                    <DatePicker
+                      selected={field.value}
+                      onChange={(date) => field.onChange(date)}
+                      includeDates={getAvailableDates()}
+                      dateFormat="MMMM d, yyyy"
+                      placeholderText="Select an available date"
+                      className="w-full p-2 border rounded"
+                    />
+                  )}
                 />
               </div>
 
               {selectedDate && (
-                <div>
-                  <label>Select Time:</label>
-                  {getAvailableTimeSlots(selectedDate).map((time) => (
-                    <button
-                      key={time}
-                      type="button"
-                      onClick={() => setSelectedTime(time)}
-                      className={`p-2 rounded ${
-                        selectedTime === time
-                          ? "bg-blue-500 text-white"
-                          : "bg-gray-200 hover:bg-gray-300"
-                      }`}
-                    >
-                      {time}
-                    </button>
-                  ))}
+                <div className="mb-4">
+                  <label className="block mb-2">Select Time:</label>
+                  <Controller
+                    name="time"
+                    control={control}
+                    rules={{ required: "Time is required" }}
+                    render={({ field }) => (
+                      <div>
+                        {getAvailableTimeSlots(selectedDate).map((time) => (
+                          <button
+                            key={time}
+                            type="button"
+                            onClick={() => field.onChange(time)}
+                            className={`m-1 p-2 rounded ${
+                              field.value === time
+                                ? "bg-blue-500 text-white"
+                                : "bg-gray-200 hover:bg-gray-300"
+                            }`}
+                          >
+                            {time}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  />
                 </div>
               )}
             </>
           )}
 
-          <div>
-            <label>Appointment Reason:</label>
-            <select
-              value={appointmentReasonCategory}
-              onChange={(e) => {
-                setAppointmentReasonCategory(e.target.value);
-                setAppointmentReasonSubcategory("");
-              }}
-              className="w-full p-2 border rounded"
-            >
-              <option value="">Select a reason category</option>
-              {Object.keys(appointmentReasons).map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
+          <div className="mb-4">
+            <label className="block mb-2">Appointment Reason:</label>
+            <Controller
+              name="appointmentReasonCategory"
+              control={control}
+              rules={{ required: "Appointment reason category is required" }}
+              render={({ field }) => (
+                <select
+                  {...field}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    setValue("appointmentReasonSubcategory", "");
+                  }}
+                  className="w-full p-2 border rounded"
+                >
+                  <option value="">Select a reason category</option>
+                  {Object.keys(appointmentReasons).map((category) => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
+              )}
+            />
           </div>
 
-          {appointmentReasonCategory && (
-            <div>
-              <label>Specific Reason:</label>
-              <select
-                value={appointmentReasonSubcategory}
-                onChange={(e) =>
-                  setAppointmentReasonSubcategory(e.target.value)
-                }
-                className="w-full p-2 border rounded"
-              >
-                <option value="">Select a specific reason</option>
-                {appointmentReasons[appointmentReasonCategory].map(
-                  (subcategory: string) => (
-                    <option key={subcategory} value={subcategory}>
-                      {subcategory}
-                    </option>
-                  )
+          <Controller
+            name="appointmentReasonCategory"
+            control={control}
+            render={({ field }) => (
+              <>
+                {field.value && (
+                  <div className="mb-4">
+                    <label className="block mb-2">Specific Reason:</label>
+                    <Controller
+                      name="appointmentReasonSubcategory"
+                      control={control}
+                      rules={{ required: "Specific reason is required" }}
+                      render={({ field: subField }) => (
+                        <select
+                          {...subField}
+                          className="w-full p-2 border rounded"
+                        >
+                          <option value="">Select a specific reason</option>
+                          {appointmentReasons[field.value].map(
+                            (subcategory: string) => (
+                              <option key={subcategory} value={subcategory}>
+                                {subcategory}
+                              </option>
+                            )
+                          )}
+                        </select>
+                      )}
+                    />
+                  </div>
                 )}
-              </select>
-            </div>
-          )}
+              </>
+            )}
+          />
 
-          <div>
-            <label>
-              <input
-                type="checkbox"
-                checked={bookTranslation}
-                onChange={(e) => setBookTranslation(e.target.checked)}
-                className="form-checkbox h-5 w-5 text-blue-600"
+          <div className="mb-4">
+            <label className="flex items-center">
+              <Controller
+                name="bookTranslation"
+                control={control}
+                render={({ field }) => (
+                  <input
+                    type="checkbox"
+                    onChange={(e) => field.onChange(e.target.checked)}
+                    checked={field.value}
+                    className="form-checkbox h-5 w-5 text-blue-600 mr-2"
+                  />
+                )}
               />
               Book Translation
             </label>
-            <p>
+            <p className="text-sm text-gray-600 mt-1">
               Check this if translation services for this appointment are
               needed.
             </p>
@@ -408,8 +432,9 @@ const AddAppointmentModal: React.FC<AddAppointmentModalProps> = ({
             <button
               type="submit"
               className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+              disabled={loading}
             >
-              Add Appointment
+              {loading ? "Adding..." : "Add Appointment"}
             </button>
           </div>
         </form>

@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "react-error-boundary": "^4.0.13",
+    "react-hook-form": "^7.52.1"
+  }
+}

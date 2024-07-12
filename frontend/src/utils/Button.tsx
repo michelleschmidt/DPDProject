@@ -1,4 +1,4 @@
-import React, { FC, HTMLAttributes } from 'react';
+import React, { FC, HTMLAttributes } from "react";
 
 interface ButtonProps extends HTMLAttributes<HTMLDivElement> {
   text: string;
