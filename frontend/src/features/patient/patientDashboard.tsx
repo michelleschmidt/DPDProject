@@ -200,9 +200,10 @@ const PatientDashboard: React.FC = () => {
     setIsViewModalOpen(false);
   };
 
-  const openAddAppointmentModal = (doctor: Doctor) => {
-    setSelectedDoctorForNewAppointment(doctor);
-    setIsAddModalOpen(true);
+  const openAddAppointmentModal = () => {
+    // setSelectedDoctorForNewAppointment(doctor);
+    // setIsAddModalOpen(true);
+    alert("This function is not available yet for patients.");
   };
 
   const handleDeleteClick = (appointment: Appointment) => {
@@ -352,7 +353,7 @@ const PatientDashboard: React.FC = () => {
         </span>
       </div>
       <button
-        onClick={() => openAddAppointmentModal(doctor)}
+        onClick={() => openAddAppointmentModal()}
         className="bg-blue-500 text-white hover:bg-blue-600 w-full py-2 px-4 rounded"
       >
         Book Appointment
@@ -369,7 +370,7 @@ const PatientDashboard: React.FC = () => {
               Upcoming Appointments
             </h2>
             <button
-              onClick={() => setIsAddModalOpen(true)}
+              onClick={() => openAddAppointmentModal()}
               className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
             >
               Book New Appointment
