@@ -1,0 +1,1 @@
+import{r as a}from"./react-is-8JwjhRSi.js";function s(e){return e&&e.__esModule&&Object.prototype.hasOwnProperty.call(e,"default")?e.default:e}var r=a,p={$$typeof:!0,render:!0,defaultProps:!0,displayName:!0,propTypes:!0},o={$$typeof:!0,compare:!0,defaultProps:!0,displayName:!0,propTypes:!0,type:!0},t={};t[r.ForwardRef]=p;t[r.Memo]=o;export{s as g};
