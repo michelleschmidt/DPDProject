@@ -5,36 +5,40 @@ services:
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_SSL_MODE: DISABLED
     ports:
       - "3307:3306"
     volumes:
+      - ./my.cnf:/etc/mysql/conf.d/my.cnf
       - project-database:/var/lib/mysql
-      - ./mysql/projectschema.sql:/docker-entrypoint-initdb.d/projectschema.sql
+      - ./mysql/schema.sql:/docker-entrypoint-initdb.d/projectschema.sql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  app:
+  server-app:
     build:
       context: ./backend
       dockerfile: Dockerfile
     environment:
       DB_HOST: db
-      DB_USER: ${DB_USER}
+      DB_USER: root
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
       SECRETE: ${SECRETE}
       API_ACCESS_KEY: ${API_ACCESS_KEY}
+      DOCKER_ENV: 'true'  # Add this line
     depends_on:
       db:
         condition: service_healthy
     ports:
       - "7000:7000"
     volumes:
-      - .:/usr/src/app
-      
+      - ./backend:/server-app
+      - /server-app/node_modules
+
   health-connect:
     build:
       context: ./frontend
@@ -42,13 +46,12 @@ services:
     ports:
       - "5173:5173"
     depends_on:
-      - app
+      - server-app
     environment:
-      - REACT_APP_API_URL=http://app:7000
+      - VITE_API_URL=http://server-app:7000
       - DOCKER_ENV=true
     volumes:
-      - .:/health-connect
+      - ./frontend:/health-connect
       - /health-connect/node_modules
-
 volumes:
   project-database:
