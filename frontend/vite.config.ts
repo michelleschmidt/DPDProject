@@ -6,8 +6,10 @@ import process from 'node:process';
 const isDocker = process.env.DOCKER_ENV === 'true';
 
 export default defineConfig({
+  base: '/DPDProject/',
   plugins: [react()],
   build: {
+    outDir: 'dist',
     rollupOptions: {
       input: '/index.html'
     }
