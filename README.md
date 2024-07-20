@@ -76,11 +76,12 @@ This project leverages a powerful combination of React and Node.js, along with a
     ```
 
     To open the frontend in developer mode do `npx vite` from the frontend directory and the page opens automatically. otherwise, run `npm start`
+    The admin access to the website is email `olivia@mail.com` and password: `securePassword123`
 
-4. **Set up environment variables:**
+5. **Set up environment variables:**
    - The backend uses some APIs which cannot be disclosed and as such, cannot work properly without the required credentials.
 
-5. **Run the backend server:**
+6. **Run the backend server:**
 
    ```bash
    cd backend
